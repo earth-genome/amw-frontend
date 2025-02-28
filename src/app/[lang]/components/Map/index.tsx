@@ -32,7 +32,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
   const [map, setMap] = useState();
   const [bounds, setBounds] = useState();
   const [yearly, setYearly] = useState(true);
-  const [activeLayer, setActiveLayer] = useState("2023");
+  const [activeLayer, setActiveLayer] = useState("2024");
   /*  
   mapbox://styles/earthrise/ckxht1jfm2h9k15m7wrv5wz5w
   */
@@ -231,10 +231,21 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           id="sentinel-2023"
           type="raster"
           tiles={[
-            `${process.env.NEXT_PUBLIC_SENTINEL2_URL_1}/2023-01-01/2024-01-01/rgb/{z}/{x}/{y}.webp`,
-            `${process.env.NEXT_PUBLIC_SENTINEL2_URL_2}/2023-01-01/2024-01-01/rgb/{z}/{x}/{y}.webp`,
-            `${process.env.NEXT_PUBLIC_SENTINEL2_URL_3}/2023-01-01/2024-01-01/rgb/{z}/{x}/{y}.webp`,
-            `${process.env.NEXT_PUBLIC_SENTINEL2_URL_4}/2023-01-01/2024-01-01/rgb/{z}/{x}/{y}.webp`,
+            `${process.env.NEXT_PUBLIC_SENTINEL2_V2_URL_1}/2023-01-01/2024-01-01/rgb/{z}/{x}/{y}.webp`,
+            `${process.env.NEXT_PUBLIC_SENTINEL2_V2_URL_2}/2023-01-01/2024-01-01/rgb/{z}/{x}/{y}.webp`,
+            `${process.env.NEXT_PUBLIC_SENTINEL2_V2_URL_3}/2023-01-01/2024-01-01/rgb/{z}/{x}/{y}.webp`,
+            `${process.env.NEXT_PUBLIC_SENTINEL2_V2_URL_4}/2023-01-01/2024-01-01/rgb/{z}/{x}/{y}.webp`,
+          ]}
+          tileSize={256}
+        />
+	<Source
+          id="sentinel-2024"
+          type="raster"
+          tiles={[
+            `${process.env.NEXT_PUBLIC_SENTINEL2_V2_URL_4}/2024-01-01/2025-01-01/rgb/{z}/{x}/{y}.webp`,
+            `${process.env.NEXT_PUBLIC_SENTINEL2_V2_URL_4}/2024-01-01/2025-01-01/rgb/{z}/{x}/{y}.webp`,
+            `${process.env.NEXT_PUBLIC_SENTINEL2_V2_URL_4}/2024-01-01/2025-01-01/rgb/{z}/{x}/{y}.webp`,
+            `${process.env.NEXT_PUBLIC_SENTINEL2_V2_URL_4}/2024-01-01/2025-01-01/rgb/{z}/{x}/{y}.webp`,
           ]}
           tileSize={256}
           bounds={[-80.0, -20.0, -50.0, 20.0]}
@@ -289,7 +300,14 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
             "raster-opacity": getSatelliteOpacity(`sentinel-layer-2023`),
           }}
         />
-
+        <Layer
+          id="sentinel-layer-2024"
+          type="raster"
+          source={`sentinel-2024`}
+          paint={{
+            "raster-opacity": getSatelliteOpacity(`sentinel-layer-2024`),
+          }}
+        />
         { /* ================== MASK =================== */}
         <Source
           id={"hole-source"}
@@ -325,6 +343,13 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         />
 
         { /* ================== MINE SOURCES =================== */}
+	<Source
+          id={"mines-2024"}
+          type="geojson"
+          tolerance={0.05}
+          // @ts-ignore
+          data={`${process.env.NEXT_PUBLIC_MINES_URL}/amazon_basin_48px_v3.2-3.7ensemble_0.50_2024-01-01_2024-12-31-dissolved-0.6.geojson`}
+        />
         <Source
           id={"mines-2023"}
           type="geojson"
@@ -369,6 +394,16 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         />
         
         { /* ================== MINE LAYERS =================== */}
+	<Layer
+          id={"mines-layer-2024"}
+          source={"mines-2024"}
+          type="line"
+          paint={{
+            "line-color": "#ffb301",
+            "line-opacity": getOpacity(`mines-layer-2024`),
+            "line-width": 1,
+          }}
+        />
         <Layer
           id={"mines-layer-2023"}
           source={"mines-2023"}
@@ -525,6 +560,10 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
             {
               label: "2023",
               value: "2023",
+            },
+	    {
+              label: "2024",
+              value: "2024",
             },
           ]}
           value={activeLayer}
