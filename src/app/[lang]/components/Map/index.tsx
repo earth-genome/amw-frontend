@@ -608,6 +608,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           setActiveLayer(value);
         }}
         >
+	  <Option value={2024}>2024</Option>
           <Option value={2023}>2023</Option>
           <Option value={2022}>2022</Option>
           <Option value={2021}>2021</Option>
