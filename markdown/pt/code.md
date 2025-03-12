@@ -5,4 +5,4 @@ O repositório GitHub contém todo o código necessário para gerar dados, trein
 <a class="amw-btn" href="https://github.com/earthrise-media/mining-detector">Obtenha o código no  <b>Github</b></a>
 
 [Avaliações anuais](https://github.com/earthrise-media/mining-detector#results) 
-da mineração na bacia amazônica para 2018-2023 estão disponíveis no formato GeoJSON.
+da mineração na bacia amazônica estão disponíveis no formato GeoJSON.
