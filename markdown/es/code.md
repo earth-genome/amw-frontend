@@ -4,4 +4,4 @@ El repositorio de GitHub contiene todo el código necesario para generar datos, 
 
 <a class="amw-btn" href="https://github.com/earthrise-media/mining-detector">Obtenga el código de  <b>Github</b></a>
 
-[Las evaluaciones anuales](https://github.com/earthrise-media/mining-detector#results) de la minería en la cuenca amazónica para 2018-2023 están disponibles en formato GeoJSON.
+[Las evaluaciones anuales](https://github.com/earthrise-media/mining-detector#results) de la minería en la cuenca amazónica están disponibles en formato GeoJSON.
