@@ -4,6 +4,8 @@ The GitHub repository contains all code needed to generate data, train models, a
 
 <a class="amw-btn" href="https://github.com/earthrise-media/mining-detector">Get the code from <b>Github</b></a>
 
-[Yearly assessments](https://github.com/earthrise-media/mining-detector#results) of mining in the Amazon basin are available in GeoJSON format.
+In April, 2025, we switched to present [cumulative detections](https://github.com/earthrise-media/mining-detector#results) of mining activity on this website, starting from year 2018. 
+
+Yearly assessments of mining in the Amazon basin remain available on our GitHub page. Both are in GeoJSON format.
 
 
