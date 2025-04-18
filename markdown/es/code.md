@@ -6,4 +6,4 @@ El repositorio de GitHub contiene todo el código necesario para generar datos, 
 
 En abril de 2025, comenzamos a presentar detecciones acumuladasde actividad minera en este sitio web, a partir del año 2018.
 
-Las evaluaciones anuales de la minería en la cuenca del Amazonas siguen disponibles en nuestra página de GitHub. [Ambos están en formato GeoJSON] (https://github.com/earthrise-media/mining-detector#results).
+Las evaluaciones anuales de la minería en la cuenca del Amazonas siguen disponibles en nuestra página de GitHub. [Ambos están en formato GeoJSON](https://github.com/earthrise-media/mining-detector#results).
