@@ -4,6 +4,6 @@ O repositório GitHub contém todo o código necessário para gerar dados, trein
 
 <a class="amw-btn" href="https://github.com/earthrise-media/mining-detector">Obtenha o código no  <b>Github</b></a>
 
-Em abril de 2025, passamos a apresentar [detecções acumuladas](https://github.com/earthrise-media/mining-detector#results) de atividade de mineração neste site, a partir do ano de 2018.
+Em abril de 2025, passamos a apresentar detecções acumuladas de atividade de mineração neste site, a partir do ano de 2018.
 
-As avaliações anuais da mineração na bacia amazônica continuam disponíveis na nossa página do GitHub. Ambos estão no formato GeoJSON.
+As avaliações anuais da mineração na bacia amazônica continuam disponíveis na nossa página do GitHub. [Ambos estão no formato GeoJSON](https://github.com/earthrise-media/mining-detector#results).
