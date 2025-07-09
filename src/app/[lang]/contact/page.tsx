@@ -18,7 +18,6 @@ const Page: NextPage<PageProps> = async ({ params: { lang } }) => {
   const getMarkdownText = (content: string) => {
     const rawMarkup = marked.parse(content);
     {
-      /* @ts-ignore */
     }
     return { __html: rawMarkup };
   };

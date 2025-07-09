@@ -144,7 +144,6 @@ const Nav: React.FC<NavProps> = ({ children, dictionary }) => {
           setMenuOpen(false);
         }}
       >
-        {/* @ts-ignore */}
         <Image src={Logo} alt="Logo" />
       </Link>
       {showMenu && (

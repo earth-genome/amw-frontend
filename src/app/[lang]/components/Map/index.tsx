@@ -1,15 +1,15 @@
 "use client";
 import "./style.css";
-import React, { ReactNode, useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { message, Button, Radio, Slider, Select, ConfigProvider } from "antd";
-import Map, { Layer, Source, Popup, ScaleControl } from "react-map-gl";
+import { message, Radio, Select, ConfigProvider } from "antd";
+import Map, { Layer, Source, Popup } from "react-map-gl";
+import type { MapboxMap } from "react-map-gl";
 import { useMenu } from "../../menuContext";
-import Overlay from "../Overlay";
 import Area from "../Area";
 import Footer from "../Footer";
 import MiniMap from "../MiniMap";
-import { convertBoundsToGeoJSON } from "./helpers";
+import { convertBoundsToGeoJSON, GeoJSONType } from "./helpers";
 import { CopyOutlined } from "@ant-design/icons";
 const { Option } = Select;
 
@@ -29,14 +29,16 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
   const router = useRouter();
   const [blurMap, setBlurMap] = useState(false);
   const [areaVisible, setAreaVisible] = useState(true);
-  const [map, setMap] = useState();
-  const [bounds, setBounds] = useState();
+  const [map, setMap] = useState<MapboxMap | null>(null);
+  const [bounds, setBounds] = useState<GeoJSONType | undefined>(undefined);
   const [yearly, setYearly] = useState(true);
   const [activeLayer, setActiveLayer] = useState("2024");
   /*  
   mapbox://styles/earthrise/ckxht1jfm2h9k15m7wrv5wz5w
   */
-  const [mapStyle, setMapStyle] = useState('mapbox://styles/earthrise/clvwchqxi06gh01pe1huv70id')
+  const [mapStyle, setMapStyle] = useState(
+    "mapbox://styles/earthrise/clvwchqxi06gh01pe1huv70id"
+  );
 
   useEffect(() => {
     if (window.location.hash) {
@@ -46,26 +48,23 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
       const zoomRaw = split[0];
       const zoom = zoomRaw.split("#")[1];
       if (map) {
-        /* @ts-ignore */
         map?.jumpTo({
-          center: [lng, lat],
-          zoom: zoom,
+          center: lng && lat ? [Number(lng), Number(lat)] : undefined,
+          zoom: zoom ? Number(zoom) : undefined,
         });
       }
     }
   }, [map]);
 
-
   const updateURLHash = () => {
-    /* @ts-ignore */
     const zoom = map?.getZoom();
-    /* @ts-ignore */
     const center = map?.getCenter();
     const lng = center?.lng;
     const lat = center?.lat;
+    if (!zoom || !lng || !lat) return;
     router.replace(
       `${pathname}/#${zoom.toFixed(2)}/${lng.toFixed(2)}/${lat.toFixed(2)}`,
-      undefined,
+      undefined
     );
   };
 
@@ -90,7 +89,6 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
     }
     return 0;
   };
-
 
   return (
     <div
@@ -119,22 +117,15 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         mapStyle={mapStyle}
         onMove={(e) => {
           if (map) {
-            
-            /* @ts-ignore */
             if (map?.getZoom() > 4) {
               setAreaVisible(false);
             } else {
               setAreaVisible(true);
             }
-            
-            /* @ts-ignore */
+
             const currentBounds = convertBoundsToGeoJSON(map?.getBounds());
-            /* @ts-ignore */
             setBounds(currentBounds);
           }
-          
-          
-          
         }}
         onMoveEnd={() => {
           updateURLHash();
@@ -143,7 +134,6 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           updateURLHash();
         }}
         onLoad={(e) => {
-          /* @ts-ignore */
           setMap(e.target);
         }}
         onClick={(e) => {
@@ -151,22 +141,19 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           const map = e.target;
           const features = map.queryRenderedFeatures(e.point);
           const clickedOnExcludedLayer = features.some(
-            (feature) => feature.layer.id === 'hole-layer'
+            (feature) => feature.layer.id === "hole-layer"
           );
           if (!clickedOnExcludedLayer) {
-          popupVisible ? setPopupVisible(false) : setPopupVisible(true);
-          setPopupInfo({
-            /* @ts-ignore */
-            latitude: lngLat.lat,
-            /* @ts-ignore */
-            longitude: lngLat.lng,
-            zoom: map?.getZoom(),
-          });
-         }
+            popupVisible ? setPopupVisible(false) : setPopupVisible(true);
+            setPopupInfo({
+              latitude: lngLat.lat,
+              longitude: lngLat.lng,
+              zoom: map?.getZoom(),
+            });
+          }
         }}
       >
-
-        { /* ================== SENTINEL2 SOURCES =================== */}
+        {/* ================== SENTINEL2 SOURCES =================== */}
         <Source
           id="sentinel-2018"
           type="raster"
@@ -238,7 +225,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           ]}
           tileSize={256}
         />
-	<Source
+        <Source
           id="sentinel-2024"
           type="raster"
           tiles={[
@@ -251,7 +238,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           bounds={[-80.0, -20.0, -50.0, 20.0]}
         />
 
-        { /* ================== SENTINEL2 LAYERS =================== */}
+        {/* ================== SENTINEL2 LAYERS =================== */}
         <Layer
           id="sentinel-layer-2018"
           type="raster"
@@ -308,7 +295,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
             "raster-opacity": getSatelliteOpacity(`sentinel-layer-2024`),
           }}
         />
-        { /* ================== MASK =================== */}
+        {/* ================== MASK =================== */}
         <Source
           id={"hole-source"}
           type="vector"
@@ -325,7 +312,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           }}
         />
 
-        { /* ================== BORDERS =================== */}
+        {/* ================== BORDERS =================== */}
         <Source
           id="boundaries"
           type="vector"
@@ -342,59 +329,52 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           }}
         />
 
-        { /* ================== MINE SOURCES =================== */}
-	<Source
+        {/* ================== MINE SOURCES =================== */}
+        <Source
           id={"mines-2024"}
           type="geojson"
           tolerance={0.05}
-          // @ts-ignore
           data={`${process.env.NEXT_PUBLIC_MINES_URL}/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2024cumulative.geojson`}
         />
         <Source
           id={"mines-2023"}
           type="geojson"
           tolerance={0.05}
-          // @ts-ignore
           data={`${process.env.NEXT_PUBLIC_MINES_URL}/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2023cumulative.geojson`}
         />
         <Source
           id={"mines-2022"}
           type="geojson"
           tolerance={0.05}
-          // @ts-ignore
           data={`${process.env.NEXT_PUBLIC_MINES_URL}/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2022cumulative.geojson`}
         />
         <Source
           id={"mines-2021"}
           type="geojson"
           tolerance={0.05}
-          // @ts-ignore
           data={`${process.env.NEXT_PUBLIC_MINES_URL}/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2021cumulative.geojson`}
         />
         <Source
           id={"mines-2020"}
           type="geojson"
           tolerance={0.05}
-          // @ts-ignore
           data={`${process.env.NEXT_PUBLIC_MINES_URL}/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2020cumulative.geojson`}
         />
         <Source
           id={"mines-2019"}
           type="geojson"
           tolerance={0.05}
-          // @ts-ignore
           data={`${process.env.NEXT_PUBLIC_MINES_URL}/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2019cumulative.geojson`}
         />
         <Source
           id={"mines-2018"}
           type="geojson"
           tolerance={0.05}
-          // @ts-ignore
           data={`${process.env.NEXT_PUBLIC_MINES_URL}/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2018cumulative.geojson`}
         />
-        
-        { /* ================== MINE LAYERS =================== */}
-	<Layer
+
+        {/* ================== MINE LAYERS =================== */}
+        <Layer
           id={"mines-layer-2024"}
           source={"mines-2024"}
           type="line"
@@ -465,7 +445,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           }}
         />
 
-        { /* ================== LABELS =================== */}
+        {/* ================== LABELS =================== */}
         <Layer
           id="country-labels"
           type="symbol"
@@ -488,7 +468,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           }}
         />
 
-        { /* ================== POPUP =================== */}
+        {/* ================== POPUP =================== */}
         {popupVisible && popupInfo && (
           <Popup
             longitude={popupInfo?.longitude}
@@ -498,18 +478,20 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
             onClose={() => setPopupInfo(null)}
           >
             <table>
-              <tr>
-                <td className="number-value">
-                  {popupInfo.longitude.toFixed(3)}
-                </td>
-                <td className="number-value">
-                  {popupInfo?.latitude.toFixed(3)}
-                </td>
-              </tr>
-              <tr>
-                <td>Longitude</td>
-                <td>Latitude</td>
-              </tr>
+              <tbody>
+                <tr>
+                  <td className="number-value">
+                    {popupInfo.longitude.toFixed(3)}
+                  </td>
+                  <td className="number-value">
+                    {popupInfo?.latitude.toFixed(3)}
+                  </td>
+                </tr>
+                <tr>
+                  <td>Longitude</td>
+                  <td>Latitude</td>
+                </tr>
+              </tbody>
             </table>
 
             <a
@@ -517,7 +499,11 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
               onClick={async (e) => {
                 e.preventDefault();
                 copyToClipboard(
-                  `${process.env.NEXT_PUBLIC_DOMAIN}/#${popupInfo.zoom.toFixed(2)}/${popupInfo.longitude.toFixed(3)}/${popupInfo?.latitude.toFixed(3)}`,
+                  `${process.env.NEXT_PUBLIC_DOMAIN}/#${popupInfo.zoom.toFixed(
+                    2
+                  )}/${popupInfo.longitude.toFixed(
+                    3
+                  )}/${popupInfo?.latitude.toFixed(3)}`
                 ).then(() => {
                   message.success("URL copied");
                 });
@@ -527,13 +513,11 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
               <CopyOutlined style={{ fontSize: "16px" }} /> Copy URL
             </a>
           </Popup>
-
         )}
 
         <div className="map-scale-control"></div>
       </Map>
 
-  
       <div className="year-pills">
         <Radio.Group
           options={[
@@ -561,7 +545,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
               label: "2023",
               value: "2023",
             },
-	    {
+            {
               label: "2024",
               value: "2024",
             },
@@ -574,48 +558,48 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           buttonStyle="solid"
         />
       </div>
-      
+
       <div className="year-dropdown">
         <ConfigProvider
-        theme={{
-          "components": {
-          "Select": {
-            "selectorBg": "rgb(11, 95, 58)",
-            "optionSelectedColor": "rgba(242, 236, 236, 0.88)",
-            "colorIconHover": "rgba(250, 246, 246, 0.88)",
-            "colorBgContainer": "rgb(11, 95, 58)",
-            "colorBgElevated": "rgb(11, 95, 58)",
-            "colorPrimary": "rgb(242, 237, 237)",
-            "colorIcon": "rgb(255,255,255)",
-            "colorBorder": "rgb(6, 89, 36)",
-            "optionSelectedBg": "rgb(76, 97, 77)",
-            "colorText": "rgba(250, 249, 249, 0.88)",
-            "colorFillTertiary": "rgba(242, 234, 234, 0.04)",
-            "colorFillSecondary": "rgba(241, 228, 228, 0.06)",
-            "colorTextQuaternary": "rgba(249, 249, 249, 0.25)",
-            "colorTextTertiary": "rgba(244, 236, 236, 0.9)",
-            "colorTextDescription": "rgba(255, 253, 253, 0.45)",
-            "colorTextDisabled": "rgba(239, 233, 233, 0.25)",
-            "colorTextPlaceholder": "rgba(255, 255, 255, 0.9)",
-          }
-         }
-        }}
+          theme={{
+            components: {
+              Select: {
+                selectorBg: "rgb(11, 95, 58)",
+                optionSelectedColor: "rgba(242, 236, 236, 0.88)",
+                colorIconHover: "rgba(250, 246, 246, 0.88)",
+                colorBgContainer: "rgb(11, 95, 58)",
+                colorBgElevated: "rgb(11, 95, 58)",
+                colorPrimary: "rgb(242, 237, 237)",
+                colorIcon: "rgb(255,255,255)",
+                colorBorder: "rgb(6, 89, 36)",
+                optionSelectedBg: "rgb(76, 97, 77)",
+                colorText: "rgba(250, 249, 249, 0.88)",
+                colorFillTertiary: "rgba(242, 234, 234, 0.04)",
+                colorFillSecondary: "rgba(241, 228, 228, 0.06)",
+                colorTextQuaternary: "rgba(249, 249, 249, 0.25)",
+                colorTextTertiary: "rgba(244, 236, 236, 0.9)",
+                colorTextDescription: "rgba(255, 253, 253, 0.45)",
+                colorTextDisabled: "rgba(239, 233, 233, 0.25)",
+                colorTextPlaceholder: "rgba(255, 255, 255, 0.9)",
+              },
+            },
+          }}
         >
-        <Select
-         style={{ width: '100px'}}
-         value={activeLayer}
-         onChange={(value) => {
-          setActiveLayer(value);
-        }}
-        >
-	  <Option value={2024}>2024</Option>
-          <Option value={2023}>2023</Option>
-          <Option value={2022}>2022</Option>
-          <Option value={2021}>2021</Option>
-          <Option value={2020}>2020</Option>
-          <Option value={2019}>2019</Option>
-          <Option value={2018}>2018</Option>
-        </Select>
+          <Select
+            style={{ width: "100px" }}
+            value={activeLayer}
+            onChange={(value) => {
+              setActiveLayer(value);
+            }}
+          >
+            <Option value={2024}>2024</Option>
+            <Option value={2023}>2023</Option>
+            <Option value={2022}>2022</Option>
+            <Option value={2021}>2021</Option>
+            <Option value={2020}>2020</Option>
+            <Option value={2019}>2019</Option>
+            <Option value={2018}>2018</Option>
+          </Select>
         </ConfigProvider>
       </div>
 
@@ -636,9 +620,13 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           onChange={({ target: { value } }) => {
             setYearly(value);
             if (value === false) {
-              setMapStyle(`mapbox://styles/earthrise/ckxht1jfm2h9k15m7wrv5wz5w`);
+              setMapStyle(
+                `mapbox://styles/earthrise/ckxht1jfm2h9k15m7wrv5wz5w`
+              );
             } else {
-              setMapStyle('mapbox://styles/earthrise/clvwchqxi06gh01pe1huv70id');
+              setMapStyle(
+                "mapbox://styles/earthrise/clvwchqxi06gh01pe1huv70id"
+              );
             }
           }}
           optionType="button"
@@ -664,14 +652,13 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         </a>
       </div>
 
-      {areaVisible && <Area dictionary={dictionary} year={activeLayer} /> }
-      {/* @ts-ignore */}
-      {map && map?.getZoom() > 5 && (
-        /* @ts-ignore */
-        <MiniMap bounds={bounds} />
-      )}
-      {/* @ts-ignore */}
-      <Footer year={activeLayer} zoom={map?.getZoom() || 4} dictionary={dictionary} />
+      {areaVisible && <Area dictionary={dictionary} year={activeLayer} />}
+      {map && map?.getZoom() > 5 && <MiniMap bounds={bounds} />}
+      <Footer
+        year={activeLayer}
+        zoom={map?.getZoom() || 4}
+        dictionary={dictionary}
+      />
     </div>
   );
 };

@@ -3,9 +3,10 @@ import "./style.css";
 import React, { useRef, useEffect } from "react";
 import Map, { Layer, Source } from "react-map-gl";
 import geojson from "../../data/amazon_basin.json";
+import { GeoJSONType } from "../Map/helpers";
 
 interface MiniMapProps {
-  bounds?: mapboxgl.LngLatBounds;
+  bounds?: GeoJSONType;
 }
 
 const MiniMap: React.FC<MiniMapProps> = ({ bounds }) => {
@@ -55,7 +56,6 @@ const MiniMap: React.FC<MiniMapProps> = ({ bounds }) => {
           // @ts-ignore
           data={geojson}
         />
-        {/* @ts-ignore */}
         <Layer
           id={"amazon-layer"}
           source={"amazon-source"}
@@ -66,12 +66,7 @@ const MiniMap: React.FC<MiniMapProps> = ({ bounds }) => {
           }}
         />
 
-        <Source
-          /* @ts-ignore */
-          type="geojson"
-          /* @ts-ignore */
-          data={bounds}
-        >
+        <Source type="geojson" data={bounds}>
           {/* @ts-ignore */}
           <Layer {...boundsLayer} />
         </Source>
