@@ -5,7 +5,6 @@ import { usePathname, useRouter } from "next/navigation";
 import { message, Radio, Select, ConfigProvider } from "antd";
 import Map, { Layer, Source, Popup } from "react-map-gl";
 import type { MapRef } from "react-map-gl";
-import { useMenu } from "../../menuContext";
 import Area from "../Area";
 import Footer from "../Footer";
 import MiniMap from "../MiniMap";
@@ -17,6 +16,8 @@ interface MainMapProps {
   dictionary: { [key: string]: any };
 }
 
+const LAYER_YEARS = [2024, 2023, 2022, 2021, 2020, 2019, 2018];
+
 const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
   const [popupInfo, setPopupInfo] = useState<{
     latitude: number;
@@ -25,9 +26,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
   } | null>(null);
   const [popupVisible, setPopupVisible] = useState(false);
   const pathname = usePathname();
-  const { menuOpen, setMenuOpen } = useMenu();
   const router = useRouter();
-  const [blurMap, setBlurMap] = useState(false);
   const [areaVisible, setAreaVisible] = useState(true);
   const mapRef = useRef<MapRef>(null);
   const [bounds, setBounds] = useState<GeoJSONType | undefined>(undefined);
@@ -93,9 +92,6 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
   return (
     <div
       className="main-map"
-      style={{
-        filter: blurMap ? "blur(80px)" : "none",
-      }}
     >
       <Map
         mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
@@ -520,36 +516,10 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
 
       <div className="year-pills">
         <Radio.Group
-          options={[
-            {
-              label: "2018",
-              value: "2018",
-            },
-            {
-              label: "2019",
-              value: "2019",
-            },
-            {
-              label: "2020",
-              value: "2020",
-            },
-            {
-              label: "2021",
-              value: "2021",
-            },
-            {
-              label: "2022",
-              value: "2022",
-            },
-            {
-              label: "2023",
-              value: "2023",
-            },
-            {
-              label: "2024",
-              value: "2024",
-            },
-          ]}
+          options={LAYER_YEARS.sort((a, b) => a - b).map((d) => ({
+            value: String(d),
+            label: String(d),
+          }))}
           value={activeLayer}
           onChange={({ target: { value } }) => {
             setActiveLayer(value);
@@ -592,13 +562,11 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
               setActiveLayer(value);
             }}
           >
-            <Option value={2024}>2024</Option>
-            <Option value={2023}>2023</Option>
-            <Option value={2022}>2022</Option>
-            <Option value={2021}>2021</Option>
-            <Option value={2020}>2020</Option>
-            <Option value={2019}>2019</Option>
-            <Option value={2018}>2018</Option>
+            {LAYER_YEARS.map((d) => (
+              <Option key={d} value={d}>
+                {d}
+              </Option>
+            ))}
           </Select>
         </ConfigProvider>
       </div>
