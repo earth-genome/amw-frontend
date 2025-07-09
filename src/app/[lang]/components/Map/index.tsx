@@ -1,10 +1,10 @@
 "use client";
 import "./style.css";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { message, Radio, Select, ConfigProvider } from "antd";
 import Map, { Layer, Source, Popup } from "react-map-gl";
-import type { MapboxMap } from "react-map-gl";
+import type { MapRef } from "react-map-gl";
 import { useMenu } from "../../menuContext";
 import Area from "../Area";
 import Footer from "../Footer";
@@ -29,7 +29,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
   const router = useRouter();
   const [blurMap, setBlurMap] = useState(false);
   const [areaVisible, setAreaVisible] = useState(true);
-  const [map, setMap] = useState<MapboxMap | null>(null);
+  const mapRef = useRef<MapRef>(null);
   const [bounds, setBounds] = useState<GeoJSONType | undefined>(undefined);
   const [yearly, setYearly] = useState(true);
   const [activeLayer, setActiveLayer] = useState("2024");
@@ -40,25 +40,25 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
     "mapbox://styles/earthrise/clvwchqxi06gh01pe1huv70id"
   );
 
-  useEffect(() => {
+  const setMapPositonFromURL = useCallback(() => {
     if (window.location.hash) {
       const split = window.location.hash.split("/");
       const lng = split[1];
       const lat = split[2];
       const zoomRaw = split[0];
       const zoom = zoomRaw.split("#")[1];
-      if (map) {
-        map?.jumpTo({
-          center: lng && lat ? [Number(lng), Number(lat)] : undefined,
-          zoom: zoom ? Number(zoom) : undefined,
-        });
-      }
+      if (!mapRef.current) return;
+      mapRef.current.jumpTo({
+        center: lng && lat ? [Number(lng), Number(lat)] : undefined,
+        zoom: zoom ? Number(zoom) : undefined,
+      });
     }
-  }, [map]);
+  }, [mapRef]);
 
-  const updateURLHash = () => {
-    const zoom = map?.getZoom();
-    const center = map?.getCenter();
+  const updateURLHash = useCallback(() => {
+    if (!mapRef.current) return;
+    const zoom = mapRef.current.getZoom();
+    const center = mapRef.current.getCenter();
     const lng = center?.lng;
     const lat = center?.lat;
     if (!zoom || !lng || !lat) return;
@@ -66,7 +66,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
       `${pathname}/#${zoom.toFixed(2)}/${lng.toFixed(2)}/${lat.toFixed(2)}`,
       undefined
     );
-  };
+  }, [pathname, router]);
 
   const copyToClipboard = async (text: string): Promise<void> => {
     try {
@@ -99,6 +99,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
     >
       <Map
         mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
+        ref={mapRef}
         initialViewState={{
           longitude: -67.78320182377449,
           latitude: -5.871455584726869,
@@ -116,16 +117,17 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         }}
         mapStyle={mapStyle}
         onMove={(e) => {
-          if (map) {
-            if (map?.getZoom() > 4) {
-              setAreaVisible(false);
-            } else {
-              setAreaVisible(true);
-            }
-
-            const currentBounds = convertBoundsToGeoJSON(map?.getBounds());
-            setBounds(currentBounds);
+          if (!mapRef.current) return;
+          if (mapRef.current.getZoom() > 4) {
+            setAreaVisible(false);
+          } else {
+            setAreaVisible(true);
           }
+
+          const currentBounds = convertBoundsToGeoJSON(
+            mapRef.current.getBounds()
+          );
+          setBounds(currentBounds);
         }}
         onMoveEnd={() => {
           updateURLHash();
@@ -133,9 +135,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         onZoomEnd={() => {
           updateURLHash();
         }}
-        onLoad={(e) => {
-          setMap(e.target);
-        }}
+        onLoad={() => setMapPositonFromURL()}
         onClick={(e) => {
           const { lngLat } = e;
           const map = e.target;
@@ -653,10 +653,12 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
       </div>
 
       {areaVisible && <Area dictionary={dictionary} year={activeLayer} />}
-      {map && map?.getZoom() > 5 && <MiniMap bounds={bounds} />}
+      {mapRef.current && mapRef.current.getZoom() > 5 && (
+        <MiniMap bounds={bounds} />
+      )}
       <Footer
         year={activeLayer}
-        zoom={map?.getZoom() || 4}
+        zoom={(mapRef.current && mapRef.current.getZoom()) || 4}
         dictionary={dictionary}
       />
     </div>
