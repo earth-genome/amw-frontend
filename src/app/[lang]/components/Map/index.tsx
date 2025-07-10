@@ -7,9 +7,9 @@ import Map, { Layer, Source, Popup } from "react-map-gl";
 import type { MapRef } from "react-map-gl";
 import Area from "../Area";
 import Footer from "../Footer";
-import MiniMap from "../MiniMap";
 import { convertBoundsToGeoJSON, GeoJSONType } from "./helpers";
 import { CopyOutlined } from "@ant-design/icons";
+import LegendWrapper from "./LegendWrapper";
 const { Option } = Select;
 
 interface MainMapProps {
@@ -90,9 +90,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
   };
 
   return (
-    <div
-      className="main-map"
-    >
+    <div className="main-map">
       <Map
         mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
         ref={mapRef}
@@ -602,28 +600,15 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         />
       </div>
 
-      <div className="partners">
-        <a className="pc-logo" href="https://pulitzercenter.org">
-          Pulitzer Center
-        </a>
-        <a
-          className="rin-logo"
-          href="https://pulitzercenter.org/journalism/initiatives/rainforest-investigations-network-initiative"
-        >
-          RIN
-        </a>
-        <a className="ac-logo" href="https://www.amazonconservation.org/">
-          Amazon Conservation
-        </a>
-        <a className="eg-logo" href="https://earthgenome.org/">
-          Earth Genome
-        </a>
-      </div>
+      <LegendWrapper
+        showMinimap={(mapRef.current && mapRef.current.getZoom() > 5) ?? false}
+        bounds={bounds}
+        years={LAYER_YEARS}
+        activeLayer={activeLayer}
+        setActiveLayer={setActiveLayer}
+      />
 
       {areaVisible && <Area dictionary={dictionary} year={activeLayer} />}
-      {mapRef.current && mapRef.current.getZoom() > 5 && (
-        <MiniMap bounds={bounds} />
-      )}
       <Footer
         year={activeLayer}
         zoom={(mapRef.current && mapRef.current.getZoom()) || 4}

@@ -1,0 +1,16 @@
+.legend-wrapper {
+  position: fixed;
+  left: 20px;
+  bottom: 50px;
+  z-index: 40px;
+  display: flex;
+  flex-direction: column;
+  row-gap: 24px;
+}
+
+.legend-card {
+  background: #ffffffcc;
+  border-radius: 12px;
+  backdrop-filter: blur(30.75px);
+  padding: 6px;
+}

@@ -1,0 +1,47 @@
+.partners {
+  padding: 5px 5px 5px 15px;
+}
+.partners a {
+  margin: 0 20px 0 0;
+  opacity: 0.8;
+}
+.partners a:hover {
+  opacity: 0.6;
+}
+.pc-logo {
+  display: inline-block;
+  text-indent: -9999px;
+  width: 170px;
+  height: 40px;
+  background: url("/images/pc-logo.png") no-repeat center center;
+  background-size: contain;
+}
+.rin-logo {
+  display: inline-block;
+  text-indent: -9999px;
+  width: 40px;
+  height: 40px;
+  background: url("/images/rin-logo.png") no-repeat center center;
+  background-size: contain;
+}
+.ac-logo {
+  display: inline-block;
+  text-indent: -9999px;
+  width: 100px;
+  height: 40px;
+  background: url("/images/ac-logo.png") no-repeat center center;
+  background-size: contain;
+}
+.eg-logo {
+  display: inline-block;
+  text-indent: -9999px;
+  width: 100px;
+  height: 40px;
+  background: url("/images/eg-logo.png") no-repeat center center;
+  background-size: contain;
+}
+@media (max-width: 1150px) {
+  .partners {
+    display: none;
+  }
+}
