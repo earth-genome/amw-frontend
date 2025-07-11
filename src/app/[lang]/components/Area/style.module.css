@@ -1,0 +1,58 @@
+.areaCard {
+  position: fixed;
+  right: 20px;
+  bottom: 50px;
+  width: 380px;
+  z-index: 500;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+}
+
+.areaTitle {
+  font-size: 18px;
+  font-weight: 700;
+  background: var(--green-light);
+  padding: 12px 24px;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.areaBody {
+  background: var(--green-dark);
+  padding: 12px 24px;
+  font-weight: 400;
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  row-gap: 12px;
+}
+
+.areaKm {
+  font-size: 48px;
+  font-weight: 800;
+}
+
+.areaKm sup {
+  font-size: 24px;
+}
+
+.areaFooter {
+  font-size: 18px;
+  font-weight: 700;
+  background: #fff;
+  color: var(--green-dark);
+  padding: 12px 24px;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+  display: flex;
+  justify-content: center;
+}
+
+.areaFooterText {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}

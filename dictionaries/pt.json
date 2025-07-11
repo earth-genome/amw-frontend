@@ -42,10 +42,11 @@
     "latest": "Anual",
     "hi_res": "Hi-Res",
     "map_mode": "OPÇÃO DE MAPA",
-    "mining_areas_detected": "Area de mineração detectada"
+    "mining_areas_detected": "Area de mineração detectada",
+    "see_more_insights": "Ver mais informação"
   },
   "coverage": {
-    "area_affected_in": "ÁREA AFETADA EM",
+    "total_area_affected": "Área total afetada pela mineração",
     "or": "ou",
     "million_acres": "milhões de acres"
   },
