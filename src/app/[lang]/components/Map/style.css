@@ -106,3 +106,7 @@
 .mapboxgl-canvas {
   background-color: transparent !important;
 }
+
+.mapboxgl-ctrl-top-right .mapboxgl-ctrl {
+  margin: 60px 10px 0 0;
+}

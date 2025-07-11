@@ -75,7 +75,7 @@ const MiniMap: React.FC<MiniMapProps> = ({ bounds }) => {
             source={"bounds"}
             type={"line"}
             paint={{
-              "line-color": "##ffb301",
+              "line-color": "#ffb301",
               "line-width": 2,
               "line-opacity": 0.9,
             }}

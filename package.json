@@ -12,6 +12,7 @@
     "@ant-design/icons": "^5.3.1",
     "@ant-design/nextjs-registry": "^1.0.0",
     "@formatjs/intl-localematcher": "^0.5.4",
+    "@mapbox/mapbox-gl-geocoder": "^5.0.3",
     "antd": "^5.14.1",
     "cookie": "^0.6.0",
     "gray-matter": "^4.0.3",
@@ -37,6 +38,7 @@
   },
   "devDependencies": {
     "@types/js-cookie": "^3.0.6",
+    "@types/mapbox__mapbox-gl-geocoder": "^5.0.0",
     "@types/negotiator": "^0.6.3",
     "@types/node": "^20",
     "@types/react": "^18",

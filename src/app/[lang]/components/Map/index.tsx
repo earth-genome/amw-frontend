@@ -1,6 +1,6 @@
 "use client";
 import "./style.css";
-import React, { useState, useRef, useCallback } from "react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { message, Radio, Select, ConfigProvider } from "antd";
 import Map, { Layer, Source, Popup, NavigationControl } from "react-map-gl";
@@ -11,12 +11,19 @@ import { convertBoundsToGeoJSON, GeoJSONType } from "./helpers";
 import { CopyOutlined } from "@ant-design/icons";
 import LegendWrapper from "./LegendWrapper";
 const { Option } = Select;
+import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
+import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 
 interface MainMapProps {
   dictionary: { [key: string]: any };
 }
 
 const LAYER_YEARS = [2024, 2023, 2022, 2021, 2020, 2019, 2018];
+const INITIAL_VIEW = {
+  longitude: -67.78320182377449,
+  latitude: -5.871455584726869,
+  zoom: 3.7,
+};
 
 const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
   const [popupInfo, setPopupInfo] = useState<{
@@ -94,17 +101,14 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
       <Map
         mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
         ref={mapRef}
-        initialViewState={{
-          longitude: -67.78320182377449,
-          latitude: -5.871455584726869,
-          zoom: 3.7,
-        }}
+        initialViewState={INITIAL_VIEW}
         minZoom={3.5}
-        projection={{
-          name: "naturalEarth",
-          center: [183, 40],
-          parallels: [30, 30],
-        }}
+        // FIXME: the projection was not working with fitBounds
+        // projection={{
+        //   name: "naturalEarth",
+        //   center: [183, 40],
+        //   parallels: [30, 30],
+        // }}
         style={{
           top: "var(--top-navbar-height)",
           bottom: 0,
@@ -130,7 +134,50 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         onZoomEnd={() => {
           updateURLHash();
         }}
-        onLoad={() => setMapPositonFromURL()}
+        onLoad={() => {
+          setMapPositonFromURL();
+
+          // geocoder
+          if (!mapRef.current) return;
+          const geocoder = new MapboxGeocoder({
+            accessToken: process.env.NEXT_PUBLIC_MAPBOX_TOKEN as string,
+            /* @ts-ignore */
+            mapboxgl: mapRef.current.getMap(),
+            marker: false,
+            placeholder: dictionary.map_ui.search_for_a_place,
+            proximity: INITIAL_VIEW,
+          });
+
+          // Add the geocoder to a container
+          const geocoderContainer = document.createElement("div");
+          geocoderContainer.style.position = "absolute";
+          geocoderContainer.style.top = "calc(var(--top-navbar-height) + 10px)";
+          geocoderContainer.style.right = "10px";
+          geocoderContainer.style.zIndex = "1000";
+
+          const mapContainer = document.querySelector(".main-map");
+          if (mapContainer) {
+            mapContainer.appendChild(geocoderContainer);
+            geocoderContainer.appendChild(
+              geocoder.onAdd(mapRef.current.getMap())
+            );
+          }
+
+          // Event listeners
+          geocoder.on("result", (e) => {
+            if (!mapRef.current) return;
+            // mapRef.current.flyTo({
+            //   center: e.result.center,
+            //   duration: 1000,
+            // });
+            const bbox = e.result.bbox;
+            const map = mapRef.current.getMap();
+            map.fitBounds(bbox, {
+              padding: { top: 20, bottom: 20, left: 20, right: 20 },
+              duration: 2000,
+            });
+          });
+        }}
         onClick={(e) => {
           const { lngLat } = e;
           const map = e.target;
