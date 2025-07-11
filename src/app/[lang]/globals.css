@@ -3,6 +3,7 @@
 :root {
   --green-dark: #003E36;
   --green-light: #22B573;
+  --top-navbar-height: 28px;
 }
 
 body {

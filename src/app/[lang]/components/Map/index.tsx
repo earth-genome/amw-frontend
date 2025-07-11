@@ -3,7 +3,7 @@ import "./style.css";
 import React, { useState, useRef, useCallback } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { message, Radio, Select, ConfigProvider } from "antd";
-import Map, { Layer, Source, Popup } from "react-map-gl";
+import Map, { Layer, Source, Popup, NavigationControl } from "react-map-gl";
 import type { MapRef } from "react-map-gl";
 import Area from "../Area";
 import Footer from "../Footer";
@@ -106,8 +106,9 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           parallels: [30, 30],
         }}
         style={{
+          top: "var(--top-navbar-height)",
+          bottom: 0,
           width: "100hw",
-          height: "100vh",
         }}
         mapStyle={mapStyle}
         onMove={(e) => {
@@ -147,6 +148,8 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           }
         }}
       >
+        <NavigationControl position={"top-right"} />
+
         {/* ================== SENTINEL2 SOURCES =================== */}
         <Source
           id="sentinel-2018"
