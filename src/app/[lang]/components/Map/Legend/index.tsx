@@ -2,16 +2,23 @@ import { Radio } from "antd";
 import { useRef, useEffect, useState, useCallback } from "react";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import "./style.css";
+import ColorScale from "@/app/[lang]/components/Map/Legend/ColorScale";
 
 export interface LegendProps {
   years: number[];
   activeLayer: string;
   setActiveLayer: (value: string) => void;
+  dictionary: { [key: string]: any };
 }
 
 const SCROLL_DISTANCE = 250;
 
-const Legend = ({ years, activeLayer, setActiveLayer }: LegendProps) => {
+const Legend = ({
+  years,
+  activeLayer,
+  setActiveLayer,
+  dictionary,
+}: LegendProps) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
@@ -101,6 +108,8 @@ const Legend = ({ years, activeLayer, setActiveLayer }: LegendProps) => {
 
   return (
     <div className="map-legend">
+      <ColorScale dictionary={dictionary} />
+
       <div className="legend-carousel">
         <button
           className="scroll-button scroll-left"

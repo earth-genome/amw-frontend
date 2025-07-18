@@ -46,6 +46,10 @@
     "search_for_a_place": "Busque por um lugar",
     "see_more_insights": "Ver mais informações"
   },
+  "map_legend": {
+    "old_mining_activity": "Mineração mais antiga",
+    "recent_mining_activity": "Mineração mais recente"
+  },
   "coverage": {
     "total_area_affected": "Área total afetada pela mineração",
     "or": "ou",

@@ -15,6 +15,7 @@ const LegendWrapper = ({
   years,
   activeLayer,
   setActiveLayer,
+  dictionary,
 }: LegendWrapperProps) => {
   return (
     <div className="legend-wrapper">
@@ -40,6 +41,7 @@ const LegendWrapper = ({
             years={years}
             activeLayer={activeLayer}
             setActiveLayer={setActiveLayer}
+            dictionary={dictionary}
           />
         </div>
       </div>

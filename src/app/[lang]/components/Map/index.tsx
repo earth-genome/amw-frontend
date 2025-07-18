@@ -24,6 +24,15 @@ const INITIAL_VIEW = {
   latitude: -5.871455584726869,
   zoom: 3.7,
 };
+export const MAP_COLOR_SCALE = [
+  "#F7E4BC",
+  "#F5CD7E",
+  "#F1B53F",
+  "#ED9E00",
+  "#F37D00",
+  "#F95D00",
+  "#FF3C00",
+];
 
 const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
   const [popupInfo, setPopupInfo] = useState<{
@@ -656,6 +665,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         years={LAYER_YEARS}
         activeLayer={activeLayer}
         setActiveLayer={setActiveLayer}
+        dictionary={dictionary}
       />
 
       {areaVisible && <Area dictionary={dictionary} year={activeLayer} />}
