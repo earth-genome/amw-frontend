@@ -1,6 +1,6 @@
 "use client";
 import "./style.css";
-import React, { useState, useRef, useCallback, useEffect } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { message, Radio, Select, ConfigProvider } from "antd";
 import Map, { Layer, Source, Popup, NavigationControl } from "react-map-gl";
@@ -13,26 +13,38 @@ import LegendWrapper from "./LegendWrapper";
 const { Option } = Select;
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
+import * as turf from "@turf/turf";
+import useSWR from "swr";
 
 interface MainMapProps {
   dictionary: { [key: string]: any };
 }
 
 const LAYER_YEARS = [2024, 2023, 2022, 2021, 2020, 2019, 2018];
+const MINE_DATA_URLS = {
+  "2024":
+    "amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2024cumulative.geojson",
+  "2023":
+    "amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2023cumulative.geojson",
+  "2022":
+    "amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2022cumulative.geojson",
+  "2021":
+    "amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2021cumulative.geojson",
+  "2020":
+    "amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2020cumulative.geojson",
+  "2019":
+    "amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2019cumulative.geojson",
+  "2018":
+    "amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2018cumulative.geojson",
+};
 const INITIAL_VIEW = {
   longitude: -67.78320182377449,
   latitude: -5.871455584726869,
   zoom: 3.7,
 };
-export const MAP_COLOR_SCALE = [
-  "#F7E4BC",
-  "#F5CD7E",
-  "#F1B53F",
-  "#ED9E00",
-  "#F37D00",
-  "#F95D00",
-  "#FF3C00",
-];
+
+const fetcher = (...args: Parameters<typeof fetch>) =>
+  fetch(...args).then((res) => res.json());
 
 const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
   const [popupInfo, setPopupInfo] = useState<{
@@ -48,12 +60,19 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
   const [bounds, setBounds] = useState<GeoJSONType | undefined>(undefined);
   const [yearly, setYearly] = useState(true);
   const [activeLayer, setActiveLayer] = useState("2024");
-  /*  
-  mapbox://styles/earthrise/ckxht1jfm2h9k15m7wrv5wz5w
-  */
+  // mapbox://styles/earthrise/ckxht1jfm2h9k15m7wrv5wz5w
   const [mapStyle, setMapStyle] = useState(
     "mapbox://styles/earthrise/clvwchqxi06gh01pe1huv70id"
   );
+
+  const mineDataUrl = `${process.env.NEXT_PUBLIC_MINES_URL}/${
+    MINE_DATA_URLS[activeLayer as keyof typeof MINE_DATA_URLS]
+  }`;
+  const {
+    data: mineData,
+    error: mineError,
+    isLoading: mineIsLoading,
+  } = useSWR(mineDataUrl, fetcher);
 
   const setMapPositonFromURL = useCallback(() => {
     if (window.location.hash) {
@@ -82,6 +101,27 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
       undefined
     );
   }, [pathname, router]);
+
+  const calculateMiningAreaInView = useCallback(() => {
+    if (!mapRef.current) return;
+    if (mapRef.current.getZoom() <= 5) return; // don't run if too zoomed out
+    const currentBounds = mapRef.current.getBounds();
+    const bbox = [
+      currentBounds.getWest(),
+      currentBounds.getSouth(),
+      currentBounds.getEast(),
+      currentBounds.getNorth(),
+    ] as [number, number, number, number];
+    let areaMinesSquareMeters = 0;
+    for (const feature of mineData?.features) {
+      const clipped = turf.bboxClip(feature, bbox);
+      areaMinesSquareMeters += turf.area(clipped);
+    }
+    console.log(
+      "Area of mine squares in view (square km): ",
+      areaMinesSquareMeters / 1000000
+    );
+  }, [mineData?.features]);
 
   const copyToClipboard = async (text: string): Promise<void> => {
     try {
@@ -139,6 +179,8 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         }}
         onMoveEnd={() => {
           updateURLHash();
+          // FIXME: we're not using the mining areas yet
+          // calculateMiningAreaInView();
         }}
         onZoomEnd={() => {
           updateURLHash();
@@ -383,120 +425,28 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         />
 
         {/* ================== MINE SOURCES =================== */}
-        <Source
-          id={"mines-2024"}
-          type="geojson"
-          tolerance={0.05}
-          data={`${process.env.NEXT_PUBLIC_MINES_URL}/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2024cumulative.geojson`}
-        />
-        <Source
-          id={"mines-2023"}
-          type="geojson"
-          tolerance={0.05}
-          data={`${process.env.NEXT_PUBLIC_MINES_URL}/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2023cumulative.geojson`}
-        />
-        <Source
-          id={"mines-2022"}
-          type="geojson"
-          tolerance={0.05}
-          data={`${process.env.NEXT_PUBLIC_MINES_URL}/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2022cumulative.geojson`}
-        />
-        <Source
-          id={"mines-2021"}
-          type="geojson"
-          tolerance={0.05}
-          data={`${process.env.NEXT_PUBLIC_MINES_URL}/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2021cumulative.geojson`}
-        />
-        <Source
-          id={"mines-2020"}
-          type="geojson"
-          tolerance={0.05}
-          data={`${process.env.NEXT_PUBLIC_MINES_URL}/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2020cumulative.geojson`}
-        />
-        <Source
-          id={"mines-2019"}
-          type="geojson"
-          tolerance={0.05}
-          data={`${process.env.NEXT_PUBLIC_MINES_URL}/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2019cumulative.geojson`}
-        />
-        <Source
-          id={"mines-2018"}
-          type="geojson"
-          tolerance={0.05}
-          data={`${process.env.NEXT_PUBLIC_MINES_URL}/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2018cumulative.geojson`}
-        />
+        {mineData && (
+          <Source
+            id={"mines"}
+            type="geojson"
+            tolerance={0.05}
+            data={mineData}
+          />
+        )}
 
-        {/* ================== MINE LAYERS =================== */}
-        <Layer
-          id={"mines-layer-2024"}
-          source={"mines-2024"}
-          type="line"
-          paint={{
-            "line-color": "#ffb301",
-            "line-opacity": getOpacity(`mines-layer-2024`),
-            "line-width": 1,
-          }}
-        />
-        <Layer
-          id={"mines-layer-2023"}
-          source={"mines-2023"}
-          type="line"
-          paint={{
-            "line-color": "#ffb301",
-            "line-opacity": getOpacity(`mines-layer-2023`),
-            "line-width": 1,
-          }}
-        />
-        <Layer
-          id={"mines-layer-2022"}
-          source={"mines-2022"}
-          type="line"
-          paint={{
-            "line-color": "#ffb301",
-            "line-opacity": getOpacity(`mines-layer-2022`),
-            "line-width": 1,
-          }}
-        />
-        <Layer
-          id={"mines-layer-2021"}
-          source={"mines-2021"}
-          type="line"
-          paint={{
-            "line-color": "#ffb301",
-            "line-opacity": getOpacity(`mines-layer-2021`),
-            "line-width": 1,
-          }}
-        />
-        <Layer
-          id={"mines-layer-2020"}
-          source={"mines-2020"}
-          type="line"
-          paint={{
-            "line-color": "#ffb301",
-            "line-opacity": getOpacity(`mines-layer-2020`),
-            "line-width": 1,
-          }}
-        />
-        <Layer
-          id={"mines-layer-2019"}
-          source={"mines-2019"}
-          type="line"
-          paint={{
-            "line-color": "#ffb301",
-            "line-opacity": getOpacity(`mines-layer-2019`),
-            "line-width": 1,
-          }}
-        />
-        <Layer
-          id={"mines-layer-2018"}
-          source={"mines-2018"}
-          type="line"
-          paint={{
-            "line-color": "#ffb301",
-            "line-opacity": getOpacity(`mines-layer-2018`),
-            "line-width": 1,
-          }}
-        />
+        {/* ================== MINE LAYER =================== */}
+        {mineData && (
+          <Layer
+            id={"mines-layer"}
+            source={"mines"}
+            type="line"
+            paint={{
+              "line-color": "#ffb301",
+              "line-opacity": 1,
+              "line-width": 1,
+            }}
+          />
+        )}
 
         {/* ================== LABELS =================== */}
         <Layer

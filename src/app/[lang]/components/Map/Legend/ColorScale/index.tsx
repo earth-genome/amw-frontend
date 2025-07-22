@@ -1,4 +1,4 @@
-import { MAP_COLOR_SCALE } from "@/app/[lang]/components/Map";
+import { MAP_COLOR_SCALE } from "@/constants/map";
 
 interface ColorScaleProps {
   dictionary: { [key: string]: any };
@@ -6,7 +6,7 @@ interface ColorScaleProps {
 
 const ColorScale = ({ dictionary }: ColorScaleProps) => {
   if (!MAP_COLOR_SCALE?.length) return null;
-  
+
   return (
     <div
       style={{
