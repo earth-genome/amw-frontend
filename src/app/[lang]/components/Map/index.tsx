@@ -4,7 +4,7 @@ import React, { useState, useRef, useCallback } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { message, Radio, Select, ConfigProvider } from "antd";
 import Map, { Layer, Source, Popup, NavigationControl } from "react-map-gl";
-import type { MapRef } from "react-map-gl";
+import type { MapGeoJSONFeature, MapRef } from "react-map-gl";
 import Area from "../Area";
 import Footer from "../Footer";
 import { convertBoundsToGeoJSON, GeoJSONType } from "./helpers";
@@ -15,28 +15,14 @@ import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import * as turf from "@turf/turf";
 import useSWR from "swr";
+import { createYearsColorScale, MAP_MISSING_DATA_COLOR } from "@/constants/map";
+import { Expression } from "mapbox-gl";
 
 interface MainMapProps {
   dictionary: { [key: string]: any };
 }
 
 const LAYER_YEARS = [2024, 2023, 2022, 2021, 2020, 2019, 2018];
-const MINE_DATA_URLS = {
-  "2024":
-    "amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2024cumulative.geojson",
-  "2023":
-    "amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2023cumulative.geojson",
-  "2022":
-    "amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2022cumulative.geojson",
-  "2021":
-    "amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2021cumulative.geojson",
-  "2020":
-    "amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2020cumulative.geojson",
-  "2019":
-    "amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2019cumulative.geojson",
-  "2018":
-    "amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2018cumulative.geojson",
-};
 const INITIAL_VIEW = {
   longitude: -67.78320182377449,
   latitude: -5.871455584726869,
@@ -65,9 +51,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
     "mapbox://styles/earthrise/clvwchqxi06gh01pe1huv70id"
   );
 
-  const mineDataUrl = `${process.env.NEXT_PUBLIC_MINES_URL}/${
-    MINE_DATA_URLS[activeLayer as keyof typeof MINE_DATA_URLS]
-  }`;
+  const mineDataUrl = `https://raw.githubusercontent.com/earthrise-media/mining-detector/8a076bf0d6fdc3dde16b9abed68087fa40ee8c92/data/outputs/48px_v3.2-3.7ensemble/difference/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2024_all_differences.geojson`;
   const {
     data: mineData,
     error: mineError,
@@ -112,8 +96,13 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
       currentBounds.getEast(),
       currentBounds.getNorth(),
     ] as [number, number, number, number];
+    // filter features based on active year
+    const filteredFeatures = mineData?.features?.filter(
+      (feature: MapGeoJSONFeature) =>
+        Number(feature?.properties?.year) <= Number(activeLayer)
+    );
     let areaMinesSquareMeters = 0;
-    for (const feature of mineData?.features) {
+    for (const feature of filteredFeatures) {
       const clipped = turf.bboxClip(feature, bbox);
       areaMinesSquareMeters += turf.area(clipped);
     }
@@ -121,7 +110,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
       "Area of mine squares in view (square km): ",
       areaMinesSquareMeters / 1000000
     );
-  }, [mineData?.features]);
+  }, [activeLayer, mineData?.features]);
 
   const copyToClipboard = async (text: string): Promise<void> => {
     try {
@@ -131,18 +120,28 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
     }
   };
 
-  const getOpacity = (layerId: string) => {
-    if (layerId === `mines-layer-${activeLayer}`) {
-      return 1;
-    }
-    return 0;
-  };
-
   const getSatelliteOpacity = (layerId: string) => {
     if (yearly && layerId === `sentinel-layer-${activeLayer}`) {
       return 1;
     }
     return 0;
+  };
+
+  const getMineLayerColor = () => {
+    const getColorsForYears = (years: number[]) => {
+      const colorScale = createYearsColorScale(years);
+      return years.map((_, index) => colorScale(index));
+    };
+    const colors = getColorsForYears(LAYER_YEARS);
+
+    return [
+      "case",
+      ...LAYER_YEARS.flatMap((year, i) => [
+        ["==", ["get", "year"], year],
+        colors[i],
+      ]),
+      MAP_MISSING_DATA_COLOR,
+    ] as Expression;
   };
 
   return (
@@ -177,10 +176,12 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           );
           setBounds(currentBounds);
         }}
-        onMoveEnd={() => {
-          updateURLHash();
+        onIdle={() => {
           // FIXME: we're not using the mining areas yet
           // calculateMiningAreaInView();
+        }}
+        onMoveEnd={() => {
+          updateURLHash();
         }}
         onZoomEnd={() => {
           updateURLHash();
@@ -440,10 +441,21 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
             id={"mines-layer"}
             source={"mines"}
             type="line"
+            filter={["<=", ["get", "year"], Number(activeLayer)]}
             paint={{
-              "line-color": "#ffb301",
+              "line-color": getMineLayerColor(),
               "line-opacity": 1,
-              "line-width": 1,
+              "line-width": [
+                "interpolate",
+                ["exponential", 2],
+                ["zoom"],
+                0,
+                1,
+                10,
+                1,
+                14,
+                2.5,
+              ],
             }}
           />
         )}
