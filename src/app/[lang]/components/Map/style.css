@@ -73,54 +73,17 @@
 .imagery-pills {
   position: fixed;
   text-align: center;
-  right: 0;
-  left: 0;
   bottom: 55px;
-  z-index: 1000;
-  width: 100%;
-}
-.year-pills .ant-radio-button-wrapper,
-.imagery-pills .ant-radio-button-wrapper {
-  padding-inline: 20px !important;
-  text-transform: uppercase;
-  font-size: 12px;
-}
-.year-pills .ant-radio-button-wrapper,
-.imagery-pills .ant-radio-button-wrapper {
-  background: rgb(11, 95, 58) !important;
-  color: #fff;
-  border: none !important;
-}
-.year-pills .ant-radio-button-wrapper:hover,
-.imagery-pills .ant-radio-button-wrapper:hover {
-  color: #fff;
-  opacity: 0.9;
-}
-.year-pills .ant-radio-button-wrapper-checked,
-.imagery-pills .ant-radio-button-wrapper-checked {
-  background: rgba(34, 181, 115, 1) !important;
-  border: none !important;
-}
-.year-pills ant-radio-button-wrapper-checked::before,
-.imagery-pills .ant-radio-button-wrapper-checked::before {
-  width: 0px !important;
-}
-.year-pills .ant-radio-button-wrapper-checked::before {
-  background: none !important;
-}
-.year-pills .ant-radio-button-wrapper:not(:first-child)::before {
-  background: none !important;
-}
-.year-pills {
-  position: fixed;
-  width: 485px;
-  margin-right: auto;
-  margin-left: auto;
-  right: 0;
   left: 0;
-  top: 50px;
+  right: 0;
   z-index: 1000;
+  pointer-events: none; /* allow clicks to pass through */
 }
+
+.imagery-pills > * {
+  pointer-events: auto; /* re-enable clicks on child elements */
+}
+
 @media (max-width: 600px) {
   .year-pills {
     display: none;
@@ -139,62 +102,11 @@
   }
 }
 
-.partners {
-  position: fixed;
-  left: 20px;
-  bottom: 50px;
-  z-index: 40;
-  padding: 5px 5px 5px 15px;
-  border-radius: 5px;
-  z-index: 100;
-}
-.partners a {
-  margin: 0 20px 0 0;
-  opacity: 0.8;
-}
-.partners a:hover {
-  opacity: 0.6;
-}
-.pc-logo {
-  display: inline-block;
-  text-indent: -9999px;
-  width: 170px;
-  height: 40px;
-  background: url("/images/pc-logo.png") no-repeat center center;
-  background-size: contain;
-}
-.rin-logo {
-  display: inline-block;
-  text-indent: -9999px;
-  width: 40px;
-  height: 40px;
-  background: url("/images/rin-logo.png") no-repeat center center;
-  background-size: contain;
-}
-.ac-logo {
-  display: inline-block;
-  text-indent: -9999px;
-  width: 100px;
-  height: 40px;
-  background: url("/images/ac-logo.png") no-repeat center center;
-  background-size: contain;
-}
-.eg-logo {
-  display: inline-block;
-  text-indent: -9999px;
-  width: 100px;
-  height: 40px;
-  background: url("/images/eg-logo.png") no-repeat center center;
-  background-size: contain;
-}
-@media (max-width: 1150px) {
-  .partners {
-    display: none;
-  }
-}
-.ant-radio-button-wrapper:not(:first-child)::before {
-  width: 0px !important;
-}
+
 .mapboxgl-canvas {
   background-color: transparent !important;
+}
+
+.mapboxgl-ctrl-top-right .mapboxgl-ctrl {
+  margin: 60px 10px 0 0;
 }

@@ -1,11 +1,11 @@
 .nav {
   position: fixed;
-  background: rgba(34, 181, 115, 0.7);
+  background: var(--green-dark);
   left: 0;
   top: 0;
   width: 100%;
   z-index: 1000;
-  height: 28px;
+  height: var(--top-navbar-height);
   text-align: right;
 }
 .nav .menu-link {

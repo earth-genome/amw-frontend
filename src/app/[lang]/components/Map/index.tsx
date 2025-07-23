@@ -1,21 +1,36 @@
 "use client";
 import "./style.css";
-import React, { ReactNode, useState, useEffect, useRef } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { message, Button, Radio, Slider, Select, ConfigProvider } from "antd";
-import Map, { Layer, Source, Popup, ScaleControl } from "react-map-gl";
-import { useMenu } from "../../menuContext";
-import Overlay from "../Overlay";
+import { message, Radio, Select, ConfigProvider } from "antd";
+import Map, { Layer, Source, Popup, NavigationControl } from "react-map-gl";
+import type { MapGeoJSONFeature, MapRef } from "react-map-gl";
 import Area from "../Area";
 import Footer from "../Footer";
-import MiniMap from "../MiniMap";
-import { convertBoundsToGeoJSON } from "./helpers";
+import { convertBoundsToGeoJSON, GeoJSONType } from "./helpers";
 import { CopyOutlined } from "@ant-design/icons";
+import LegendWrapper from "./LegendWrapper";
 const { Option } = Select;
+import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
+import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
+import * as turf from "@turf/turf";
+import useSWR from "swr";
+import { createYearsColorScale, MAP_MISSING_DATA_COLOR } from "@/constants/map";
+import { Expression } from "mapbox-gl";
 
 interface MainMapProps {
   dictionary: { [key: string]: any };
 }
+
+const LAYER_YEARS = [2024, 2023, 2022, 2021, 2020, 2019, 2018];
+const INITIAL_VIEW = {
+  longitude: -67.78320182377449,
+  latitude: -5.871455584726869,
+  zoom: 3.7,
+};
+
+const fetcher = (...args: Parameters<typeof fetch>) =>
+  fetch(...args).then((res) => res.json());
 
 const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
   const [popupInfo, setPopupInfo] = useState<{
@@ -25,49 +40,77 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
   } | null>(null);
   const [popupVisible, setPopupVisible] = useState(false);
   const pathname = usePathname();
-  const { menuOpen, setMenuOpen } = useMenu();
   const router = useRouter();
-  const [blurMap, setBlurMap] = useState(false);
   const [areaVisible, setAreaVisible] = useState(true);
-  const [map, setMap] = useState();
-  const [bounds, setBounds] = useState();
+  const mapRef = useRef<MapRef>(null);
+  const [bounds, setBounds] = useState<GeoJSONType | undefined>(undefined);
   const [yearly, setYearly] = useState(true);
   const [activeLayer, setActiveLayer] = useState("2024");
-  /*  
-  mapbox://styles/earthrise/ckxht1jfm2h9k15m7wrv5wz5w
-  */
-  const [mapStyle, setMapStyle] = useState('mapbox://styles/earthrise/clvwchqxi06gh01pe1huv70id')
+  // mapbox://styles/earthrise/ckxht1jfm2h9k15m7wrv5wz5w
+  const [mapStyle, setMapStyle] = useState(
+    "mapbox://styles/earthrise/clvwchqxi06gh01pe1huv70id"
+  );
 
-  useEffect(() => {
+  const mineDataUrl = `https://raw.githubusercontent.com/earthrise-media/mining-detector/8a076bf0d6fdc3dde16b9abed68087fa40ee8c92/data/outputs/48px_v3.2-3.7ensemble/difference/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2024_all_differences.geojson`;
+  const {
+    data: mineData,
+    error: mineError,
+    isLoading: mineIsLoading,
+  } = useSWR(mineDataUrl, fetcher);
+
+  const setMapPositonFromURL = useCallback(() => {
     if (window.location.hash) {
       const split = window.location.hash.split("/");
       const lng = split[1];
       const lat = split[2];
       const zoomRaw = split[0];
       const zoom = zoomRaw.split("#")[1];
-      if (map) {
-        /* @ts-ignore */
-        map?.jumpTo({
-          center: [lng, lat],
-          zoom: zoom,
-        });
-      }
+      if (!mapRef.current) return;
+      mapRef.current.jumpTo({
+        center: lng && lat ? [Number(lng), Number(lat)] : undefined,
+        zoom: zoom ? Number(zoom) : undefined,
+      });
     }
-  }, [map]);
+  }, [mapRef]);
 
-
-  const updateURLHash = () => {
-    /* @ts-ignore */
-    const zoom = map?.getZoom();
-    /* @ts-ignore */
-    const center = map?.getCenter();
+  const updateURLHash = useCallback(() => {
+    if (!mapRef.current) return;
+    const zoom = mapRef.current.getZoom();
+    const center = mapRef.current.getCenter();
     const lng = center?.lng;
     const lat = center?.lat;
+    if (!zoom || !lng || !lat) return;
     router.replace(
       `${pathname}/#${zoom.toFixed(2)}/${lng.toFixed(2)}/${lat.toFixed(2)}`,
-      undefined,
+      undefined
     );
-  };
+  }, [pathname, router]);
+
+  const calculateMiningAreaInView = useCallback(() => {
+    if (!mapRef.current) return;
+    if (mapRef.current.getZoom() <= 5) return; // don't run if too zoomed out
+    const currentBounds = mapRef.current.getBounds();
+    const bbox = [
+      currentBounds.getWest(),
+      currentBounds.getSouth(),
+      currentBounds.getEast(),
+      currentBounds.getNorth(),
+    ] as [number, number, number, number];
+    // filter features based on active year
+    const filteredFeatures = mineData?.features?.filter(
+      (feature: MapGeoJSONFeature) =>
+        Number(feature?.properties?.year) <= Number(activeLayer)
+    );
+    let areaMinesSquareMeters = 0;
+    for (const feature of filteredFeatures) {
+      const clipped = turf.bboxClip(feature, bbox);
+      areaMinesSquareMeters += turf.area(clipped);
+    }
+    console.log(
+      "Area of mine squares in view (square km): ",
+      areaMinesSquareMeters / 1000000
+    );
+  }, [activeLayer, mineData?.features]);
 
   const copyToClipboard = async (text: string): Promise<void> => {
     try {
@@ -77,13 +120,6 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
     }
   };
 
-  const getOpacity = (layerId: string) => {
-    if (layerId === `mines-layer-${activeLayer}`) {
-      return 1;
-    }
-    return 0;
-  };
-
   const getSatelliteOpacity = (layerId: string) => {
     if (yearly && layerId === `sentinel-layer-${activeLayer}`) {
       return 1;
@@ -91,50 +127,58 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
     return 0;
   };
 
+  const getMineLayerColor = () => {
+    const getColorsForYears = (years: number[]) => {
+      const colorScale = createYearsColorScale(years);
+      return years.map((_, index) => colorScale(index));
+    };
+    const colors = getColorsForYears(LAYER_YEARS);
+
+    return [
+      "case",
+      ...LAYER_YEARS.flatMap((year, i) => [
+        ["==", ["get", "year"], year],
+        colors[i],
+      ]),
+      MAP_MISSING_DATA_COLOR,
+    ] as Expression;
+  };
 
   return (
-    <div
-      className="main-map"
-      style={{
-        filter: blurMap ? "blur(80px)" : "none",
-      }}
-    >
+    <div className="main-map">
       <Map
         mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
-        initialViewState={{
-          longitude: -67.78320182377449,
-          latitude: -5.871455584726869,
-          zoom: 3.7,
-        }}
+        ref={mapRef}
+        initialViewState={INITIAL_VIEW}
         minZoom={3.5}
-        projection={{
-          name: "naturalEarth",
-          center: [183, 40],
-          parallels: [30, 30],
-        }}
+        // FIXME: the projection was not working with fitBounds
+        // projection={{
+        //   name: "naturalEarth",
+        //   center: [183, 40],
+        //   parallels: [30, 30],
+        // }}
         style={{
+          top: "var(--top-navbar-height)",
+          bottom: 0,
           width: "100hw",
-          height: "100vh",
         }}
         mapStyle={mapStyle}
         onMove={(e) => {
-          if (map) {
-            
-            /* @ts-ignore */
-            if (map?.getZoom() > 4) {
-              setAreaVisible(false);
-            } else {
-              setAreaVisible(true);
-            }
-            
-            /* @ts-ignore */
-            const currentBounds = convertBoundsToGeoJSON(map?.getBounds());
-            /* @ts-ignore */
-            setBounds(currentBounds);
+          if (!mapRef.current) return;
+          if (mapRef.current.getZoom() > 4) {
+            setAreaVisible(false);
+          } else {
+            setAreaVisible(true);
           }
-          
-          
-          
+
+          const currentBounds = convertBoundsToGeoJSON(
+            mapRef.current.getBounds()
+          );
+          setBounds(currentBounds);
+        }}
+        onIdle={() => {
+          // FIXME: we're not using the mining areas yet
+          // calculateMiningAreaInView();
         }}
         onMoveEnd={() => {
           updateURLHash();
@@ -142,31 +186,70 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         onZoomEnd={() => {
           updateURLHash();
         }}
-        onLoad={(e) => {
-          /* @ts-ignore */
-          setMap(e.target);
+        onLoad={() => {
+          setMapPositonFromURL();
+
+          // geocoder
+          if (!mapRef.current) return;
+          const geocoder = new MapboxGeocoder({
+            accessToken: process.env.NEXT_PUBLIC_MAPBOX_TOKEN as string,
+            /* @ts-ignore */
+            mapboxgl: mapRef.current.getMap(),
+            marker: false,
+            placeholder: dictionary.map_ui.search_for_a_place,
+            proximity: INITIAL_VIEW,
+          });
+
+          // Add the geocoder to a container
+          const geocoderContainer = document.createElement("div");
+          geocoderContainer.style.position = "absolute";
+          geocoderContainer.style.top = "calc(var(--top-navbar-height) + 10px)";
+          geocoderContainer.style.right = "10px";
+          geocoderContainer.style.zIndex = "1000";
+
+          const mapContainer = document.querySelector(".main-map");
+          if (mapContainer) {
+            mapContainer.appendChild(geocoderContainer);
+            geocoderContainer.appendChild(
+              geocoder.onAdd(mapRef.current.getMap())
+            );
+          }
+
+          // Event listeners
+          geocoder.on("result", (e) => {
+            if (!mapRef.current) return;
+            // mapRef.current.flyTo({
+            //   center: e.result.center,
+            //   duration: 1000,
+            // });
+            const bbox = e.result.bbox;
+            const map = mapRef.current.getMap();
+            map.fitBounds(bbox, {
+              padding: { top: 20, bottom: 20, left: 20, right: 20 },
+              duration: 2000,
+            });
+          });
         }}
         onClick={(e) => {
           const { lngLat } = e;
           const map = e.target;
           const features = map.queryRenderedFeatures(e.point);
           const clickedOnExcludedLayer = features.some(
-            (feature) => feature.layer.id === 'hole-layer'
+            (feature) => feature.layer.id === "hole-layer"
           );
           if (!clickedOnExcludedLayer) {
-          popupVisible ? setPopupVisible(false) : setPopupVisible(true);
-          setPopupInfo({
-            /* @ts-ignore */
-            latitude: lngLat.lat,
-            /* @ts-ignore */
-            longitude: lngLat.lng,
-            zoom: map?.getZoom(),
-          });
-         }
+            popupVisible ? setPopupVisible(false) : setPopupVisible(true);
+            setPopupInfo({
+              latitude: lngLat.lat,
+              longitude: lngLat.lng,
+              zoom: map?.getZoom(),
+            });
+          }
         }}
       >
+        <NavigationControl position={"top-right"} />
 
-        { /* ================== SENTINEL2 SOURCES =================== */}
+        {/* ================== SENTINEL2 SOURCES =================== */}
         <Source
           id="sentinel-2018"
           type="raster"
@@ -238,7 +321,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           ]}
           tileSize={256}
         />
-	<Source
+        <Source
           id="sentinel-2024"
           type="raster"
           tiles={[
@@ -251,7 +334,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           bounds={[-80.0, -20.0, -50.0, 20.0]}
         />
 
-        { /* ================== SENTINEL2 LAYERS =================== */}
+        {/* ================== SENTINEL2 LAYERS =================== */}
         <Layer
           id="sentinel-layer-2018"
           type="raster"
@@ -308,7 +391,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
             "raster-opacity": getSatelliteOpacity(`sentinel-layer-2024`),
           }}
         />
-        { /* ================== MASK =================== */}
+        {/* ================== MASK =================== */}
         <Source
           id={"hole-source"}
           type="vector"
@@ -325,7 +408,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           }}
         />
 
-        { /* ================== BORDERS =================== */}
+        {/* ================== BORDERS =================== */}
         <Source
           id="boundaries"
           type="vector"
@@ -342,130 +425,42 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           }}
         />
 
-        { /* ================== MINE SOURCES =================== */}
-	<Source
-          id={"mines-2024"}
-          type="geojson"
-          tolerance={0.05}
-          // @ts-ignore
-          data={`${process.env.NEXT_PUBLIC_MINES_URL}/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2024cumulative.geojson`}
-        />
-        <Source
-          id={"mines-2023"}
-          type="geojson"
-          tolerance={0.05}
-          // @ts-ignore
-          data={`${process.env.NEXT_PUBLIC_MINES_URL}/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2023cumulative.geojson`}
-        />
-        <Source
-          id={"mines-2022"}
-          type="geojson"
-          tolerance={0.05}
-          // @ts-ignore
-          data={`${process.env.NEXT_PUBLIC_MINES_URL}/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2022cumulative.geojson`}
-        />
-        <Source
-          id={"mines-2021"}
-          type="geojson"
-          tolerance={0.05}
-          // @ts-ignore
-          data={`${process.env.NEXT_PUBLIC_MINES_URL}/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2021cumulative.geojson`}
-        />
-        <Source
-          id={"mines-2020"}
-          type="geojson"
-          tolerance={0.05}
-          // @ts-ignore
-          data={`${process.env.NEXT_PUBLIC_MINES_URL}/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2020cumulative.geojson`}
-        />
-        <Source
-          id={"mines-2019"}
-          type="geojson"
-          tolerance={0.05}
-          // @ts-ignore
-          data={`${process.env.NEXT_PUBLIC_MINES_URL}/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2019cumulative.geojson`}
-        />
-        <Source
-          id={"mines-2018"}
-          type="geojson"
-          tolerance={0.05}
-          // @ts-ignore
-          data={`${process.env.NEXT_PUBLIC_MINES_URL}/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2018cumulative.geojson`}
-        />
-        
-        { /* ================== MINE LAYERS =================== */}
-	<Layer
-          id={"mines-layer-2024"}
-          source={"mines-2024"}
-          type="line"
-          paint={{
-            "line-color": "#ffb301",
-            "line-opacity": getOpacity(`mines-layer-2024`),
-            "line-width": 1,
-          }}
-        />
-        <Layer
-          id={"mines-layer-2023"}
-          source={"mines-2023"}
-          type="line"
-          paint={{
-            "line-color": "#ffb301",
-            "line-opacity": getOpacity(`mines-layer-2023`),
-            "line-width": 1,
-          }}
-        />
-        <Layer
-          id={"mines-layer-2022"}
-          source={"mines-2022"}
-          type="line"
-          paint={{
-            "line-color": "#ffb301",
-            "line-opacity": getOpacity(`mines-layer-2022`),
-            "line-width": 1,
-          }}
-        />
-        <Layer
-          id={"mines-layer-2021"}
-          source={"mines-2021"}
-          type="line"
-          paint={{
-            "line-color": "#ffb301",
-            "line-opacity": getOpacity(`mines-layer-2021`),
-            "line-width": 1,
-          }}
-        />
-        <Layer
-          id={"mines-layer-2020"}
-          source={"mines-2020"}
-          type="line"
-          paint={{
-            "line-color": "#ffb301",
-            "line-opacity": getOpacity(`mines-layer-2020`),
-            "line-width": 1,
-          }}
-        />
-        <Layer
-          id={"mines-layer-2019"}
-          source={"mines-2019"}
-          type="line"
-          paint={{
-            "line-color": "#ffb301",
-            "line-opacity": getOpacity(`mines-layer-2019`),
-            "line-width": 1,
-          }}
-        />
-        <Layer
-          id={"mines-layer-2018"}
-          source={"mines-2018"}
-          type="line"
-          paint={{
-            "line-color": "#ffb301",
-            "line-opacity": getOpacity(`mines-layer-2018`),
-            "line-width": 1,
-          }}
-        />
+        {/* ================== MINE SOURCES =================== */}
+        {mineData && (
+          <Source
+            id={"mines"}
+            type="geojson"
+            tolerance={0.05}
+            data={mineData}
+          />
+        )}
 
-        { /* ================== LABELS =================== */}
+        {/* ================== MINE LAYER =================== */}
+        {mineData && (
+          <Layer
+            id={"mines-layer"}
+            source={"mines"}
+            type="line"
+            filter={["<=", ["get", "year"], Number(activeLayer)]}
+            paint={{
+              "line-color": getMineLayerColor(),
+              "line-opacity": 1,
+              "line-width": [
+                "interpolate",
+                ["exponential", 2],
+                ["zoom"],
+                0,
+                1,
+                10,
+                1,
+                14,
+                2.5,
+              ],
+            }}
+          />
+        )}
+
+        {/* ================== LABELS =================== */}
         <Layer
           id="country-labels"
           type="symbol"
@@ -488,7 +483,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           }}
         />
 
-        { /* ================== POPUP =================== */}
+        {/* ================== POPUP =================== */}
         {popupVisible && popupInfo && (
           <Popup
             longitude={popupInfo?.longitude}
@@ -498,18 +493,20 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
             onClose={() => setPopupInfo(null)}
           >
             <table>
-              <tr>
-                <td className="number-value">
-                  {popupInfo.longitude.toFixed(3)}
-                </td>
-                <td className="number-value">
-                  {popupInfo?.latitude.toFixed(3)}
-                </td>
-              </tr>
-              <tr>
-                <td>Longitude</td>
-                <td>Latitude</td>
-              </tr>
+              <tbody>
+                <tr>
+                  <td className="number-value">
+                    {popupInfo.longitude.toFixed(3)}
+                  </td>
+                  <td className="number-value">
+                    {popupInfo?.latitude.toFixed(3)}
+                  </td>
+                </tr>
+                <tr>
+                  <td>Longitude</td>
+                  <td>Latitude</td>
+                </tr>
+              </tbody>
             </table>
 
             <a
@@ -517,7 +514,11 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
               onClick={async (e) => {
                 e.preventDefault();
                 copyToClipboard(
-                  `${process.env.NEXT_PUBLIC_DOMAIN}/#${popupInfo.zoom.toFixed(2)}/${popupInfo.longitude.toFixed(3)}/${popupInfo?.latitude.toFixed(3)}`,
+                  `${process.env.NEXT_PUBLIC_DOMAIN}/#${popupInfo.zoom.toFixed(
+                    2
+                  )}/${popupInfo.longitude.toFixed(
+                    3
+                  )}/${popupInfo?.latitude.toFixed(3)}`
                 ).then(() => {
                   message.success("URL copied");
                 });
@@ -527,45 +528,17 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
               <CopyOutlined style={{ fontSize: "16px" }} /> Copy URL
             </a>
           </Popup>
-
         )}
 
         <div className="map-scale-control"></div>
       </Map>
 
-  
       <div className="year-pills">
         <Radio.Group
-          options={[
-            {
-              label: "2018",
-              value: "2018",
-            },
-            {
-              label: "2019",
-              value: "2019",
-            },
-            {
-              label: "2020",
-              value: "2020",
-            },
-            {
-              label: "2021",
-              value: "2021",
-            },
-            {
-              label: "2022",
-              value: "2022",
-            },
-            {
-              label: "2023",
-              value: "2023",
-            },
-	    {
-              label: "2024",
-              value: "2024",
-            },
-          ]}
+          options={LAYER_YEARS.sort((a, b) => a - b).map((d) => ({
+            value: String(d),
+            label: String(d),
+          }))}
           value={activeLayer}
           onChange={({ target: { value } }) => {
             setActiveLayer(value);
@@ -574,48 +547,46 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           buttonStyle="solid"
         />
       </div>
-      
+
       <div className="year-dropdown">
         <ConfigProvider
-        theme={{
-          "components": {
-          "Select": {
-            "selectorBg": "rgb(11, 95, 58)",
-            "optionSelectedColor": "rgba(242, 236, 236, 0.88)",
-            "colorIconHover": "rgba(250, 246, 246, 0.88)",
-            "colorBgContainer": "rgb(11, 95, 58)",
-            "colorBgElevated": "rgb(11, 95, 58)",
-            "colorPrimary": "rgb(242, 237, 237)",
-            "colorIcon": "rgb(255,255,255)",
-            "colorBorder": "rgb(6, 89, 36)",
-            "optionSelectedBg": "rgb(76, 97, 77)",
-            "colorText": "rgba(250, 249, 249, 0.88)",
-            "colorFillTertiary": "rgba(242, 234, 234, 0.04)",
-            "colorFillSecondary": "rgba(241, 228, 228, 0.06)",
-            "colorTextQuaternary": "rgba(249, 249, 249, 0.25)",
-            "colorTextTertiary": "rgba(244, 236, 236, 0.9)",
-            "colorTextDescription": "rgba(255, 253, 253, 0.45)",
-            "colorTextDisabled": "rgba(239, 233, 233, 0.25)",
-            "colorTextPlaceholder": "rgba(255, 255, 255, 0.9)",
-          }
-         }
-        }}
+          theme={{
+            components: {
+              Select: {
+                selectorBg: "rgb(11, 95, 58)",
+                optionSelectedColor: "rgba(242, 236, 236, 0.88)",
+                colorIconHover: "rgba(250, 246, 246, 0.88)",
+                colorBgContainer: "rgb(11, 95, 58)",
+                colorBgElevated: "rgb(11, 95, 58)",
+                colorPrimary: "rgb(242, 237, 237)",
+                colorIcon: "rgb(255,255,255)",
+                colorBorder: "rgb(6, 89, 36)",
+                optionSelectedBg: "rgb(76, 97, 77)",
+                colorText: "rgba(250, 249, 249, 0.88)",
+                colorFillTertiary: "rgba(242, 234, 234, 0.04)",
+                colorFillSecondary: "rgba(241, 228, 228, 0.06)",
+                colorTextQuaternary: "rgba(249, 249, 249, 0.25)",
+                colorTextTertiary: "rgba(244, 236, 236, 0.9)",
+                colorTextDescription: "rgba(255, 253, 253, 0.45)",
+                colorTextDisabled: "rgba(239, 233, 233, 0.25)",
+                colorTextPlaceholder: "rgba(255, 255, 255, 0.9)",
+              },
+            },
+          }}
         >
-        <Select
-         style={{ width: '100px'}}
-         value={activeLayer}
-         onChange={(value) => {
-          setActiveLayer(value);
-        }}
-        >
-	  <Option value={2024}>2024</Option>
-          <Option value={2023}>2023</Option>
-          <Option value={2022}>2022</Option>
-          <Option value={2021}>2021</Option>
-          <Option value={2020}>2020</Option>
-          <Option value={2019}>2019</Option>
-          <Option value={2018}>2018</Option>
-        </Select>
+          <Select
+            style={{ width: "100px" }}
+            value={activeLayer}
+            onChange={(value) => {
+              setActiveLayer(value);
+            }}
+          >
+            {LAYER_YEARS.map((d) => (
+              <Option key={d} value={d}>
+                {d}
+              </Option>
+            ))}
+          </Select>
         </ConfigProvider>
       </div>
 
@@ -636,9 +607,13 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           onChange={({ target: { value } }) => {
             setYearly(value);
             if (value === false) {
-              setMapStyle(`mapbox://styles/earthrise/ckxht1jfm2h9k15m7wrv5wz5w`);
+              setMapStyle(
+                `mapbox://styles/earthrise/ckxht1jfm2h9k15m7wrv5wz5w`
+              );
             } else {
-              setMapStyle('mapbox://styles/earthrise/clvwchqxi06gh01pe1huv70id');
+              setMapStyle(
+                "mapbox://styles/earthrise/clvwchqxi06gh01pe1huv70id"
+              );
             }
           }}
           optionType="button"
@@ -646,32 +621,21 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         />
       </div>
 
-      <div className="partners">
-        <a className="pc-logo" href="https://pulitzercenter.org">
-          Pulitzer Center
-        </a>
-        <a
-          className="rin-logo"
-          href="https://pulitzercenter.org/journalism/initiatives/rainforest-investigations-network-initiative"
-        >
-          RIN
-        </a>
-        <a className="ac-logo" href="https://www.amazonconservation.org/">
-          Amazon Conservation
-        </a>
-        <a className="eg-logo" href="https://earthgenome.org/">
-          Earth Genome
-        </a>
-      </div>
+      <LegendWrapper
+        showMinimap={(mapRef.current && mapRef.current.getZoom() > 5) ?? false}
+        bounds={bounds}
+        years={LAYER_YEARS}
+        activeLayer={activeLayer}
+        setActiveLayer={setActiveLayer}
+        dictionary={dictionary}
+      />
 
-      {areaVisible && <Area dictionary={dictionary} year={activeLayer} /> }
-      {/* @ts-ignore */}
-      {map && map?.getZoom() > 5 && (
-        /* @ts-ignore */
-        <MiniMap bounds={bounds} />
-      )}
-      {/* @ts-ignore */}
-      <Footer year={activeLayer} zoom={map?.getZoom() || 4} dictionary={dictionary} />
+      {areaVisible && <Area dictionary={dictionary} year={activeLayer} />}
+      <Footer
+        year={activeLayer}
+        zoom={(mapRef.current && mapRef.current.getZoom()) || 4}
+        dictionary={dictionary}
+      />
     </div>
   );
 };
