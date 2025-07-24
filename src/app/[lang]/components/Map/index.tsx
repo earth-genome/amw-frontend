@@ -151,12 +151,11 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         ref={mapRef}
         initialViewState={INITIAL_VIEW}
         minZoom={3.5}
-        // FIXME: the projection was not working with fitBounds
-        // projection={{
-        //   name: "naturalEarth",
-        //   center: [183, 40],
-        //   parallels: [30, 30],
-        // }}
+        projection={{
+          name: "naturalEarth",
+          center: [183, 40],
+          parallels: [30, 30],
+        }}
         style={{
           top: "var(--top-navbar-height)",
           bottom: 0,
@@ -218,16 +217,18 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           // Event listeners
           geocoder.on("result", (e) => {
             if (!mapRef.current) return;
-            // mapRef.current.flyTo({
-            //   center: e.result.center,
-            //   duration: 1000,
-            // });
-            const bbox = e.result.bbox;
-            const map = mapRef.current.getMap();
-            map.fitBounds(bbox, {
-              padding: { top: 20, bottom: 20, left: 20, right: 20 },
-              duration: 2000,
+            mapRef.current.flyTo({
+              center: e.result.center,
+              zoom: 9,
+              duration: 1000,
             });
+            // FIXME: we can't use fitBounds with natural earth projection, there's a Mapbox bug
+            // const bbox = e.result.bbox;
+            // const map = mapRef.current.getMap();
+            // map.fitBounds(bbox, {
+            //   padding: { top: 20, bottom: 20, left: 20, right: 20 },
+            //   duration: 2000,
+            // });
           });
         }}
         onClick={(e) => {
