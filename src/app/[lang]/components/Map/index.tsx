@@ -144,8 +144,6 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
     ] as Expression;
   };
 
-  console.log("check");
-
   return (
     <div className="main-map">
       <Map
