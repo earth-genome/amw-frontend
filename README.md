@@ -22,6 +22,12 @@ To create a production build:
 
 Rename env-example.txt to .env and add your env values.
 
+Make sure you're using node version 22. If you use `nvm`, run:
+
+```bash
+nvm use
+```
+
 First, install dependences:
 
 ```bash
