@@ -88,7 +88,7 @@
 
 .year-pills .ant-radio-button-wrapper-checked,
 .imagery-pills .ant-radio-button-wrapper-checked {
-  background: var(--green-dark) !important;
+  background: var(--green-normal) !important;
   border: none !important;
 }
 

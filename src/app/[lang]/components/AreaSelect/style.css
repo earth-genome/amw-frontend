@@ -1,0 +1,70 @@
+.area-types-wrapper {
+  position: fixed;
+  text-align: center;
+  top: calc(var(--top-navbar-height) + 10px);
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  pointer-events: none; /* allow clicks to pass through */
+}
+
+.area-types-wrapper > * {
+  pointer-events: auto; /* re-enable clicks on child elements */
+}
+
+.area-types-container {
+  display: flex;
+  justify-content: center;
+  pointer-events: none; /* allow clicks to pass through */
+}
+
+.area-types-container > * {
+  pointer-events: auto; /* re-enable clicks on child elements */
+}
+
+.area-types .ant-radio-group {
+  display: flex;
+  white-space: nowrap;
+}
+
+.area-types .ant-radio-button-wrapper {
+  padding-inline: 20px !important;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.area-types .ant-radio-button-wrapper {
+  background: #fff !important;
+  color: #003e36b2;
+  border: none !important;
+}
+
+.area-types .ant-radio-button-wrapper:hover {
+  color: #003e36b2;
+  opacity: 0.9;
+}
+
+.area-types .ant-radio-button-wrapper-checked {
+  background: var(--green-normal) !important;
+  border: none !important;
+}
+
+.area-types .ant-radio-button-wrapper-checked::before {
+  width: 0px !important;
+}
+
+.area-types .ant-radio-button-wrapper-checked::before {
+  background: none !important;
+}
+
+.area-types .ant-radio-button-wrapper:not(:first-child)::before {
+  background: none !important;
+}
+
+.ant-radio-button-wrapper:not(:first-child)::before {
+  width: 0px !important;
+}
+
+.area-select {
+  margin-left: 24px;
+}

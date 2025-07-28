@@ -8,9 +8,8 @@ import Loader from "./components/Loader";
 import React from "react";
 import "./globals.css";
 import type { Metadata, ResolvingMetadata } from "next";
-import GoogleAnalytics from './components/Tracking';
+import GoogleAnalytics from "./components/Tracking";
 import "mapbox-gl/dist/mapbox-gl.css";
-
 
 type Props = {
   params: { lang: "en" | "es" | "pt" };
@@ -18,7 +17,7 @@ type Props = {
 
 export async function generateMetadata(
   { params }: Props,
-  parent: ResolvingMetadata,
+  parent: ResolvingMetadata
 ): Promise<Metadata> {
   // read route params
   const { lang } = params;
@@ -45,7 +44,7 @@ export default async function RootLayout({
   return (
     <html lang={params.lang}>
       <AntdRegistry>
-      <GoogleAnalytics />
+        <GoogleAnalytics />
         <MenuProvider>
           <body>
             <Nav dictionary={dictionary} />

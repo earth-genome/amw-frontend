@@ -17,6 +17,7 @@ import * as turf from "@turf/turf";
 import useSWR from "swr";
 import { createYearsColorScale, MAP_MISSING_DATA_COLOR } from "@/constants/map";
 import { Expression } from "mapbox-gl";
+import AreaSelect from "@/app/[lang]/components/AreaSelect";
 
 interface MainMapProps {
   dictionary: { [key: string]: any };
@@ -621,6 +622,8 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           buttonStyle="solid"
         />
       </div>
+
+      <AreaSelect dictionary={dictionary} />
 
       <LegendWrapper
         showMinimap={(mapRef.current && mapRef.current.getZoom() > 5) ?? false}
