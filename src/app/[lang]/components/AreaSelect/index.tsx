@@ -1,28 +1,21 @@
-import { ConfigProvider, Radio, Select } from "antd";
-import { useState } from "react";
+import {
+  AutoComplete,
+  Button,
+  ConfigProvider,
+  Modal,
+  Radio,
+  Select,
+} from "antd";
+import { useContext, useEffect, useState } from "react";
 import "./style.css";
 import useSWR from "swr";
+import { Context } from "@/lib/Store";
+import { AreasData, GeoJSONFeature } from "@/types/types";
+import ModalWrapper from "@/app/[lang]/components/ModalWrapper";
 const { Option } = Select;
 
 interface AreaSelectProps {
   dictionary: { [key: string]: any };
-}
-
-interface AreaProperties {
-  id: string;
-  country: string;
-  name_field: string;
-  [key: string]: any;
-}
-
-interface GeoJSONFeature {
-  properties: AreaProperties;
-  [key: string]: any;
-}
-
-interface AreasData {
-  features: GeoJSONFeature[];
-  [key: string]: any;
 }
 
 const AREA_TYPES = [
@@ -38,17 +31,22 @@ const AREA_TYPES = [
   },
 ] as const;
 
-const BASE_URL =
-  "https://raw.githubusercontent.com/earthrise-media/mining-detector/standardize-it-and-pa-areas/data/boundaries/protected_areas_and_indigenous_territories/out";
+const BASE_URL = "test-data";
+// "https://raw.githubusercontent.com/earthrise-media/mining-detector/standardize-it-and-pa-areas/data/boundaries/protected_areas_and_indigenous_territories/out";
 
 const fetcher = (...args: Parameters<typeof fetch>) =>
   fetch(...args).then((res) => res.json());
 
 const AreaSelect = ({ dictionary }: AreaSelectProps) => {
+  const [state, dispatch] = useContext(Context)!;
   const [activeAreaType, setActiveAreaType] = useState(
     AREA_TYPES[0]?.data_type
   );
-  const [activeArea, setActiveArea] = useState<string | null>(null);
+  // const [activeArea, setActiveArea] = useState<string | null>(null);
+  const { activeArea } = state;
+  const setActiveArea = (activeArea: string) => {
+    dispatch({ type: "SET_ACTIVE_AREA", activeArea: activeArea });
+  };
 
   const activeAreaTypeData = AREA_TYPES.find(
     (d) => d.data_type === activeAreaType
@@ -63,9 +61,17 @@ const AreaSelect = ({ dictionary }: AreaSelectProps) => {
     isLoading: areasDataIsLoading,
   } = useSWR<AreasData>(areasDataUrl, fetcher);
 
+  useEffect(() => {
+    if (areasDataIsLoading || areasDataError) {
+      dispatch({ type: "SET_AREAS_DATA", areasData: undefined });
+      return;
+    }
+    dispatch({ type: "SET_AREAS_DATA", areasData: areasData });
+  }, [areasData, areasDataError, areasDataIsLoading, dispatch]);
+
   const areaOptions = areasData?.features?.map(
     (d: GeoJSONFeature) => d.properties
-  );
+  )?.map((d) => ({ value: d.name_field }));
 
   return (
     <div className="area-types-wrapper">
@@ -110,7 +116,7 @@ const AreaSelect = ({ dictionary }: AreaSelectProps) => {
               },
             }}
           >
-            <Select
+            {/* <Select
               style={{ width: "200px" }}
               value={activeArea}
               onChange={(value: string) => {
@@ -122,7 +128,33 @@ const AreaSelect = ({ dictionary }: AreaSelectProps) => {
                   {d.country}: {d.name_field}
                 </Option>
               ))}
-            </Select>
+            </Select> */}
+            <AutoComplete
+              style={{ width: 200 }}
+              options={areaOptions}
+              placeholder="Search for an area"
+              filterOption={(inputValue, option) =>
+                option!.value
+                  ?.toUpperCase()
+                  ?.indexOf(inputValue?.toUpperCase()) !== -1
+              }
+            />
+            {/* {areaOptions?.length ? (
+              <ModalWrapper buttonText={"Select areas"} title={"Select areas"}>
+                <ul
+                  style={{
+                    maxHeight: "70vh",
+                    overflowY: "auto",
+                  }}
+                >
+                  {areaOptions.map((d) => (
+                    <li key={d.id} value={d.id}>
+                      {d.country}: {d.name_field}
+                    </li>
+                  ))}
+                </ul>
+              </ModalWrapper>
+            ) : null} */}
           </ConfigProvider>
         </div>
       </div>

@@ -10,6 +10,7 @@ import "./globals.css";
 import type { Metadata, ResolvingMetadata } from "next";
 import GoogleAnalytics from "./components/Tracking";
 import "mapbox-gl/dist/mapbox-gl.css";
+import MapWrapper from "@/app/[lang]/components/Map/Wrapper";
 
 type Props = {
   params: { lang: "en" | "es" | "pt" };
@@ -48,7 +49,9 @@ export default async function RootLayout({
         <MenuProvider>
           <body>
             <Nav dictionary={dictionary} />
-            <MainMap dictionary={dictionary} />
+            <MapWrapper>
+              <MainMap dictionary={dictionary} />
+            </MapWrapper>
             {children}
             <Loader dictionary={dictionary} />
           </body>

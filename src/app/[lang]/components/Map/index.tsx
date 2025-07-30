@@ -1,6 +1,6 @@
 "use client";
 import "./style.css";
-import React, { useState, useRef, useCallback } from "react";
+import React, { useState, useRef, useCallback, useContext } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { message, Radio, Select, ConfigProvider } from "antd";
 import Map, { Layer, Source, Popup, NavigationControl } from "react-map-gl";
@@ -18,6 +18,7 @@ import useSWR from "swr";
 import { createYearsColorScale, MAP_MISSING_DATA_COLOR } from "@/constants/map";
 import { Expression } from "mapbox-gl";
 import AreaSelect from "@/app/[lang]/components/AreaSelect";
+import { Context } from "@/lib/Store";
 
 interface MainMapProps {
   dictionary: { [key: string]: any };
@@ -34,6 +35,7 @@ const fetcher = (...args: Parameters<typeof fetch>) =>
   fetch(...args).then((res) => res.json());
 
 const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
+  const [state, dispatch] = useContext(Context)!;
   const [popupInfo, setPopupInfo] = useState<{
     latitude: number;
     longitude: number;
@@ -52,12 +54,15 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
     "mapbox://styles/earthrise/clvwchqxi06gh01pe1huv70id"
   );
 
-  const mineDataUrl = `https://raw.githubusercontent.com/earthrise-media/mining-detector/8a076bf0d6fdc3dde16b9abed68087fa40ee8c92/data/outputs/48px_v3.2-3.7ensemble/difference/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2024_all_differences.geojson`;
+  // const mineDataUrl = `https://raw.githubusercontent.com/earthrise-media/mining-detector/8a076bf0d6fdc3dde16b9abed68087fa40ee8c92/data/outputs/48px_v3.2-3.7ensemble/difference/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2024_all_differences.geojson`;
+  const mineDataUrl = `test-data/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2024_all_differences.geojson`;
   const {
     data: mineData,
     error: mineError,
     isLoading: mineIsLoading,
   } = useSWR(mineDataUrl, fetcher);
+
+  const { areasData } = state;
 
   const setMapPositonFromURL = useCallback(() => {
     if (window.location.hash) {
@@ -426,6 +431,40 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
             "line-width": 0.5,
           }}
         />
+
+        {/* ================== AREA SOURCES =================== */}
+        {areasData && (
+          <Source
+            id={"areas"}
+            type="geojson"
+            tolerance={0.05}
+            data={areasData}
+          />
+        )}
+
+        {/* ================== AREA LAYER =================== */}
+        {areasData && (
+          <Layer
+            id={"areas-layer"}
+            source={"areas"}
+            type="line"
+            paint={{
+              "line-color": "#ccc",
+              "line-opacity": 1,
+              "line-width": [
+                "interpolate",
+                ["exponential", 2],
+                ["zoom"],
+                0,
+                1,
+                10,
+                1,
+                14,
+                2.5,
+              ],
+            }}
+          />
+        )}
 
         {/* ================== MINE SOURCES =================== */}
         {mineData && (
