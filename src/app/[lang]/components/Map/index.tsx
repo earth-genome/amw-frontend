@@ -1,6 +1,12 @@
 "use client";
 import "./style.css";
-import React, { useState, useRef, useCallback, useContext } from "react";
+import React, {
+  useState,
+  useRef,
+  useCallback,
+  useContext,
+  useEffect,
+} from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { message, Radio, Select, ConfigProvider } from "antd";
 import Map, { Layer, Source, Popup, NavigationControl } from "react-map-gl";
@@ -54,15 +60,14 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
     "mapbox://styles/earthrise/clvwchqxi06gh01pe1huv70id"
   );
 
-  // const mineDataUrl = `https://raw.githubusercontent.com/earthrise-media/mining-detector/8a076bf0d6fdc3dde16b9abed68087fa40ee8c92/data/outputs/48px_v3.2-3.7ensemble/difference/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2024_all_differences.geojson`;
-  const mineDataUrl = `test-data/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2024_all_differences.geojson`;
+  const mineDataUrl = `https://raw.githubusercontent.com/earthrise-media/mining-detector/8a076bf0d6fdc3dde16b9abed68087fa40ee8c92/data/outputs/48px_v3.2-3.7ensemble/difference/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2024_all_differences.geojson`;
   const {
     data: mineData,
     error: mineError,
     isLoading: mineIsLoading,
   } = useSWR(mineDataUrl, fetcher);
 
-  const { areasData } = state;
+  const { areasData, selectedAreaData } = state;
 
   const setMapPositonFromURL = useCallback(() => {
     if (window.location.hash) {
@@ -149,6 +154,22 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
       MAP_MISSING_DATA_COLOR,
     ] as Expression;
   };
+
+  useEffect(() => {
+    // zoom to selected area on change
+    if (!selectedAreaData || !mapRef.current) return;
+
+    const centroid = turf.centroid(selectedAreaData);
+    const [lng, lat] = centroid.geometry.coordinates;
+
+    if (typeof lng === "number" && typeof lat === "number") {
+      mapRef.current.flyTo({
+        center: [lng, lat] as [number, number],
+        zoom: 9,
+        duration: 1000,
+      });
+    }
+  }, [selectedAreaData]);
 
   return (
     <div className="main-map">
@@ -255,7 +276,6 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         }}
       >
         <NavigationControl position={"top-right"} />
-
         {/* ================== SENTINEL2 SOURCES =================== */}
         <Source
           id="sentinel-2018"
@@ -340,7 +360,6 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           tileSize={256}
           bounds={[-80.0, -20.0, -50.0, 20.0]}
         />
-
         {/* ================== SENTINEL2 LAYERS =================== */}
         <Layer
           id="sentinel-layer-2018"
@@ -414,7 +433,6 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
             "fill-opacity": yearly ? 1 : 0.6,
           }}
         />
-
         {/* ================== BORDERS =================== */}
         <Source
           id="boundaries"
@@ -441,6 +459,14 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
             data={areasData}
           />
         )}
+        {selectedAreaData && (
+          <Source
+            id={"selected-area"}
+            type="geojson"
+            tolerance={0.05}
+            data={selectedAreaData}
+          />
+        )}
 
         {/* ================== AREA LAYER =================== */}
         {areasData && (
@@ -465,6 +491,30 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
             }}
           />
         )}
+        {selectedAreaData && (
+          <>
+            <Layer
+              id={"selected-area-layer-fill"}
+              source={"selected-area"}
+              type="fill"
+              paint={{
+                "fill-color": "#22B573",
+                "fill-opacity": 0.1,
+                "fill-outline-color": "#22B573",
+              }}
+            />
+            <Layer
+              id={"selected-area-layer"}
+              source={"selected-area"}
+              type="line"
+              paint={{
+                "line-color": "#22B573",
+                "line-opacity": 1,
+                "line-width": 3,
+              }}
+            />
+          </>
+        )}
 
         {/* ================== MINE SOURCES =================== */}
         {mineData && (
@@ -475,7 +525,6 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
             data={mineData}
           />
         )}
-
         {/* ================== MINE LAYER =================== */}
         {mineData && (
           <Layer
@@ -500,7 +549,6 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
             }}
           />
         )}
-
         {/* ================== LABELS =================== */}
         <Layer
           id="country-labels"
@@ -523,7 +571,6 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
             "text-color": "#ffffff",
           }}
         />
-
         {/* ================== POPUP =================== */}
         {popupVisible && popupInfo && (
           <Popup
@@ -570,7 +617,6 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
             </a>
           </Popup>
         )}
-
         <div className="map-scale-control"></div>
       </Map>
 

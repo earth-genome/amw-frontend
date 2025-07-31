@@ -7,10 +7,13 @@ const Reducer = (state: IState, action: ActionType) => {
         ...state,
         areasData: action.areasData,
       };
-    case "SET_ACTIVE_AREA":
+    case "SET_SELECTED_AREA":
       return {
         ...state,
-        activeArea: action.activeArea,
+        selectedArea: action.selectedArea,
+        selectedAreaData: state.areasData?.features.find(
+          (d) => String(d.properties.id) === action.selectedArea?.value
+        ),
       };
 
     default:

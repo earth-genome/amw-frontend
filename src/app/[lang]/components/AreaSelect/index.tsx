@@ -1,21 +1,22 @@
 import {
-  AutoComplete,
-  Button,
   ConfigProvider,
-  Modal,
   Radio,
-  Select,
 } from "antd";
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import "./style.css";
 import useSWR from "swr";
 import { Context } from "@/lib/Store";
-import { AreasData, GeoJSONFeature } from "@/types/types";
-import ModalWrapper from "@/app/[lang]/components/ModalWrapper";
-const { Option } = Select;
+import { AreasData } from "@/types/types";
+import AreaSearch from "@/app/[lang]/components/AreaSelect/AreaSearch";
+import { SingleValue } from "react-select";
 
 interface AreaSelectProps {
   dictionary: { [key: string]: any };
+}
+
+export interface AreaSelectOption {
+  value: string;
+  label: string;
 }
 
 const AREA_TYPES = [
@@ -31,28 +32,30 @@ const AREA_TYPES = [
   },
 ] as const;
 
-const BASE_URL = "test-data";
-// "https://raw.githubusercontent.com/earthrise-media/mining-detector/standardize-it-and-pa-areas/data/boundaries/protected_areas_and_indigenous_territories/out";
+const BASE_URL =
+  "https://raw.githubusercontent.com/earthrise-media/mining-detector/standardize-it-and-pa-areas/data/boundaries/protected_areas_and_indigenous_territories/out";
 
 const fetcher = (...args: Parameters<typeof fetch>) =>
   fetch(...args).then((res) => res.json());
 
 const AreaSelect = ({ dictionary }: AreaSelectProps) => {
   const [state, dispatch] = useContext(Context)!;
-  const [activeAreaType, setActiveAreaType] = useState(
+  const [selectedAreaType, setActiveAreaType] = useState(
     AREA_TYPES[0]?.data_type
   );
-  // const [activeArea, setActiveArea] = useState<string | null>(null);
-  const { activeArea } = state;
-  const setActiveArea = (activeArea: string) => {
-    dispatch({ type: "SET_ACTIVE_AREA", activeArea: activeArea });
-  };
-
-  const activeAreaTypeData = AREA_TYPES.find(
-    (d) => d.data_type === activeAreaType
+  const { selectedArea } = state;
+  const setSelectedArea = useCallback(
+    (selectedArea: SingleValue<AreaSelectOption> | undefined) => {
+      dispatch({ type: "SET_SELECTED_AREA", selectedArea: selectedArea });
+    },
+    [dispatch]
   );
-  const areasDataUrl = activeAreaTypeData
-    ? `${BASE_URL}/${activeAreaTypeData.file}`
+
+  const selectedAreaTypeData = AREA_TYPES.find(
+    (d) => d.data_type === selectedAreaType
+  );
+  const areasDataUrl = selectedAreaTypeData
+    ? `${BASE_URL}/${selectedAreaTypeData.file}`
     : "";
 
   const {
@@ -69,9 +72,13 @@ const AreaSelect = ({ dictionary }: AreaSelectProps) => {
     dispatch({ type: "SET_AREAS_DATA", areasData: areasData });
   }, [areasData, areasDataError, areasDataIsLoading, dispatch]);
 
-  const areaOptions = areasData?.features?.map(
-    (d: GeoJSONFeature) => d.properties
-  )?.map((d) => ({ value: d.name_field }));
+  useEffect(() => {
+    setSelectedArea(undefined);
+  }, [selectedAreaType, setSelectedArea]);
+
+  const handleAreaSelect = (value: SingleValue<AreaSelectOption>) => {
+    setSelectedArea(value);
+  };
 
   return (
     <div className="area-types-wrapper">
@@ -82,7 +89,7 @@ const AreaSelect = ({ dictionary }: AreaSelectProps) => {
               value: d.data_type,
               label: dictionary?.map_ui?.[d.dictionary_key],
             }))}
-            value={activeAreaType}
+            value={selectedAreaType}
             onChange={({ target: { value } }) => {
               setActiveAreaType(value);
             }}
@@ -116,45 +123,15 @@ const AreaSelect = ({ dictionary }: AreaSelectProps) => {
               },
             }}
           >
-            {/* <Select
-              style={{ width: "200px" }}
-              value={activeArea}
-              onChange={(value: string) => {
-                setActiveArea(value);
-              }}
-            >
-              {areaOptions?.map((d) => (
-                <Option key={d.id} value={d.id}>
-                  {d.country}: {d.name_field}
-                </Option>
-              ))}
-            </Select> */}
-            <AutoComplete
-              style={{ width: 200 }}
-              options={areaOptions}
-              placeholder="Search for an area"
-              filterOption={(inputValue, option) =>
-                option!.value
-                  ?.toUpperCase()
-                  ?.indexOf(inputValue?.toUpperCase()) !== -1
-              }
-            />
-            {/* {areaOptions?.length ? (
-              <ModalWrapper buttonText={"Select areas"} title={"Select areas"}>
-                <ul
-                  style={{
-                    maxHeight: "70vh",
-                    overflowY: "auto",
-                  }}
-                >
-                  {areaOptions.map((d) => (
-                    <li key={d.id} value={d.id}>
-                      {d.country}: {d.name_field}
-                    </li>
-                  ))}
-                </ul>
-              </ModalWrapper>
-            ) : null} */}
+            {areasData && !areasDataIsLoading ? (
+              <AreaSearch
+                areasData={areasData}
+                handleAreaSelect={handleAreaSelect}
+                selectedArea={selectedArea}
+              />
+            ) : (
+              <div>Loading...</div>
+            )}
           </ConfigProvider>
         </div>
       </div>
