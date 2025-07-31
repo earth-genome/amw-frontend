@@ -101,6 +101,8 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
     if (!mapRef.current) return;
     if (mapRef.current.getZoom() <= 5) return; // don't run if too zoomed out
     const currentBounds = mapRef.current.getBounds();
+    if (!currentBounds) return;
+
     const bbox = [
       currentBounds.getWest(),
       currentBounds.getSouth(),
@@ -159,16 +161,17 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
     // zoom to selected area on change
     if (!selectedAreaData || !mapRef.current) return;
 
-    const centroid = turf.centroid(selectedAreaData);
-    const [lng, lat] = centroid.geometry.coordinates;
+    const bbox = turf.bbox(selectedAreaData) as [
+      number,
+      number,
+      number,
+      number
+    ];
 
-    if (typeof lng === "number" && typeof lat === "number") {
-      mapRef.current.flyTo({
-        center: [lng, lat] as [number, number],
-        zoom: 9,
-        duration: 1000,
-      });
-    }
+    mapRef.current.fitBounds(bbox, {
+      padding: { top: 20, bottom: 20, left: 20, right: 20 },
+      duration: 2000,
+    });
   }, [selectedAreaData]);
 
   return (
@@ -197,9 +200,9 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
             setAreaVisible(true);
           }
 
-          const currentBounds = convertBoundsToGeoJSON(
-            mapRef.current.getBounds()
-          );
+          const bounds = mapRef.current.getBounds();
+          if (!bounds) return;
+          const currentBounds = convertBoundsToGeoJSON(bounds);
           setBounds(currentBounds);
         }}
         onIdle={() => {
@@ -244,18 +247,12 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           // Event listeners
           geocoder.on("result", (e) => {
             if (!mapRef.current) return;
-            mapRef.current.flyTo({
-              center: e.result.center,
-              zoom: 9,
-              duration: 1000,
+            const bbox = e.result.bbox;
+            const map = mapRef.current.getMap();
+            map.fitBounds(bbox, {
+              padding: { top: 20, bottom: 20, left: 20, right: 20 },
+              duration: 2000,
             });
-            // FIXME: we can't use fitBounds with natural earth projection, there's a Mapbox bug
-            // const bbox = e.result.bbox;
-            // const map = mapRef.current.getMap();
-            // map.fitBounds(bbox, {
-            //   padding: { top: 20, bottom: 20, left: 20, right: 20 },
-            //   duration: 2000,
-            // });
           });
         }}
         onClick={(e) => {
@@ -263,7 +260,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           const map = e.target;
           const features = map.queryRenderedFeatures(e.point);
           const clickedOnExcludedLayer = features.some(
-            (feature) => feature.layer.id === "hole-layer"
+            (feature) => feature?.layer?.id === "hole-layer"
           );
           if (!clickedOnExcludedLayer) {
             popupVisible ? setPopupVisible(false) : setPopupVisible(true);
