@@ -34,9 +34,9 @@ const Area: React.FC<AreaProps> = ({ dictionary, year }) => {
           <div>
             {selectedArea?.name}, {selectedArea?.country}
           </div>
-          {selectedAreaType?.dictionaryKey ? (
+          {selectedAreaType ? (
             <div className={style.areaType}>
-              {dictionary?.map_ui?.[selectedAreaType?.dictionaryKey]}
+              {dictionary?.map_ui?.[selectedAreaType?.dictionaryKeySingular]}
             </div>
           ) : null}
         </div>

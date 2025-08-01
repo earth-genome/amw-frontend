@@ -22,6 +22,7 @@ export const createYearsColorScale = (years: number[]) => {
 export interface AreaType {
   key: string;
   dictionaryKey: string;
+  dictionaryKeySingular: string;
   file: string;
   isDefault?: boolean;
 }
@@ -30,12 +31,14 @@ export const AREA_TYPES = [
   {
     key: "indigenous-territory",
     dictionaryKey: "indigenous_territories",
+    dictionaryKeySingular: "indigenous_territory",
     file: "indigenous_territories.geojson",
     isDefault: true,
   },
   {
     key: "protected-area",
     dictionaryKey: "protected_areas",
+    dictionaryKeySingular: "protected_area",
     file: "protected_areas.geojson",
   },
 ] as const;

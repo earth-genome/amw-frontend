@@ -45,7 +45,9 @@
     "mining_areas_detected": "Zona minera detectada",
     "search_for_a_place": "Buscar un lugar",
     "indigenous_territories": "Territorios indígenas",
+    "indigenous_territory": "Territorio indígena",
     "protected_areas": "Áreas protegidas",
+    "protected_area": "Área protegida",
     "see_more_insights": "Ver más información"
   },
   "map_legend": {

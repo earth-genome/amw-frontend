@@ -25,6 +25,7 @@ import { createYearsColorScale, MAP_MISSING_DATA_COLOR } from "@/constants/map";
 import { Expression } from "mapbox-gl";
 import AreaSelect from "@/app/[lang]/components/AreaSelect";
 import { Context } from "@/lib/Store";
+import GeocoderIcon from "@/app/[lang]/components/Icons/GeocoderIcon";
 
 interface MainMapProps {
   dictionary: { [key: string]: any };
@@ -58,6 +59,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
   const [mapStyle, setMapStyle] = useState(
     "mapbox://styles/earthrise/clvwchqxi06gh01pe1huv70id"
   );
+  const [isGeocoderHidden, setIsGeocoderHidden] = useState(true);
 
   const mineDataUrl = `https://raw.githubusercontent.com/earthrise-media/mining-detector/8a076bf0d6fdc3dde16b9abed68087fa40ee8c92/data/outputs/48px_v3.2-3.7ensemble/difference/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2024_all_differences.geojson`;
   const {
@@ -225,6 +227,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
 
           // Add the geocoder to a container
           const geocoderContainer = document.createElement("div");
+          geocoderContainer.className = "geocoder-hidden";
           geocoderContainer.style.position = "absolute";
           geocoderContainer.style.top = "calc(var(--top-navbar-height) + 10px)";
           geocoderContainer.style.right = "10px";
@@ -700,6 +703,21 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
       </div>
 
       <AreaSelect dictionary={dictionary} />
+
+      {isGeocoderHidden && (
+        <div className="geocoder-toggle">
+          <button
+            onClick={() => {
+              const element = document.querySelector(".geocoder-hidden");
+              if (!element) return;
+              element.classList.remove("geocoder-hidden");
+              setIsGeocoderHidden(false);
+            }}
+          >
+            <GeocoderIcon />
+          </button>
+        </div>
+      )}
 
       <LegendWrapper
         showMinimap={(mapRef.current && mapRef.current.getZoom() > 5) ?? false}

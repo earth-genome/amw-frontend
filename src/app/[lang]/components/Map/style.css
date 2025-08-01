@@ -96,12 +96,11 @@
   z-index: 1000;
   display: none;
 }
-@media(max-width: 600px) {
+@media (max-width: 600px) {
   .year-dropdown {
-  display: block;
+    display: block;
   }
 }
-
 
 .mapboxgl-canvas {
   background-color: transparent !important;
@@ -109,4 +108,33 @@
 
 .mapboxgl-ctrl-top-right .mapboxgl-ctrl {
   margin: 60px 10px 0 0;
+}
+
+.geocoder-hidden {
+  visibility: hidden;
+}
+
+.geocoder-toggle {
+  position: absolute;
+  top: calc(var(--top-navbar-height) + 10px);
+  right: 10px;
+  z-index: 1000;
+  height: 36px;
+  width: 29px;
+  display: flex;
+  justify-content: center;
+  justify-items: center;
+  border-radius: 4px;
+  background-color: #fff;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+}
+
+.geocoder-toggle button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.geocoder-toggle:hover {
+  opacity: 0.9;
 }
