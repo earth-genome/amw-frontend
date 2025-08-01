@@ -720,7 +720,8 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
       )}
 
       <LegendWrapper
-        showMinimap={(mapRef.current && mapRef.current.getZoom() > 5) ?? false}
+        showMinimap={true}
+        showMinimapBounds={(mapRef.current && mapRef.current.getZoom() > 5) ?? false}
         bounds={bounds}
         years={LAYER_YEARS}
         activeLayer={activeLayer}

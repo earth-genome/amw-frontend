@@ -7,9 +7,10 @@ import { GeoJSONType } from "../Map/helpers";
 
 interface MiniMapProps {
   bounds?: GeoJSONType;
+  showMinimapBounds: boolean;
 }
 
-const MiniMap: React.FC<MiniMapProps> = ({ bounds }) => {
+const MiniMap: React.FC<MiniMapProps> = ({ bounds, showMinimapBounds }) => {
   return (
     <div className="mini-map">
       <Map
@@ -69,27 +70,29 @@ const MiniMap: React.FC<MiniMapProps> = ({ bounds }) => {
           }}
         />
 
-        <Source type="geojson" data={bounds}>
-          <Layer
-            id={"bounds-outline"}
-            source={"bounds"}
-            type={"line"}
-            paint={{
-              "line-color": "#ffb301",
-              "line-width": 2,
-              "line-opacity": 0.9,
-            }}
-          />
-          <Layer
-            id={"bounds-fill"}
-            source={"bounds"}
-            type={"fill"}
-            paint={{
-              "fill-color": "#ffb301",
-              "fill-opacity": 0.5,
-            }}
-          />
-        </Source>
+        {showMinimapBounds && (
+          <Source type="geojson" data={bounds}>
+            <Layer
+              id={"bounds-outline"}
+              source={"bounds"}
+              type={"line"}
+              paint={{
+                "line-color": "#ffb301",
+                "line-width": 2,
+                "line-opacity": 0.9,
+              }}
+            />
+            <Layer
+              id={"bounds-fill"}
+              source={"bounds"}
+              type={"fill"}
+              paint={{
+                "fill-color": "#ffb301",
+                "fill-opacity": 0.5,
+              }}
+            />
+          </Source>
+        )}
       </Map>
     </div>
   );
