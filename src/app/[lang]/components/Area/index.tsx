@@ -1,9 +1,9 @@
 "use client";
-import React, { useState } from "react";
-import { Tween } from "react-gsap";
+import React, { useContext, useState } from "react";
 import coverageData from "../../../../../configs/coverage.json";
 import style from "./style.module.css";
 import Eye from "@/app/[lang]/components/Icons/Eye";
+import { Context } from "@/lib/Store";
 
 interface AreaProps {
   dictionary: { [key: string]: any };
@@ -21,38 +21,46 @@ interface Coverage {
 }
 
 const Area: React.FC<AreaProps> = ({ dictionary, year }) => {
+  const [state, dispatch] = useContext(Context)!;
+  const { selectedArea, selectedAreaType, selectedAreaData } = state;
+
   const coverage: Coverage = coverageData;
 
   return (
-    <Tween
-      from={{ y: 100, opacity: 0 }}
-      to={{ y: 0, opacity: 1 }}
-      stagger={0.1}
-      ease={"sine.out"}
-      delay={0.2}
-    >
-      <div className={style.areaCard}>
-        <div className={style.areaTitle}>
-          {/* FIXME: set programatically and localize */}
-          <div>Whole Amazonia</div>
-          <div>{year}</div>
-        </div>
-        <div className={style.areaBody}>
-          <div>{dictionary.coverage.total_area_affected}</div>
-          <div className={style.areaKm}>
-            {coverage?.[year].km} km<sup>2</sup>
+    <div className={style.areaCard}>
+      <div className={style.areaTitle}>
+        {/* FIXME: set programatically and localize */}
+        <div>
+          <div>
+            {selectedArea?.name}, {selectedArea?.country}
           </div>
-          {/* FIXME: calculate increase and display */}
+          {selectedAreaType?.dictionaryKey ? (
+            <div className={style.areaType}>
+              {dictionary?.map_ui?.[selectedAreaType?.dictionaryKey]}
+            </div>
+          ) : null}
         </div>
-        {/* FIXME: trigger interaction */}
-        <div className={style.areaFooter}>
-          <div className={style.areaFooterText}>
-            {dictionary.map_ui.see_more_insights}
-            <Eye />
-          </div>
+
+        <div>{year}</div>
+      </div>
+      <div className={style.areaBody}>
+        <div>{dictionary.coverage.total_area_affected}</div>
+        <div className={style.areaKm}>
+          {/* FIXME: need to set correct area */}
+          {/* possible something like {selectedAreaData.properties.area_affected} */}
+          {/* {coverage?.[year].km} km<sup>2</sup> */}
+          {"X"} km<sup>2</sup>
+        </div>
+        {/* FIXME: calculate increase and display */}
+      </div>
+      {/* FIXME: trigger interaction */}
+      <div className={style.areaFooter}>
+        <div className={style.areaFooterText}>
+          {dictionary.map_ui.see_more_insights}
+          <Eye />
         </div>
       </div>
-    </Tween>
+    </div>
   );
 };
 

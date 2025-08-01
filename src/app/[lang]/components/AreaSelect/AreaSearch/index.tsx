@@ -21,6 +21,8 @@ const AreaSearch = ({
     ?.map((d) => ({
       value: `${d.id}`,
       label: `${d.country}: ${d.name_field}`,
+      country: d.country,
+      name: d.name_field,
     }))
     ?.sort((a, b) => a.label.localeCompare(b.label));
 

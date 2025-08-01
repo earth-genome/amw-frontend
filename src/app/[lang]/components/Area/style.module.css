@@ -20,6 +20,12 @@
   justify-content: space-between;
 }
 
+.areaType {
+  font-size: 14px;
+  font-weight: 500;
+  margin-top: 6px;
+}
+
 .areaBody {
   background: var(--green-dark);
   padding: 12px 24px;

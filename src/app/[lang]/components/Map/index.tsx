@@ -50,7 +50,6 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
   const [popupVisible, setPopupVisible] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
-  const [areaVisible, setAreaVisible] = useState(true);
   const mapRef = useRef<MapRef>(null);
   const [bounds, setBounds] = useState<GeoJSONType | undefined>(undefined);
   const [yearly, setYearly] = useState(true);
@@ -67,7 +66,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
     isLoading: mineIsLoading,
   } = useSWR(mineDataUrl, fetcher);
 
-  const { areasData, selectedAreaData } = state;
+  const { areasData, selectedAreaData, selectedArea } = state;
 
   const setMapPositonFromURL = useCallback(() => {
     if (window.location.hash) {
@@ -119,7 +118,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
       const clipped = turf.bboxClip(feature, bbox);
       areaMinesSquareMeters += turf.area(clipped);
     }
-    console.log(
+    console.info(
       "Area of mine squares in view (square km): ",
       areaMinesSquareMeters / 1000000
     );
@@ -194,11 +193,6 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         mapStyle={mapStyle}
         onMove={(e) => {
           if (!mapRef.current) return;
-          if (mapRef.current.getZoom() > 4) {
-            setAreaVisible(false);
-          } else {
-            setAreaVisible(true);
-          }
 
           const bounds = mapRef.current.getBounds();
           if (!bounds) return;
@@ -716,7 +710,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         dictionary={dictionary}
       />
 
-      {areaVisible && <Area dictionary={dictionary} year={activeLayer} />}
+      {selectedArea && <Area dictionary={dictionary} year={activeLayer} />}
       <Footer
         year={activeLayer}
         zoom={(mapRef.current && mapRef.current.getZoom()) || 4}

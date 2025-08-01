@@ -1,7 +1,4 @@
-import {
-  ConfigProvider,
-  Radio,
-} from "antd";
+import { ConfigProvider, Radio } from "antd";
 import { useCallback, useContext, useEffect, useState } from "react";
 import "./style.css";
 import useSWR from "swr";
@@ -9,6 +6,8 @@ import { Context } from "@/lib/Store";
 import { AreasData } from "@/types/types";
 import AreaSearch from "@/app/[lang]/components/AreaSelect/AreaSearch";
 import { SingleValue } from "react-select";
+import { AREA_TYPES, AreaType } from "@/constants/map";
+import { getAreaType } from "@/lib/Reducer";
 
 interface AreaSelectProps {
   dictionary: { [key: string]: any };
@@ -17,20 +16,9 @@ interface AreaSelectProps {
 export interface AreaSelectOption {
   value: string;
   label: string;
+  country: string;
+  name: string;
 }
-
-const AREA_TYPES = [
-  {
-    data_type: "indigenous-territory",
-    dictionary_key: "indigenous_territories",
-    file: "indigenous_territories.geojson",
-  },
-  {
-    data_type: "protected-area",
-    dictionary_key: "protected_areas",
-    file: "protected_areas.geojson",
-  },
-] as const;
 
 const BASE_URL =
   "https://raw.githubusercontent.com/earthrise-media/mining-detector/standardize-it-and-pa-areas/data/boundaries/protected_areas_and_indigenous_territories/out";
@@ -40,22 +28,26 @@ const fetcher = (...args: Parameters<typeof fetch>) =>
 
 const AreaSelect = ({ dictionary }: AreaSelectProps) => {
   const [state, dispatch] = useContext(Context)!;
-  const [selectedAreaType, setActiveAreaType] = useState(
-    AREA_TYPES[0]?.data_type
-  );
-  const { selectedArea } = state;
+
+  const { selectedArea, selectedAreaType } = state;
   const setSelectedArea = useCallback(
     (selectedArea: SingleValue<AreaSelectOption> | undefined) => {
       dispatch({ type: "SET_SELECTED_AREA", selectedArea: selectedArea });
     },
     [dispatch]
   );
-
-  const selectedAreaTypeData = AREA_TYPES.find(
-    (d) => d.data_type === selectedAreaType
+  const setSelectedAreaType = useCallback(
+    (selectedAreaType: AreaType) => {
+      dispatch({
+        type: "SET_SELECTED_AREA_TYPE",
+        selectedAreaType: selectedAreaType,
+      });
+    },
+    [dispatch]
   );
-  const areasDataUrl = selectedAreaTypeData
-    ? `${BASE_URL}/${selectedAreaTypeData.file}`
+
+  const areasDataUrl = selectedAreaType
+    ? `${BASE_URL}/${selectedAreaType.file}`
     : "";
 
   const {
@@ -72,10 +64,6 @@ const AreaSelect = ({ dictionary }: AreaSelectProps) => {
     dispatch({ type: "SET_AREAS_DATA", areasData: areasData });
   }, [areasData, areasDataError, areasDataIsLoading, dispatch]);
 
-  useEffect(() => {
-    setSelectedArea(undefined);
-  }, [selectedAreaType, setSelectedArea]);
-
   const handleAreaSelect = (value: SingleValue<AreaSelectOption>) => {
     setSelectedArea(value);
   };
@@ -86,12 +74,14 @@ const AreaSelect = ({ dictionary }: AreaSelectProps) => {
         <div className="area-types">
           <Radio.Group
             options={AREA_TYPES.map((d) => ({
-              value: d.data_type,
-              label: dictionary?.map_ui?.[d.dictionary_key],
+              value: d.key,
+              label: dictionary?.map_ui?.[d.dictionaryKey],
             }))}
-            value={selectedAreaType}
+            value={selectedAreaType?.key}
             onChange={({ target: { value } }) => {
-              setActiveAreaType(value);
+              const areaType = getAreaType(value);
+              if (!areaType) return;
+              setSelectedAreaType(areaType);
             }}
             optionType="button"
             buttonStyle="solid"
@@ -125,6 +115,7 @@ const AreaSelect = ({ dictionary }: AreaSelectProps) => {
           >
             {areasData && !areasDataIsLoading ? (
               <AreaSearch
+                key={selectedAreaType?.key}
                 areasData={areasData}
                 handleAreaSelect={handleAreaSelect}
                 selectedArea={selectedArea}

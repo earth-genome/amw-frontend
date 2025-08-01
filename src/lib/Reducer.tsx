@@ -1,4 +1,8 @@
+import { AREA_TYPES } from "@/constants/map";
 import { ActionType, IState } from "@/lib/Store";
+
+export const getAreaType = (key: string) =>
+  AREA_TYPES.find((d) => key === d.key);
 
 const Reducer = (state: IState, action: ActionType) => {
   switch (action.type) {
@@ -15,7 +19,12 @@ const Reducer = (state: IState, action: ActionType) => {
           (d) => String(d.properties.id) === action.selectedArea?.value
         ),
       };
-
+    case "SET_SELECTED_AREA_TYPE":
+      return {
+        ...state,
+        selectedAreaType: action.selectedAreaType,
+        selectedArea: undefined, // clear when area type changes
+      };
     default:
       return state;
   }

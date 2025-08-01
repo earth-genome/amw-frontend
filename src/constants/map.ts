@@ -18,3 +18,24 @@ export const createYearsColorScale = (years: number[]) => {
     .domain([0, years.length - 1])
     .interpolator(interpolateRgbBasis(MAP_COLOR_SCALE));
 };
+
+export interface AreaType {
+  key: string;
+  dictionaryKey: string;
+  file: string;
+  isDefault?: boolean;
+}
+
+export const AREA_TYPES = [
+  {
+    key: "indigenous-territory",
+    dictionaryKey: "indigenous_territories",
+    file: "indigenous_territories.geojson",
+    isDefault: true,
+  },
+  {
+    key: "protected-area",
+    dictionaryKey: "protected_areas",
+    file: "protected_areas.geojson",
+  },
+] as const;

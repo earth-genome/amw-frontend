@@ -4,11 +4,13 @@ import Reducer from "@/lib/Reducer";
 import { SingleValue } from "react-select";
 import { AllGeoJSON } from "@turf/turf";
 import { AreaSelectOption } from "@/app/[lang]/components/AreaSelect";
+import { AREA_TYPES, AreaType } from "@/constants/map";
 
 export interface IState {
   areasData: AreasData | undefined;
   selectedArea: SingleValue<AreaSelectOption> | undefined;
   selectedAreaData: AllGeoJSON | undefined;
+  selectedAreaType: AreaType | undefined;
 }
 
 export type ActionType =
@@ -16,7 +18,8 @@ export type ActionType =
   | {
       type: "SET_SELECTED_AREA";
       selectedArea: SingleValue<AreaSelectOption> | undefined;
-    };
+    }
+  | { type: "SET_SELECTED_AREA_TYPE"; selectedAreaType: AreaType | undefined };
 
 export const Context = createContext<
   [IState, Dispatch<ActionType>] | undefined
@@ -27,6 +30,7 @@ const Store = ({ children }: Readonly<{ children: React.ReactNode }>) => {
     areasData: undefined,
     selectedArea: undefined,
     selectedAreaData: undefined,
+    selectedAreaType: AREA_TYPES[0],
   };
 
   const [state, dispatch] = useReducer(Reducer, initialState);
