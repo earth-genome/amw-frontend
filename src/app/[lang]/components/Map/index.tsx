@@ -37,6 +37,10 @@ const INITIAL_VIEW = {
   latitude: -5.871455584726869,
   zoom: 3.7,
 };
+const SATELLITE_LAYERS = {
+  yearly: "mapbox://styles/earthrise/clvwchqxi06gh01pe1huv70id",
+  hiRes: "mapbox://styles/earthrise/cmdxgrceq014x01s22jfm5muv", // Mapbox satellite
+};
 
 const fetcher = (...args: Parameters<typeof fetch>) =>
   fetch(...args).then((res) => res.json());
@@ -55,10 +59,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
   const [bounds, setBounds] = useState<GeoJSONType | undefined>(undefined);
   const [yearly, setYearly] = useState(true);
   const [activeLayer, setActiveLayer] = useState("2024");
-  // mapbox://styles/earthrise/ckxht1jfm2h9k15m7wrv5wz5w
-  const [mapStyle, setMapStyle] = useState(
-    "mapbox://styles/earthrise/clvwchqxi06gh01pe1huv70id"
-  );
+  const [mapStyle, setMapStyle] = useState(SATELLITE_LAYERS["yearly"]);
   const [isGeocoderHidden, setIsGeocoderHidden] = useState(true);
 
   const mineDataUrl = `https://raw.githubusercontent.com/earthrise-media/mining-detector/8a076bf0d6fdc3dde16b9abed68087fa40ee8c92/data/outputs/48px_v3.2-3.7ensemble/difference/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2024_all_differences.geojson`;
@@ -415,12 +416,12 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         <Source
           id={"hole-source"}
           type="vector"
-          url="mapbox://dmccarey.3pur462h"
+          url="mapbox://earthrise.cw29jm21"
         />
         <Layer
           id={"hole-layer"}
           source={"hole-source"}
-          source-layer={"amazon-hole-0asofs"}
+          source-layer={"amazon_aca_mask-6i3usc"}
           type="fill"
           paint={{
             "fill-color": yearly ? "#dddddd" : "#ffffff",
@@ -688,13 +689,9 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           onChange={({ target: { value } }) => {
             setYearly(value);
             if (value === false) {
-              setMapStyle(
-                `mapbox://styles/earthrise/ckxht1jfm2h9k15m7wrv5wz5w`
-              );
+              setMapStyle(SATELLITE_LAYERS["hiRes"]);
             } else {
-              setMapStyle(
-                "mapbox://styles/earthrise/clvwchqxi06gh01pe1huv70id"
-              );
+              setMapStyle(SATELLITE_LAYERS["yearly"]);
             }
           }}
           optionType="button"
@@ -721,7 +718,9 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
 
       <LegendWrapper
         showMinimap={true}
-        showMinimapBounds={(mapRef.current && mapRef.current.getZoom() > 5) ?? false}
+        showMinimapBounds={
+          (mapRef.current && mapRef.current.getZoom() > 5) ?? false
+        }
         bounds={bounds}
         years={LAYER_YEARS}
         activeLayer={activeLayer}
