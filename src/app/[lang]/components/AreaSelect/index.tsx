@@ -121,7 +121,7 @@ const AreaSelect = ({ dictionary }: AreaSelectProps) => {
                 selectedArea={selectedArea}
               />
             ) : (
-              <div>Loading...</div>
+              <div className="area-loading">Loading...</div>
             )}
           </ConfigProvider>
         </div>

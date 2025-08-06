@@ -31,6 +31,10 @@
   padding-inline: 20px !important;
   font-size: 14px;
   flex-shrink: 0;
+  height: 37px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .area-types .ant-radio-button-wrapper {
@@ -67,4 +71,14 @@
 
 .area-select {
   margin-left: 24px;
+}
+
+.area-loading {
+  background: #fff;
+  color: #003e36b2;
+  border-radius: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 37px;
 }

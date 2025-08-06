@@ -20,7 +20,9 @@ const AreaSearch = ({
     ?.map((d: GeoJSONFeature) => d.properties)
     ?.map((d) => ({
       value: `${d.id}`,
-      label: `${d.country}: ${d.name_field}`,
+      label: `${d.country}: ${d.name_field}${
+        d?.status_field ? ` - ${d.status_field}` : ""
+      }`,
       country: d.country,
       name: d.name_field,
     }))
@@ -30,12 +32,14 @@ const AreaSearch = ({
     control: (provided: any, state: any) => ({
       ...provided,
       backgroundColor: "white",
-      borderColor: state.isFocused ? "#22B573" : "#003E36",
+      borderColor: state.isFocused ? "#22B573" : "transparent",
       borderWidth: "1px",
       boxShadow: state.isFocused ? "0 0 0 1px #22B573" : "none",
       "&:hover": {
         borderColor: "#22B573",
       },
+      borderRadius: "5px",
+      fontSize: "16px",
     }),
     option: (provided: any, state: any) => ({
       ...provided,
@@ -51,6 +55,7 @@ const AreaSearch = ({
         backgroundColor: "#22B573",
         color: "white",
       },
+      borderRadius: "5px",
     }),
     singleValue: (provided: any) => ({
       ...provided,
@@ -67,7 +72,8 @@ const AreaSearch = ({
     menu: (provided: any) => ({
       ...provided,
       backgroundColor: "white",
-      border: "1px solid #003E36",
+      border: "none",
+      borderRadius: "5px",
     }),
     menuList: (provided: any) => ({
       ...provided,
