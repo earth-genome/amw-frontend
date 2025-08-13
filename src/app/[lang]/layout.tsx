@@ -11,9 +11,10 @@ import type { Metadata, ResolvingMetadata } from "next";
 import GoogleAnalytics from "./components/Tracking";
 import "mapbox-gl/dist/mapbox-gl.css";
 import MapWrapper from "@/app/[lang]/components/Map/Wrapper";
+import { PERMITTED_LANGUAGES } from "@/utils/content";
 
 type Props = {
-  params: { lang: "en" | "es" | "pt" };
+  params: { lang: PERMITTED_LANGUAGES };
 };
 
 export async function generateMetadata(
@@ -50,7 +51,7 @@ export default async function RootLayout({
           <body>
             <Nav dictionary={dictionary} />
             <MapWrapper>
-              <MainMap dictionary={dictionary} />
+              <MainMap dictionary={dictionary} lang={params.lang} />
             </MapWrapper>
             {children}
             <Loader dictionary={dictionary} />

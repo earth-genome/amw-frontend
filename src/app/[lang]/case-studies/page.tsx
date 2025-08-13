@@ -4,10 +4,11 @@ import Overlay from "../components/Overlay";
 import { getDictionary } from "../../../get-dictionary";
 import { getMarkdown } from "../../../get-markdown";
 import { marked } from "marked";
+import { PERMITTED_LANGUAGES } from "@/utils/content";
 
 interface PageProps {
   params: {
-    lang: "en" | "es" | "pt";
+    lang: PERMITTED_LANGUAGES;
   };
 }
 

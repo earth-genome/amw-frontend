@@ -1,15 +1,15 @@
 import { createContext, useReducer, Dispatch } from "react";
-import { AreasData, GeoJSONFeature } from "@/types/types";
+import { AreasData } from "@/types/types";
+import { Feature } from "geojson";
 import Reducer from "@/lib/Reducer";
 import { SingleValue } from "react-select";
-import { AllGeoJSON } from "@turf/turf";
 import { AreaSelectOption } from "@/app/[lang]/components/AreaSelect";
 import { AREA_TYPES, AreaType } from "@/constants/map";
 
 export interface IState {
   areasData: AreasData | undefined;
   selectedArea: SingleValue<AreaSelectOption> | undefined;
-  selectedAreaData: AllGeoJSON | undefined;
+  selectedAreaData: Feature | undefined;
   selectedAreaType: AreaType | undefined;
 }
 

@@ -32,13 +32,13 @@ export const AREA_TYPES = [
     key: "indigenous-territory",
     dictionaryKey: "indigenous_territories",
     dictionaryKeySingular: "indigenous_territory",
-    file: "indigenous_territories.geojson",
+    file: "indigenous_territories_impacts.geojson",
     isDefault: true,
   },
   {
     key: "protected-area",
     dictionaryKey: "protected_areas",
     dictionaryKeySingular: "protected_area",
-    file: "protected_areas.geojson",
+    file: "protected_areas_impacts.geojson",
   },
 ] as const;

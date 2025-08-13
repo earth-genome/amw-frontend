@@ -48,6 +48,9 @@
     "indigenous_territory": "Território indígena",
     "protected_areas": "Áreas protegidas",
     "protected_area": "Área protegida",
+    "economic_cost": "Custo econômico acumulado na área",
+    "economic_cost_currency": "USD",
+    "hide_more_insights": "Ocultar mais informações",
     "see_more_insights": "Ver mais informações"
   },
   "map_legend": {

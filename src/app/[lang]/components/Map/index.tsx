@@ -11,7 +11,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { message, Radio, Select, ConfigProvider } from "antd";
 import Map, { Layer, Source, Popup, NavigationControl } from "react-map-gl";
 import type { MapGeoJSONFeature, MapRef } from "react-map-gl";
-import Area from "../Area";
+import AreaSummary from "../AreaSummary";
 import Footer from "../Footer";
 import { convertBoundsToGeoJSON, GeoJSONType } from "./helpers";
 import { CopyOutlined } from "@ant-design/icons";
@@ -26,9 +26,11 @@ import { Expression } from "mapbox-gl";
 import AreaSelect from "@/app/[lang]/components/AreaSelect";
 import { Context } from "@/lib/Store";
 import GeocoderIcon from "@/app/[lang]/components/Icons/GeocoderIcon";
+import { PERMITTED_LANGUAGES } from "@/utils/content";
 
 interface MainMapProps {
   dictionary: { [key: string]: any };
+  lang: PERMITTED_LANGUAGES;
 }
 
 const LAYER_YEARS = [2024, 2023, 2022, 2021, 2020, 2019, 2018];
@@ -45,7 +47,7 @@ const SATELLITE_LAYERS = {
 const fetcher = (...args: Parameters<typeof fetch>) =>
   fetch(...args).then((res) => res.json());
 
-const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
+const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
   const [state, dispatch] = useContext(Context)!;
   const [popupInfo, setPopupInfo] = useState<{
     latitude: number;
@@ -163,6 +165,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
     // zoom to selected area on change
     if (!selectedAreaData || !mapRef.current) return;
 
+    // FIXME:
     const bbox = turf.bbox(selectedAreaData) as [
       number,
       number,
@@ -728,7 +731,9 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         dictionary={dictionary}
       />
 
-      {selectedArea && <Area dictionary={dictionary} year={activeLayer} />}
+      {selectedArea && (
+        <AreaSummary dictionary={dictionary} year={activeLayer} lang={lang} />
+      )}
       <Footer
         year={activeLayer}
         zoom={(mapRef.current && mapRef.current.getZoom()) || 4}

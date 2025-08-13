@@ -46,10 +46,7 @@
 }
 
 .areaFooter {
-  font-size: 18px;
-  font-weight: 700;
-  background: #fff;
-  color: var(--green-dark);
+  background: #efefef;
   padding: 12px 24px;
   border-bottom-left-radius: 12px;
   border-bottom-right-radius: 12px;
@@ -57,8 +54,18 @@
   justify-content: center;
 }
 
-.areaFooterText {
+.showMoreButton {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--green-dark);
+  border: none;
+  background: transparent;
   display: flex;
   align-items: center;
   gap: 6px;
+  cursor: pointer;
+}
+
+.showMoreButton:hover {
+  opacity: 80%;
 }
