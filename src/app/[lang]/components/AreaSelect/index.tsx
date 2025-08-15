@@ -16,12 +16,11 @@ interface AreaSelectProps {
 export interface AreaSelectOption {
   value: string;
   label: string;
-  country: string;
-  name: string;
+  title: string;
+  status?: string;
+  country?: string;
+  showCountry?: boolean;
 }
-
-const BASE_URL =
-  "https://raw.githubusercontent.com/earthrise-media/mining-detector/standardize-it-and-pa-areas/data/boundaries/protected_areas_and_indigenous_territories/out";
 
 const fetcher = (...args: Parameters<typeof fetch>) =>
   fetch(...args).then((res) => res.json());
@@ -46,9 +45,7 @@ const AreaSelect = ({ dictionary }: AreaSelectProps) => {
     [dispatch]
   );
 
-  const areasDataUrl = selectedAreaType
-    ? `${BASE_URL}/${selectedAreaType.file}`
-    : "";
+  const areasDataUrl = selectedAreaType ? selectedAreaType.url : "";
 
   const {
     data: areasData,
@@ -119,6 +116,8 @@ const AreaSelect = ({ dictionary }: AreaSelectProps) => {
                 areasData={areasData}
                 handleAreaSelect={handleAreaSelect}
                 selectedArea={selectedArea}
+                selectedAreaType={selectedAreaType}
+                dictionary={dictionary}
               />
             ) : (
               <div className="area-loading">Loading...</div>

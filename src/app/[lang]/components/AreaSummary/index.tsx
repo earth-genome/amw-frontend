@@ -1,6 +1,6 @@
 "use client";
 import React, { useContext, useState } from "react";
-import coverageData from "../../../../../configs/coverage.json";
+// import coverageData from "../../../../../configs/coverage.json";
 import style from "./style.module.css";
 import Eye from "@/app/[lang]/components/Icons/Eye";
 import { Context } from "@/lib/Store";
@@ -19,18 +19,18 @@ interface CoverageYear {
   acres: number;
 }
 
-interface Coverage {
-  [key: string]: CoverageYear;
-}
+// interface Coverage {
+//   [key: string]: CoverageYear;
+// }
 
 const Area: React.FC<AreaProps> = ({ dictionary, year, lang }) => {
   const [state, dispatch] = useContext(Context)!;
   const [showMoreInsights, setShowMoreInsights] = useState(false);
   const { selectedArea, selectedAreaType, selectedAreaData } = state;
 
-  const coverage: Coverage = coverageData;
-  const affectedArea = selectedAreaData?.properties?.totalAffectedArea;
-  const economicCost = selectedAreaData?.properties?.totalImpact;
+  // const coverage: Coverage = coverageData;
+  const affectedAreaHa = selectedAreaData?.properties?.mining_affected_area_ha;
+  const economicCost = selectedAreaData?.properties?.economic_impact_usd;
 
   const toggleShowMoreInsights = () => setShowMoreInsights(!showMoreInsights);
 
@@ -40,7 +40,9 @@ const Area: React.FC<AreaProps> = ({ dictionary, year, lang }) => {
         {/* FIXME: set programatically and localize */}
         <div>
           <div>
-            {selectedArea?.name}, {selectedArea?.country}
+            {selectedAreaType?.renderTitle && selectedAreaData?.properties
+              ? selectedAreaType?.renderTitle(selectedAreaData?.properties)
+              : null}
           </div>
           {selectedAreaType ? (
             <div className={style.areaType}>
@@ -54,9 +56,9 @@ const Area: React.FC<AreaProps> = ({ dictionary, year, lang }) => {
       <div className={style.areaBody}>
         <div>{dictionary.coverage.total_area_affected}</div>
         <div className={style.areaKm}>
-          {affectedArea ? (
+          {affectedAreaHa ? (
             <>
-              {formatNumber(affectedArea, lang)} km<sup>2</sup>
+              {formatNumber(affectedAreaHa * 0.01, lang)} km<sup>2</sup>
             </>
           ) : null}
         </div>

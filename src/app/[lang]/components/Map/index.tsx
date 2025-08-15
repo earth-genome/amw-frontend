@@ -174,7 +174,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
     ];
 
     mapRef.current.fitBounds(bbox, {
-      padding: { top: 20, bottom: 20, left: 20, right: 20 },
+      padding: { top: 70, bottom: 70, left: 20, right: 20 },
       duration: 2000,
     });
   }, [selectedAreaData]);

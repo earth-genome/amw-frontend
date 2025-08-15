@@ -1,32 +1,79 @@
-import Select, { SingleValue } from "react-select";
+import Select, { SingleValue, components, OptionProps } from "react-select";
 import { AreasData, GeoJSONFeature } from "@/types/types";
 import { AreaSelectOption } from "@/app/[lang]/components/AreaSelect";
+import { AreaType } from "@/constants/map";
+import { useMemo } from "react";
 
 interface AreaSearchProps {
   areasData: AreasData;
   handleAreaSelect: (value: SingleValue<AreaSelectOption>) => void;
   selectedArea?: SingleValue<AreaSelectOption>;
+  selectedAreaType: AreaType | undefined;
+  dictionary: { [key: string]: any };
 }
+
+const CustomOption = (props: OptionProps<AreaSelectOption>) => {
+  const { data, isSelected, isFocused } = props;
+
+  return (
+    <components.Option {...props}>
+      <div>
+        <div
+          style={{
+            fontWeight: 700,
+            fontSize: "16px",
+            marginBottom: "2px",
+          }}
+        >
+          {data.title}
+        </div>
+        <div
+          style={{
+            marginBottom: "2px",
+          }}
+        >
+          {data.status}
+        </div>
+        {data.showCountry && <div>{data.country}</div>}
+      </div>
+    </components.Option>
+  );
+};
 
 const AreaSearch = ({
   areasData,
   handleAreaSelect,
   selectedArea,
+  selectedAreaType,
+  dictionary,
 }: AreaSearchProps) => {
-  const areaOptions = areasData?.features
-    ?.filter(
-      (d: GeoJSONFeature) => d.properties?.id && d.properties?.name_field
-    )
-    ?.map((d: GeoJSONFeature) => d.properties)
-    ?.map((d) => ({
-      value: `${d.id}`,
-      label: `${d.country}: ${d.name_field}${
-        d?.status_field ? ` - ${d.status_field}` : ""
-      }`,
-      country: d.country,
-      name: d.name_field,
-    }))
-    ?.sort((a, b) => a.label.localeCompare(b.label));
+  const areaOptions = useMemo(
+    () =>
+      areasData?.features
+        ?.filter((d: GeoJSONFeature) => d.properties?.id)
+        ?.map((d: GeoJSONFeature) => d.properties)
+        ?.map((d) => ({
+          value: `${d.id}`,
+          // label is used for searching
+          label: selectedAreaType?.renderLabel
+            ? selectedAreaType.renderLabel(d)
+            : d.id,
+          title: selectedAreaType?.renderTitle
+            ? selectedAreaType.renderTitle(d) || dictionary?.map_ui?.unknown
+            : d.id,
+          status: selectedAreaType?.renderStatus
+            ? selectedAreaType.renderStatus(d)
+            : undefined,
+          country: d.country,
+          showCountry: selectedAreaType?.showCountry,
+        }))
+        ?.sort(
+          (a, b) =>
+            a?.country?.localeCompare(b?.country) ||
+            a?.title?.localeCompare(b?.title)
+        ),
+    [areasData?.features, dictionary?.map_ui?.unknown, selectedAreaType]
+  );
 
   const customStyles = {
     control: (provided: any, state: any) => ({
@@ -56,6 +103,7 @@ const AreaSearch = ({
         color: "white",
       },
       borderRadius: "5px",
+      padding: "8px 12px",
     }),
     singleValue: (provided: any) => ({
       ...provided,
@@ -101,10 +149,17 @@ const AreaSearch = ({
       <Select
         options={areaOptions}
         styles={customStyles}
+        components={{
+          Option: CustomOption,
+        }}
         isSearchable={true}
         placeholder="Select an area..."
-        onChange={handleAreaSelect}
+        onChange={(newValue) =>
+          handleAreaSelect(newValue as SingleValue<AreaSelectOption>)
+        }
+        getOptionLabel={(option) => option.label}
         value={selectedArea}
+        menuShouldScrollIntoView={true}
       />
     </div>
   );
