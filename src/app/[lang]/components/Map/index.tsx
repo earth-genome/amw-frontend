@@ -9,12 +9,11 @@ import React, {
 } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { message, Radio, Select, ConfigProvider } from "antd";
-import Map, { Layer, Source, Popup, NavigationControl } from "react-map-gl";
-import type { MapGeoJSONFeature, MapRef } from "react-map-gl";
+import Map, { Layer, Source, NavigationControl } from "react-map-gl";
+import type { MapGeoJSONFeature, MapMouseEvent, MapRef } from "react-map-gl";
 import AreaSummary from "../AreaSummary";
 import Footer from "../Footer";
 import { convertBoundsToGeoJSON, GeoJSONType } from "./helpers";
-import { CopyOutlined } from "@ant-design/icons";
 import LegendWrapper from "./LegendWrapper";
 const { Option } = Select;
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
@@ -27,6 +26,7 @@ import AreaSelect from "@/app/[lang]/components/AreaSelect";
 import { Context } from "@/lib/Store";
 import GeocoderIcon from "@/app/[lang]/components/Icons/GeocoderIcon";
 import { PERMITTED_LANGUAGES } from "@/utils/content";
+import MapPopup, { TooltipInfo } from "@/app/[lang]/components/Map/MapPopup";
 
 interface MainMapProps {
   dictionary: { [key: string]: any };
@@ -49,12 +49,6 @@ const fetcher = (...args: Parameters<typeof fetch>) =>
 
 const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
   const [state, dispatch] = useContext(Context)!;
-  const [popupInfo, setPopupInfo] = useState<{
-    latitude: number;
-    longitude: number;
-    zoom: number;
-  } | null>(null);
-  const [popupVisible, setPopupVisible] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
   const mapRef = useRef<MapRef>(null);
@@ -63,6 +57,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
   const [activeLayer, setActiveLayer] = useState("2024");
   const [mapStyle, setMapStyle] = useState(SATELLITE_LAYERS["yearly"]);
   const [isGeocoderHidden, setIsGeocoderHidden] = useState(true);
+  const [tooltip, setTooltip] = useState<TooltipInfo | null>(null);
 
   const mineDataUrl = `https://raw.githubusercontent.com/earthrise-media/mining-detector/8a076bf0d6fdc3dde16b9abed68087fa40ee8c92/data/outputs/48px_v3.2-3.7ensemble/difference/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2024_all_differences.geojson`;
   const {
@@ -161,6 +156,41 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
     ] as Expression;
   };
 
+  const handleMouseMove = useCallback((event: MapMouseEvent) => {
+    const { features } = event;
+    const feature = features && features[0];
+
+    event.target.getCanvas().style.cursor = feature ? "pointer" : "";
+
+    if (feature?.properties) {
+      setTooltip({
+        longitude: event.lngLat.lng,
+        latitude: event.lngLat.lat,
+        properties: feature.properties as [key: string],
+      });
+    }
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    setTooltip(null);
+  }, []);
+
+  const handleClick = useCallback((event: MapMouseEvent) => {
+    const map = event.target;
+    const features = map.queryRenderedFeatures(event.point);
+    const clickedOnExcludedLayer = features.some(
+      (feature) => feature?.layer?.id === "hole-layer"
+    );
+    if (!clickedOnExcludedLayer) {
+      const feature = features[0];
+      const id = feature?.properties?.id;
+
+      if (id) {
+        dispatch({ type: "SET_SELECTED_AREA_BY_ID", selectedAreaId: id });
+      }
+    }
+  }, []);
+
   useEffect(() => {
     // zoom to selected area on change
     if (!selectedAreaData || !mapRef.current) return;
@@ -256,22 +286,10 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
             });
           });
         }}
-        onClick={(e) => {
-          const { lngLat } = e;
-          const map = e.target;
-          const features = map.queryRenderedFeatures(e.point);
-          const clickedOnExcludedLayer = features.some(
-            (feature) => feature?.layer?.id === "hole-layer"
-          );
-          if (!clickedOnExcludedLayer) {
-            popupVisible ? setPopupVisible(false) : setPopupVisible(true);
-            setPopupInfo({
-              latitude: lngLat.lat,
-              longitude: lngLat.lng,
-              zoom: map?.getZoom(),
-            });
-          }
-        }}
+        onClick={handleClick}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        interactiveLayerIds={["areas-layer-fill"]}
       >
         <NavigationControl position={"top-right"} />
         {/* ================== SENTINEL2 SOURCES =================== */}
@@ -468,26 +486,38 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
 
         {/* ================== AREA LAYER =================== */}
         {areasData && (
-          <Layer
-            id={"areas-layer"}
-            source={"areas"}
-            type="line"
-            paint={{
-              "line-color": "#ccc",
-              "line-opacity": 1,
-              "line-width": [
-                "interpolate",
-                ["exponential", 2],
-                ["zoom"],
-                0,
-                1,
-                10,
-                1,
-                14,
-                2.5,
-              ],
-            }}
-          />
+          <>
+            <Layer
+              id={"areas-layer"}
+              source={"areas"}
+              type="line"
+              paint={{
+                "line-color": "#ccc",
+                "line-opacity": 1,
+                "line-width": [
+                  "interpolate",
+                  ["exponential", 2],
+                  ["zoom"],
+                  0,
+                  1,
+                  10,
+                  1,
+                  14,
+                  2.5,
+                ],
+              }}
+            />
+            <Layer
+              id={"areas-layer-fill"}
+              source={"areas"}
+              type="fill"
+              paint={{
+                "fill-color": "#fff",
+                "fill-opacity": 0,
+                "fill-outline-color": "#fff",
+              }}
+            />
+          </>
         )}
         {selectedAreaData && (
           <>
@@ -570,51 +600,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
           }}
         />
         {/* ================== POPUP =================== */}
-        {popupVisible && popupInfo && (
-          <Popup
-            longitude={popupInfo?.longitude}
-            latitude={popupInfo?.latitude}
-            closeButton={false}
-            closeOnClick={false}
-            onClose={() => setPopupInfo(null)}
-          >
-            <table>
-              <tbody>
-                <tr>
-                  <td className="number-value">
-                    {popupInfo.longitude.toFixed(3)}
-                  </td>
-                  <td className="number-value">
-                    {popupInfo?.latitude.toFixed(3)}
-                  </td>
-                </tr>
-                <tr>
-                  <td>Longitude</td>
-                  <td>Latitude</td>
-                </tr>
-              </tbody>
-            </table>
-
-            <a
-              className="copy-url"
-              onClick={async (e) => {
-                e.preventDefault();
-                copyToClipboard(
-                  `${process.env.NEXT_PUBLIC_DOMAIN}/#${popupInfo.zoom.toFixed(
-                    2
-                  )}/${popupInfo.longitude.toFixed(
-                    3
-                  )}/${popupInfo?.latitude.toFixed(3)}`
-                ).then(() => {
-                  message.success("URL copied");
-                });
-              }}
-              href="#copy"
-            >
-              <CopyOutlined style={{ fontSize: "16px" }} /> Copy URL
-            </a>
-          </Popup>
-        )}
+        {tooltip && <MapPopup tooltip={tooltip} />}
         <div className="map-scale-control"></div>
       </Map>
 
@@ -734,6 +720,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
       {selectedArea && (
         <AreaSummary dictionary={dictionary} year={activeLayer} lang={lang} />
       )}
+
       <Footer
         year={activeLayer}
         zoom={(mapRef.current && mapRef.current.getZoom()) || 4}

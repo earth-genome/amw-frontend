@@ -2,14 +2,12 @@ import Select, { SingleValue, components, OptionProps } from "react-select";
 import { AreasData, GeoJSONFeature } from "@/types/types";
 import { AreaSelectOption } from "@/app/[lang]/components/AreaSelect";
 import { AreaType } from "@/constants/map";
-import { useMemo } from "react";
+import { useContext, useMemo } from "react";
+import { Context } from "@/lib/Store";
 
 interface AreaSearchProps {
-  areasData: AreasData;
   handleAreaSelect: (value: SingleValue<AreaSelectOption>) => void;
   selectedArea?: SingleValue<AreaSelectOption>;
-  selectedAreaType: AreaType | undefined;
-  dictionary: { [key: string]: any };
 }
 
 const CustomOption = (props: OptionProps<AreaSelectOption>) => {
@@ -41,39 +39,11 @@ const CustomOption = (props: OptionProps<AreaSelectOption>) => {
 };
 
 const AreaSearch = ({
-  areasData,
   handleAreaSelect,
   selectedArea,
-  selectedAreaType,
-  dictionary,
 }: AreaSearchProps) => {
-  const areaOptions = useMemo(
-    () =>
-      areasData?.features
-        ?.filter((d: GeoJSONFeature) => d.properties?.id)
-        ?.map((d: GeoJSONFeature) => d.properties)
-        ?.map((d) => ({
-          value: `${d.id}`,
-          // label is used for searching
-          label: selectedAreaType?.renderLabel
-            ? selectedAreaType.renderLabel(d)
-            : d.id,
-          title: selectedAreaType?.renderTitle
-            ? selectedAreaType.renderTitle(d) || dictionary?.map_ui?.unknown
-            : d.id,
-          status: selectedAreaType?.renderStatus
-            ? selectedAreaType.renderStatus(d)
-            : undefined,
-          country: d.country,
-          showCountry: selectedAreaType?.showCountry,
-        }))
-        ?.sort(
-          (a, b) =>
-            a?.country?.localeCompare(b?.country) ||
-            a?.title?.localeCompare(b?.title)
-        ),
-    [areasData?.features, dictionary?.map_ui?.unknown, selectedAreaType]
-  );
+  const [state] = useContext(Context)!;
+  const {areasOptions} = state;
 
   const customStyles = {
     control: (provided: any, state: any) => ({
@@ -147,7 +117,7 @@ const AreaSearch = ({
       }}
     >
       <Select
-        options={areaOptions}
+        options={areasOptions}
         styles={customStyles}
         components={{
           Option: CustomOption,

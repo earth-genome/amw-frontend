@@ -14,7 +14,7 @@ interface AreaSelectProps {
 }
 
 export interface AreaSelectOption {
-  value: string;
+  value: number;
   label: string;
   title: string;
   status?: string;
@@ -120,11 +120,8 @@ const AreaSelect = ({ dictionary }: AreaSelectProps) => {
             {areasData && !areasDataIsLoading ? (
               <AreaSearch
                 key={selectedAreaType?.key}
-                areasData={areasData}
                 handleAreaSelect={handleAreaSelect}
                 selectedArea={selectedArea}
-                selectedAreaType={selectedAreaType}
-                dictionary={dictionary}
               />
             ) : (
               <div className="area-loading">Loading...</div>

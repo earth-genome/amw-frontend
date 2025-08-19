@@ -1,5 +1,5 @@
 export interface AreaProperties {
-  id: string;
+  id: number;
   country: string;
   name_field: string;
   [key: string]: any;
