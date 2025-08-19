@@ -79,6 +79,13 @@ const AreaSelect = ({ dictionary }: AreaSelectProps) => {
               const areaType = getAreaType(value);
               if (!areaType) return;
               setSelectedAreaType(areaType);
+              // clean previously selected area, if any
+              if (selectedArea) {
+                dispatch({
+                  type: "SET_SELECTED_AREA",
+                  selectedArea: undefined,
+                });
+              }
             }}
             optionType="button"
             buttonStyle="solid"
