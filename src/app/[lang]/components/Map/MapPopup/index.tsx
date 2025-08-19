@@ -34,7 +34,7 @@ const MapPopup = ({ tooltip }: MapPopupProps) => {
       closeButton={false}
       closeOnClick={false}
       anchor="bottom"
-      offset={[0, -10]}
+      offset={[0, -10] as [number, number]}
       className="map-tooltip"
     >
       <div
