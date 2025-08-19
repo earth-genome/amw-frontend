@@ -32,7 +32,7 @@ export interface AreaType {
 }
 
 const AREA_TYPES_BASE_URL =
-  "https://raw.githubusercontent.com/earthrise-media/mining-detector/4af28dbf850ed2254412a9ac7196c5d174797b07/data/boundaries";
+  "https://raw.githubusercontent.com/earthrise-media/mining-detector/standardize-it-and-pa-areas/data/boundaries";
 
 export const AREA_TYPES = [
   {

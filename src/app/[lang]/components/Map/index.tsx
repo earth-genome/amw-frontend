@@ -58,6 +58,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
   const [mapStyle, setMapStyle] = useState(SATELLITE_LAYERS["yearly"]);
   const [isGeocoderHidden, setIsGeocoderHidden] = useState(true);
   const [tooltip, setTooltip] = useState<TooltipInfo | null>(null);
+  const hoveredFeatureRef = useRef<string | number | null>(null);
 
   const mineDataUrl = `https://raw.githubusercontent.com/earthrise-media/mining-detector/8a076bf0d6fdc3dde16b9abed68087fa40ee8c92/data/outputs/48px_v3.2-3.7ensemble/difference/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2024_all_differences.geojson`;
   const {
@@ -158,6 +159,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
 
   const handleMouseMove = useCallback((event: MapMouseEvent) => {
     const { features } = event;
+    const map = event.target;
     const feature = features && features[0];
 
     event.target.getCanvas().style.cursor = feature ? "pointer" : "";
@@ -168,11 +170,44 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
         latitude: event.lngLat.lat,
         properties: feature.properties as [key: string],
       });
+
+      // remove hover state from previous feature
+      if (hoveredFeatureRef.current) {
+        map.setFeatureState(
+          {
+            source: "areas",
+            id: hoveredFeatureRef.current,
+          },
+          { hover: false }
+        );
+      }
+
+      // set hover state on current feature
+      if (feature.id !== undefined) {
+        hoveredFeatureRef.current = feature.id;
+        map.setFeatureState(
+          {
+            source: "areas",
+            id: feature.id,
+          },
+          { hover: true }
+        );
+      }
     }
   }, []);
 
-  const handleMouseLeave = useCallback(() => {
+  const handleMouseLeave = useCallback((event: MapMouseEvent) => {
     setTooltip(null);
+    const map = event.target;
+    if (hoveredFeatureRef.current) {
+      map.setFeatureState(
+        {
+          source: "areas",
+          id: hoveredFeatureRef.current,
+        },
+        { hover: false }
+      );
+    }
   }, []);
 
   const handleClick = useCallback((event: MapMouseEvent) => {
@@ -512,8 +547,13 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
               source={"areas"}
               type="fill"
               paint={{
-                "fill-color": "#fff",
-                "fill-opacity": 0,
+                "fill-color": "#22B573",
+                "fill-opacity": [
+                  "case",
+                  ["boolean", ["feature-state", "hover"], false],
+                  0.2, // hovered
+                  0, // not hovered
+                ],
                 "fill-outline-color": "#fff",
               }}
             />
