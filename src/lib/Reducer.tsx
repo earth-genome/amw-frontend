@@ -12,7 +12,7 @@ const Reducer = (state: IState, action: ActionType): IState => {
         ...state,
         areasData: action.areasData,
         areasOptions: action.areasData?.features
-          ?.filter((d: GeoJSONFeature) => d.properties?.id)
+          ?.filter((d: GeoJSONFeature) => d.properties?.id !== undefined)
           ?.map((d: GeoJSONFeature) => d.properties)
           ?.map((d) => ({
             value: d.id,

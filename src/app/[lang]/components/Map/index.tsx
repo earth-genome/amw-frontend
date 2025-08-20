@@ -58,7 +58,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
   const [mapStyle, setMapStyle] = useState(SATELLITE_LAYERS["yearly"]);
   const [isGeocoderHidden, setIsGeocoderHidden] = useState(true);
   const [tooltip, setTooltip] = useState<TooltipInfo | null>(null);
-  const hoveredFeatureRef = useRef<string | number | null>(null);
+  const hoveredFeatureRef = useRef<string | number | undefined>(undefined);
 
   const mineDataUrl = `https://raw.githubusercontent.com/earthrise-media/mining-detector/8a076bf0d6fdc3dde16b9abed68087fa40ee8c92/data/outputs/48px_v3.2-3.7ensemble/difference/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2024_all_differences.geojson`;
   const {
@@ -172,7 +172,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
       });
 
       // remove hover state from previous feature
-      if (hoveredFeatureRef.current) {
+      if (hoveredFeatureRef.current !== undefined) {
         map.setFeatureState(
           {
             source: "areas",
@@ -199,7 +199,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
   const handleMouseLeave = useCallback((event: MapMouseEvent) => {
     setTooltip(null);
     const map = event.target;
-    if (hoveredFeatureRef.current) {
+    if (hoveredFeatureRef.current !== undefined) {
       map.setFeatureState(
         {
           source: "areas",
@@ -220,11 +220,11 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
       const feature = features[0];
       const id = feature?.properties?.id;
 
-      if (id) {
+      if (id !== undefined) {
         dispatch({ type: "SET_SELECTED_AREA_BY_ID", selectedAreaId: id });
       }
     }
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     // zoom to selected area on change
