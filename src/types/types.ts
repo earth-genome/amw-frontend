@@ -1,3 +1,5 @@
+import { Feature } from "geojson";
+
 export interface AreaProperties {
   id: number;
   country: string;
@@ -7,6 +9,8 @@ export interface AreaProperties {
 
 export interface AreasData
   extends GeoJSON.FeatureCollection<GeoJSON.Geometry, AreaProperties> {}
+
+export type AreaData = Feature | undefined;
 
 export interface GeoJSONFeature {
   properties: AreaProperties;

@@ -1,7 +1,5 @@
 import Select, { SingleValue, components, OptionProps } from "react-select";
-import { AreasData, GeoJSONFeature } from "@/types/types";
 import { AreaSelectOption } from "@/app/[lang]/components/AreaSelect";
-import { AreaType } from "@/constants/map";
 import { useContext, useMemo } from "react";
 import { Context } from "@/lib/Store";
 
@@ -38,12 +36,9 @@ const CustomOption = (props: OptionProps<AreaSelectOption>) => {
   );
 };
 
-const AreaSearch = ({
-  handleAreaSelect,
-  selectedArea,
-}: AreaSearchProps) => {
+const AreaSearch = ({ handleAreaSelect, selectedArea }: AreaSearchProps) => {
   const [state] = useContext(Context)!;
-  const {areasOptions} = state;
+  const { areasOptions } = state;
 
   const customStyles = {
     control: (provided: any, state: any) => ({

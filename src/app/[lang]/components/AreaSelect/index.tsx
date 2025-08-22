@@ -1,13 +1,10 @@
 import { ConfigProvider, Radio } from "antd";
 import { useCallback, useContext, useEffect, useState } from "react";
 import "./style.css";
-import useSWR from "swr";
 import { Context } from "@/lib/Store";
-import { AreasData } from "@/types/types";
 import AreaSearch from "@/app/[lang]/components/AreaSelect/AreaSearch";
 import { SingleValue } from "react-select";
-import { AREA_TYPES, AreaType } from "@/constants/map";
-import { getAreaType } from "@/lib/Reducer";
+import { AREA_TYPES } from "@/constants/map";
 
 interface AreaSelectProps {
   dictionary: { [key: string]: any };
@@ -22,44 +19,29 @@ export interface AreaSelectOption {
   showCountry?: boolean;
 }
 
-const fetcher = (...args: Parameters<typeof fetch>) =>
-  fetch(...args).then((res) => res.json());
-
 const AreaSelect = ({ dictionary }: AreaSelectProps) => {
   const [state, dispatch] = useContext(Context)!;
 
-  const { selectedArea, selectedAreaType } = state;
+  const { selectedArea, selectedAreaType, areasData, areasDataIsLoading } = state;
+
   const setSelectedArea = useCallback(
     (selectedArea: SingleValue<AreaSelectOption> | undefined) => {
-      dispatch({ type: "SET_SELECTED_AREA", selectedArea: selectedArea });
+      dispatch({ type: "SET_SELECTED_AREA_BY_ID", selectedAreaId: selectedArea?.value });
     },
     [dispatch]
   );
+
   const setSelectedAreaType = useCallback(
-    (selectedAreaType: AreaType) => {
+    (selectedAreaTypeKey: string) => {
       dispatch({
-        type: "SET_SELECTED_AREA_TYPE",
-        selectedAreaType: selectedAreaType,
+        type: "SET_SELECTED_AREA_TYPE_BY_KEY",
+        selectedAreaTypeKey: selectedAreaTypeKey,
       });
     },
     [dispatch]
   );
 
-  const areasDataUrl = selectedAreaType ? selectedAreaType.url : "";
-
-  const {
-    data: areasData,
-    error: areasDataError,
-    isLoading: areasDataIsLoading,
-  } = useSWR<AreasData>(areasDataUrl, fetcher);
-
-  useEffect(() => {
-    if (areasDataIsLoading || areasDataError) {
-      dispatch({ type: "SET_AREAS_DATA", areasData: undefined });
-      return;
-    }
-    dispatch({ type: "SET_AREAS_DATA", areasData: areasData });
-  }, [areasData, areasDataError, areasDataIsLoading, dispatch]);
+  
 
   const handleAreaSelect = (value: SingleValue<AreaSelectOption>) => {
     setSelectedArea(value);
@@ -75,18 +57,7 @@ const AreaSelect = ({ dictionary }: AreaSelectProps) => {
               label: dictionary?.map_ui?.[d.dictionaryKey],
             }))}
             value={selectedAreaType?.key}
-            onChange={({ target: { value } }) => {
-              const areaType = getAreaType(value);
-              if (!areaType) return;
-              setSelectedAreaType(areaType);
-              // clean previously selected area, if any
-              if (selectedArea) {
-                dispatch({
-                  type: "SET_SELECTED_AREA",
-                  selectedArea: undefined,
-                });
-              }
-            }}
+            onChange={({ target: { value } }) => setSelectedAreaType(value)}
             optionType="button"
             buttonStyle="solid"
           />

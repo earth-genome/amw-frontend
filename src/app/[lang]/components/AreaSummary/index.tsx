@@ -26,11 +26,12 @@ interface CoverageYear {
 const Area: React.FC<AreaProps> = ({ dictionary, year, lang }) => {
   const [state, dispatch] = useContext(Context)!;
   const [showMoreInsights, setShowMoreInsights] = useState(false);
-  const { selectedArea, selectedAreaType, selectedAreaData } = state;
+  const { selectedAreaType, selectedAreaData } = state;
+  const areaProperties = selectedAreaData?.properties || {};
 
   // const coverage: Coverage = coverageData;
-  const affectedAreaHa = selectedAreaData?.properties?.mining_affected_area_ha;
-  const economicCost = selectedAreaData?.properties?.economic_impact_usd;
+  const affectedAreaHa = areaProperties?.mining_affected_area_ha;
+  const economicCost = areaProperties?.economic_impact_usd;
 
   const toggleShowMoreInsights = () => setShowMoreInsights(!showMoreInsights);
 
@@ -40,13 +41,16 @@ const Area: React.FC<AreaProps> = ({ dictionary, year, lang }) => {
         {/* FIXME: set programatically and localize */}
         <div>
           <div>
-            {selectedAreaType?.renderTitle && selectedAreaData?.properties
-              ? selectedAreaType?.renderTitle(selectedAreaData?.properties)
+            {selectedAreaType?.renderTitle && areaProperties
+              ? selectedAreaType?.renderTitle(areaProperties)
               : null}
           </div>
           {selectedAreaType ? (
             <div className={style.areaType}>
               {dictionary?.map_ui?.[selectedAreaType?.dictionaryKeySingular]}
+              {selectedAreaType?.showCountry && areaProperties?.country ? (
+                <span> - {areaProperties.country}</span>
+              ) : null}
             </div>
           ) : null}
         </div>

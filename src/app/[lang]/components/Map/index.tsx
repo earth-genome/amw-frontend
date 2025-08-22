@@ -67,34 +67,39 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
     isLoading: mineIsLoading,
   } = useSWR(mineDataUrl, fetcher);
 
-  const { areasData, selectedAreaData, selectedArea } = state;
+  const { areasData, selectedAreaData, selectedArea, selectedAreaTypeKey } =
+    state;
 
-  const setMapPositonFromURL = useCallback(() => {
-    if (window.location.hash) {
-      const split = window.location.hash.split("/");
-      const lng = split[1];
-      const lat = split[2];
-      const zoomRaw = split[0];
-      const zoom = zoomRaw.split("#")[1];
-      if (!mapRef.current) return;
+  const setMapParamsFromURL = useCallback(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const zoom = searchParams.get("zoom");
+    const lng = searchParams.get("lng");
+    const lat = searchParams.get("lat");
+
+    if (mapRef.current && zoom && lng && lat) {
       mapRef.current.jumpTo({
         center: lng && lat ? [Number(lng), Number(lat)] : undefined,
         zoom: zoom ? Number(zoom) : undefined,
       });
     }
-  }, [mapRef]);
+  }, []);
 
-  const updateURLHash = useCallback(() => {
+  const updateURLParamsMapPosition = useCallback(() => {
     if (!mapRef.current) return;
+
     const zoom = mapRef.current.getZoom();
     const center = mapRef.current.getCenter();
     const lng = center?.lng;
     const lat = center?.lat;
+
     if (!zoom || !lng || !lat) return;
-    router.replace(
-      `${pathname}/#${zoom.toFixed(2)}/${lng.toFixed(2)}/${lat.toFixed(2)}`,
-      undefined
-    );
+
+    const params = new URLSearchParams(window.location.search);
+    params.set("zoom", zoom.toFixed(2));
+    params.set("lng", lng.toFixed(2));
+    params.set("lat", lat.toFixed(2));
+
+    router.replace(`${pathname}?${params.toString()}`);
   }, [pathname, router]);
 
   const calculateMiningAreaInView = useCallback(() => {
@@ -125,14 +130,6 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
     );
   }, [activeLayer, mineData?.features]);
 
-  const copyToClipboard = async (text: string): Promise<void> => {
-    try {
-      await navigator.clipboard.writeText(text);
-    } catch (err) {
-      console.error("Failed to copy: ", err);
-    }
-  };
-
   const getSatelliteOpacity = (layerId: string) => {
     if (yearly && layerId === `sentinel-layer-${activeLayer}`) {
       return 1;
@@ -157,44 +154,50 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
     ] as Expression;
   };
 
-  const handleMouseMove = useCallback((event: MapMouseEvent) => {
-    const { features } = event;
-    const map = event.target;
-    const feature = features && features[0];
+  const handleMouseMove = useCallback(
+    (event: MapMouseEvent) => {
+      const { features } = event;
+      const map = event.target;
+      const feature = features && features[0];
 
-    event.target.getCanvas().style.cursor = feature ? "pointer" : "";
+      event.target.getCanvas().style.cursor = feature ? "pointer" : "";
 
-    if (feature?.properties) {
-      setTooltip({
-        longitude: event.lngLat.lng,
-        latitude: event.lngLat.lat,
-        properties: feature.properties as [key: string],
-      });
+      if (feature?.properties) {
+        setTooltip({
+          longitude: event.lngLat.lng,
+          latitude: event.lngLat.lat,
+          properties: feature.properties as [key: string],
+        });
 
-      // remove hover state from previous feature
-      if (hoveredFeatureRef.current !== undefined) {
-        map.setFeatureState(
-          {
-            source: "areas",
-            id: hoveredFeatureRef.current,
-          },
-          { hover: false }
-        );
+        // don't use hover effect for countries, it is too distracting
+        if (selectedAreaTypeKey === "countries") return;
+
+        // remove hover state from previous feature
+        if (hoveredFeatureRef.current !== undefined) {
+          map.setFeatureState(
+            {
+              source: "areas",
+              id: hoveredFeatureRef.current,
+            },
+            { hover: false }
+          );
+        }
+
+        // set hover state on current feature
+        if (feature.id !== undefined) {
+          hoveredFeatureRef.current = feature.id;
+          map.setFeatureState(
+            {
+              source: "areas",
+              id: feature.id,
+            },
+            { hover: true }
+          );
+        }
       }
-
-      // set hover state on current feature
-      if (feature.id !== undefined) {
-        hoveredFeatureRef.current = feature.id;
-        map.setFeatureState(
-          {
-            source: "areas",
-            id: feature.id,
-          },
-          { hover: true }
-        );
-      }
-    }
-  }, []);
+    },
+    [selectedAreaTypeKey]
+  );
 
   const handleMouseLeave = useCallback((event: MapMouseEvent) => {
     setTooltip(null);
@@ -210,27 +213,26 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
     }
   }, []);
 
-  const handleClick = useCallback((event: MapMouseEvent) => {
-    const map = event.target;
-    const features = map.queryRenderedFeatures(event.point);
-    const clickedOnExcludedLayer = features.some(
-      (feature) => feature?.layer?.id === "hole-layer"
-    );
-    if (!clickedOnExcludedLayer) {
-      const feature = features[0];
-      const id = feature?.properties?.id;
-
-      if (id !== undefined) {
+  const handleClick = useCallback(
+    (event: MapMouseEvent) => {
+      const map = event.target;
+      const features = map.queryRenderedFeatures(event.point);
+      const clickedOnExcludedLayer = features.some(
+        (feature) => feature?.layer?.id === "hole-layer"
+      );
+      if (!clickedOnExcludedLayer) {
+        const feature = features[0];
+        const id = feature?.properties?.id;
         dispatch({ type: "SET_SELECTED_AREA_BY_ID", selectedAreaId: id });
       }
-    }
-  }, [dispatch]);
+    },
+    [dispatch]
+  );
 
   useEffect(() => {
     // zoom to selected area on change
     if (!selectedAreaData || !mapRef.current) return;
 
-    // FIXME:
     const bbox = turf.bbox(selectedAreaData) as [
       number,
       number,
@@ -241,6 +243,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
     mapRef.current.fitBounds(bbox, {
       padding: { top: 70, bottom: 70, left: 20, right: 20 },
       duration: 2000,
+      essential: true,
     });
   }, [selectedAreaData]);
 
@@ -275,13 +278,13 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
           // calculateMiningAreaInView();
         }}
         onMoveEnd={() => {
-          updateURLHash();
+          updateURLParamsMapPosition();
         }}
         onZoomEnd={() => {
-          updateURLHash();
+          updateURLParamsMapPosition();
         }}
         onLoad={() => {
-          setMapPositonFromURL();
+          setMapParamsFromURL();
 
           // geocoder
           if (!mapRef.current) return;
@@ -559,7 +562,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
             />
           </>
         )}
-        {selectedAreaData && (
+        {selectedAreaData && selectedArea && (
           <>
             <Layer
               id={"selected-area-layer-fill"}

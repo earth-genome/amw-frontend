@@ -7,10 +7,21 @@ export const getAreaType = (key: string) =>
 
 const Reducer = (state: IState, action: ActionType): IState => {
   switch (action.type) {
+    case "SET_MAP_REF":
+      return {
+        ...state,
+        map: action.map,
+      };
+    case "SET_IS_QUERY_CHECKED":
+      return {
+        ...state,
+        isQueryChecked: action.isQueryChecked,
+      };
     case "SET_AREAS_DATA":
       return {
         ...state,
         areasData: action.areasData,
+        areasDataIsLoading: action.areasDataIsLoading,
         areasOptions: action.areasData?.features
           ?.filter((d: GeoJSONFeature) => d.properties?.id !== undefined)
           ?.map((d: GeoJSONFeature) => d.properties)
@@ -47,19 +58,21 @@ const Reducer = (state: IState, action: ActionType): IState => {
           (d) => d.properties.id === action.selectedAreaId
         ),
       };
-    case "SET_SELECTED_AREA":
+    case "SET_PENDING_SELECTED_AREA_ID":
+      // set it as pending so it will wait for the area data to finish loading to be set
       return {
         ...state,
-        selectedArea: action.selectedArea,
-        selectedAreaData: state.areasData?.features.find(
-          (d) => d.properties.id === action.selectedArea?.value
-        ),
+        pendingSelectedAreaId: action.pendingSelectedAreaId,
       };
-    case "SET_SELECTED_AREA_TYPE":
+    case "SET_SELECTED_AREA_TYPE_BY_KEY":
       return {
         ...state,
-        selectedAreaType: action.selectedAreaType,
+        selectedAreaTypeKey: action.selectedAreaTypeKey,
+        selectedAreaType: action.selectedAreaTypeKey
+          ? getAreaType(action.selectedAreaTypeKey)
+          : undefined,
         selectedArea: undefined, // clear when area type changes
+        selectedAreaData: undefined,
       };
     default:
       return state;
