@@ -18,12 +18,32 @@
   border-top-right-radius: 12px;
   display: flex;
   justify-content: space-between;
+  column-gap: 12px;
+}
+
+.areaYear {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 3px;
+}
+
+.areaTitleRight {
+  display: flex;
+  gap: 6px;
+}
+
+.areaClose {
+  cursor: pointer;
+  font-size: 24px;
+}
+.areaClose:hover {
+  opacity: 80%;
 }
 
 .areaType {
   font-size: 14px;
   font-weight: 500;
-  margin-top: 6px;
+  margin-top: 3px;
 }
 
 .areaBody {

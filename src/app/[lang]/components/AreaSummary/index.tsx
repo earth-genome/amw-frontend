@@ -6,6 +6,7 @@ import Eye from "@/app/[lang]/components/Icons/Eye";
 import { Context } from "@/lib/Store";
 import { formatNumber, PERMITTED_LANGUAGES } from "@/utils/content";
 import AreaSummaryFigure from "@/app/[lang]/components/AreaSummary/AreaSummaryFigure";
+import { CloseCircleFilled } from "@ant-design/icons";
 
 interface AreaProps {
   dictionary: { [key: string]: any };
@@ -35,11 +36,17 @@ const Area: React.FC<AreaProps> = ({ dictionary, year, lang }) => {
 
   const toggleShowMoreInsights = () => setShowMoreInsights(!showMoreInsights);
 
+  const handleClose = () =>
+    dispatch({ type: "SET_SELECTED_AREA_BY_ID", selectedAreaId: undefined });
+
   return (
     <div className={style.areaCard}>
       <div className={style.areaTitle}>
         {/* FIXME: set programatically and localize */}
         <div>
+          <div className={style.areaYear}>
+            {year}
+          </div>
           <div>
             {selectedAreaType?.renderTitle && areaProperties
               ? selectedAreaType?.renderTitle(areaProperties)
@@ -55,7 +62,11 @@ const Area: React.FC<AreaProps> = ({ dictionary, year, lang }) => {
           ) : null}
         </div>
 
-        <div>{year}</div>
+        <div className={style.areaTitleRight}>
+          <div className={style.areaClose} onClick={handleClose}>
+            <CloseCircleFilled />
+          </div>
+        </div>
       </div>
       <div className={style.areaBody}>
         <div>{dictionary.coverage.total_area_affected}</div>
