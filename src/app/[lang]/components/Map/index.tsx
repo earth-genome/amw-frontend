@@ -217,14 +217,17 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
     (event: MapMouseEvent) => {
       const map = event.target;
       const features = map.queryRenderedFeatures(event.point);
+
       const clickedOnExcludedLayer = features.some(
         (feature) => feature?.layer?.id === "hole-layer"
       );
-      if (!clickedOnExcludedLayer) {
-        const feature = features[0];
-        const id = feature?.properties?.id;
-        dispatch({ type: "SET_SELECTED_AREA_BY_ID", selectedAreaId: id });
-      }
+      if (clickedOnExcludedLayer) return;
+
+      const feature = features[0];
+      const id = feature?.properties?.id;
+      if (!id) return;
+
+      dispatch({ type: "SET_SELECTED_AREA_BY_ID", selectedAreaId: id });
     },
     [dispatch]
   );
@@ -265,20 +268,19 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
           width: "100hw",
         }}
         mapStyle={mapStyle}
-        onMove={(e) => {
-          if (!mapRef.current) return;
-
-          const bounds = mapRef.current.getBounds();
-          if (!bounds) return;
-          const currentBounds = convertBoundsToGeoJSON(bounds);
-          setBounds(currentBounds);
-        }}
         onIdle={() => {
           // FIXME: we're not using the mining areas yet
           // calculateMiningAreaInView();
         }}
         onMoveEnd={() => {
           updateURLParamsMapPosition();
+
+          if (!mapRef.current) return;
+
+          const bounds = mapRef.current.getBounds();
+          if (!bounds) return;
+          const currentBounds = convertBoundsToGeoJSON(bounds);
+          setBounds(currentBounds);
         }}
         onZoomEnd={() => {
           updateURLParamsMapPosition();
