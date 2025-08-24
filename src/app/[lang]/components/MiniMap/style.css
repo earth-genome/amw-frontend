@@ -7,6 +7,9 @@
 }
 @media (max-width: 600px) {
   .mini-map {
-  right: 0px;
+    right: 10px;
+    bottom: 120px;
+    width: 120px;
+    height: 90px;
   }
 }
