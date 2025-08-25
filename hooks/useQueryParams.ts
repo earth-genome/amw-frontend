@@ -34,10 +34,10 @@ export const useQueryParams = ({ state, dispatch }: Props) => {
     // Sync areaId
     const currentSelectedAreaId = params.get("areaId");
     if (
-      state.selectedArea?.value !== Number(currentSelectedAreaId) &&
+      state.selectedArea?.value !== currentSelectedAreaId &&
       !state?.pendingSelectedAreaId
     ) {
-      if (state.selectedArea?.value !== undefined) {
+      if (state.selectedArea?.value) {
         params.set("areaId", String(state.selectedArea?.value));
       } else {
         params.delete("areaId");
@@ -83,13 +83,10 @@ export const useQueryParams = ({ state, dispatch }: Props) => {
       });
     }
 
-    if (
-      pendingAreaId !== undefined &&
-      Number(pendingAreaId) !== state.selectedArea?.value
-    ) {
+    if (pendingAreaId && pendingAreaId !== state.selectedArea?.value) {
       dispatch({
         type: "SET_PENDING_SELECTED_AREA_ID",
-        pendingSelectedAreaId: Number(pendingAreaId),
+        pendingSelectedAreaId: pendingAreaId,
       });
     }
 

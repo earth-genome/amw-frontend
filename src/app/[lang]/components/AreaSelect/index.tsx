@@ -11,7 +11,7 @@ interface AreaSelectProps {
 }
 
 export interface AreaSelectOption {
-  value: number;
+  value: string;
   label: string;
   title: string;
   status?: string;

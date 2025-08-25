@@ -70,7 +70,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
   const { areasData, selectedAreaData, selectedArea, selectedAreaTypeKey } =
     state;
 
-  const setMapParamsFromURL = useCallback(() => {
+  const setMapPostionFromURL = useCallback(() => {
     const searchParams = new URLSearchParams(window.location.search);
     const zoom = searchParams.get("zoom");
     const lng = searchParams.get("lng");
@@ -173,7 +173,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
         if (selectedAreaTypeKey === "countries") return;
 
         // remove hover state from previous feature
-        if (hoveredFeatureRef.current !== undefined) {
+        if (hoveredFeatureRef.current) {
           map.setFeatureState(
             {
               source: "areas",
@@ -184,7 +184,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
         }
 
         // set hover state on current feature
-        if (feature.id !== undefined) {
+        if (feature.id) {
           hoveredFeatureRef.current = feature.id;
           map.setFeatureState(
             {
@@ -202,7 +202,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
   const handleMouseLeave = useCallback((event: MapMouseEvent) => {
     setTooltip(null);
     const map = event.target;
-    if (hoveredFeatureRef.current !== undefined) {
+    if (hoveredFeatureRef.current) {
       map.setFeatureState(
         {
           source: "areas",
@@ -286,7 +286,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
           updateURLParamsMapPosition();
         }}
         onLoad={() => {
-          setMapParamsFromURL();
+          setMapPostionFromURL();
 
           // geocoder
           if (!mapRef.current) return;

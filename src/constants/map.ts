@@ -32,6 +32,7 @@ export interface AreaType {
 }
 
 const AREA_TYPES_BASE_URL =
+  // "/test-data";
   "https://raw.githubusercontent.com/earthrise-media/mining-detector/standardize-it-and-pa-areas/data/boundaries";
 
 export const AREA_TYPES = [
@@ -53,8 +54,11 @@ export const AREA_TYPES = [
     url: `${AREA_TYPES_BASE_URL}/protected_areas_and_indigenous_territories/out/indigenous_territories_impacts.geojson`,
     isDefault: false,
     renderLabel: (properties: Record<string, any>) =>
-      `${properties.name_field} - ${properties.status_field} - ${properties.country}`,
-    renderTitle: (properties: Record<string, any>) => properties.name_field,
+      `${properties.name_field || "N/A"} ${
+        properties.status_field ? `- ${properties.status_field}` : ""
+      } ${properties.country ? `- ${properties.country}` : ""}`,
+    renderTitle: (properties: Record<string, any>) =>
+      properties.name_field || "N/A",
     renderStatus: (properties: Record<string, any>) => properties.status_field,
     showCountry: true,
   },
@@ -65,8 +69,11 @@ export const AREA_TYPES = [
     url: `${AREA_TYPES_BASE_URL}/protected_areas_and_indigenous_territories/out/protected_areas_impacts.geojson`,
     isDefault: false,
     renderLabel: (properties: Record<string, any>) =>
-      `${properties.name_field} - ${properties.status_field} - ${properties.country}`,
-    renderTitle: (properties: Record<string, any>) => properties.name_field,
+      `${properties.name_field || "N/A"} ${
+        properties.status_field ? `- ${properties.status_field}` : ""
+      } ${properties.country ? `- ${properties.country}` : ""}`,
+    renderTitle: (properties: Record<string, any>) =>
+      properties.name_field || "N/A",
     renderStatus: (properties: Record<string, any>) => properties.status_field,
     showCountry: true,
   },

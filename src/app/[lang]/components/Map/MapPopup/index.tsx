@@ -20,12 +20,8 @@ const MapPopup = ({ tooltip }: MapPopupProps) => {
 
   const { properties, longitude, latitude } = tooltip;
 
-  const title = state.selectedAreaType?.renderTitle
-    ? state.selectedAreaType.renderTitle(properties)
-    : "N/A";
-  const status = state.selectedAreaType?.renderStatus
-    ? state.selectedAreaType.renderStatus(properties)
-    : "N/A";
+  const title = state.selectedAreaType?.renderTitle(properties);
+  const status = state.selectedAreaType?.renderStatus(properties);
   const country = properties?.country;
   return (
     <Popup
@@ -37,15 +33,17 @@ const MapPopup = ({ tooltip }: MapPopupProps) => {
       offset={[0, -10] as [number, number]}
       className="map-tooltip"
     >
-      <div
-        style={{
-          fontWeight: 700,
-          fontSize: "16px",
-        }}
-      >
-        {title}
-      </div>
-      <div>{status}</div>
+      {title && (
+        <div
+          style={{
+            fontWeight: 700,
+            fontSize: "16px",
+          }}
+        >
+          {title}
+        </div>
+      )}
+      {status && <div>{status}</div>}
       {state.selectedAreaType?.showCountry && <div>{country}</div>}
     </Popup>
   );

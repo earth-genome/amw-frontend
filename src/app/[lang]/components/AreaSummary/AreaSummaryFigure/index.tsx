@@ -11,11 +11,12 @@ const AreaSummaryFigure = ({
   figure,
   currency,
 }: AreaSummaryFigureProps) => {
+  const figureText = figure ? `${figure} ${currency}` : "N/A"
   return (
     <div className={style.wrapper}>
       <div className={style.label}>{label}</div>
       <div className={style.figure}>
-        {figure} {currency}
+        {figureText}
       </div>
     </div>
   );

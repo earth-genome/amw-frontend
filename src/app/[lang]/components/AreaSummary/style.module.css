@@ -10,8 +10,6 @@
 }
 
 .areaTitle {
-  font-size: 18px;
-  font-weight: 700;
   background: var(--green-light);
   padding: 12px 24px;
   border-top-left-radius: 12px;
@@ -19,6 +17,11 @@
   display: flex;
   justify-content: space-between;
   column-gap: 12px;
+}
+
+.areaTitleText {
+  font-size: 22px;
+  font-weight: 700;
 }
 
 .areaYear {

@@ -1,7 +1,7 @@
 import { Feature } from "geojson";
 
 export interface AreaProperties {
-  id: number;
+  id: string;
   country: string;
   name_field: string;
   [key: string]: any;

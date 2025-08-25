@@ -53,6 +53,7 @@
     "economic_cost": "Custo econômico acumulado na área",
     "economic_cost_currency": "USD",
     "unknown": "Desconhecido",
+    "area_status": "Status da área",
     "hide_more_insights": "Ocultar mais informações",
     "see_more_insights": "Ver mais informações"
   },

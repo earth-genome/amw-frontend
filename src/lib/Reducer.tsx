@@ -74,6 +74,11 @@ const Reducer = (state: IState, action: ActionType): IState => {
         selectedArea: undefined, // clear when area type changes
         selectedAreaData: undefined,
       };
+    case "SHOW_AREA_SUMMARY_MORE_INSIGHTS":
+      return {
+        ...state,
+        showAreaSummaryMoreInsights: action.showAreaSummaryMoreInsights,
+      };
     default:
       return state;
   }

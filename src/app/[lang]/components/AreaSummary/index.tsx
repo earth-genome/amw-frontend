@@ -26,13 +26,28 @@ interface CoverageYear {
 
 const Area: React.FC<AreaProps> = ({ dictionary, year, lang }) => {
   const [state, dispatch] = useContext(Context)!;
-  const [showMoreInsights, setShowMoreInsights] = useState(false);
-  const { selectedAreaType, selectedAreaData } = state;
+  const {
+    selectedAreaType,
+    selectedAreaData,
+    showAreaSummaryMoreInsights: showMoreInsights,
+  } = state;
   const areaProperties = selectedAreaData?.properties || {};
 
   // const coverage: Coverage = coverageData;
-  const affectedAreaHa = areaProperties?.mining_affected_area_ha;
-  const economicCost = areaProperties?.economic_impact_usd;
+  const {
+    mining_affected_area_ha: affectedAreaHa,
+    economic_impact_usd: economicCost,
+    country,
+  } = areaProperties;
+  const { showCountry, renderTitle, renderStatus } = selectedAreaType || {};
+  const areaTitle = renderTitle && renderTitle(areaProperties);
+  const areaStatus = renderStatus && renderStatus(areaProperties);
+
+  const setShowMoreInsights = (value: boolean) =>
+    dispatch({
+      type: "SHOW_AREA_SUMMARY_MORE_INSIGHTS",
+      showAreaSummaryMoreInsights: value,
+    });
 
   const toggleShowMoreInsights = () => setShowMoreInsights(!showMoreInsights);
 
@@ -42,24 +57,20 @@ const Area: React.FC<AreaProps> = ({ dictionary, year, lang }) => {
   return (
     <div className={style.areaCard}>
       <div className={style.areaTitle}>
-        {/* FIXME: set programatically and localize */}
         <div>
-          <div className={style.areaYear}>
-            {year}
-          </div>
-          <div>
-            {selectedAreaType?.renderTitle && areaProperties
-              ? selectedAreaType?.renderTitle(areaProperties)
-              : null}
-          </div>
+          <div className={style.areaYear}>{year}</div>
+          {areaTitle && <div className={style.areaTitleText}>{areaTitle}</div>}
           {selectedAreaType ? (
             <div className={style.areaType}>
               {dictionary?.map_ui?.[selectedAreaType?.dictionaryKeySingular]}
-              {selectedAreaType?.showCountry && areaProperties?.country ? (
-                <span> - {areaProperties.country}</span>
-              ) : null}
+              {showCountry && country && <span> - {country}</span>}
             </div>
           ) : null}
+          {areaStatus && (
+            <div className={style.areaType}>
+              {dictionary?.map_ui?.area_status}: {areaStatus}
+            </div>
+          )}
         </div>
 
         <div className={style.areaTitleRight}>
@@ -81,13 +92,11 @@ const Area: React.FC<AreaProps> = ({ dictionary, year, lang }) => {
       </div>
       {showMoreInsights && (
         <div>
-          {economicCost && (
-            <AreaSummaryFigure
-              label={dictionary.map_ui.economic_cost}
-              figure={formatNumber(economicCost, lang)}
-              currency={dictionary.map_ui.economic_cost_currency}
-            />
-          )}
+          <AreaSummaryFigure
+            label={dictionary.map_ui.economic_cost}
+            figure={economicCost && formatNumber(economicCost, lang)}
+            currency={dictionary.map_ui.economic_cost_currency}
+          />
         </div>
       )}
       <div className={style.areaFooter}>

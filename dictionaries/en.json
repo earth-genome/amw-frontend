@@ -48,6 +48,7 @@
     "economic_cost": "Cumulative economic cost in the area",
     "economic_cost_currency": "USD",
     "unknown": "Unknown",
+    "area_status": "Area status",
     "hide_more_insights": "Hide more insights",
     "see_more_insights": "See more insights"
   },

@@ -17,9 +17,10 @@ export interface IState {
   areasOptions: AreaSelectOption[] | undefined;
   selectedArea: SingleValue<AreaSelectOption> | undefined;
   selectedAreaData: AreaData;
-  pendingSelectedAreaId: number | undefined;
+  pendingSelectedAreaId: string | undefined;
   selectedAreaTypeKey: string | undefined;
   selectedAreaType: AreaType | undefined;
+  showAreaSummaryMoreInsights: boolean;
 }
 
 export type ActionType =
@@ -30,14 +31,18 @@ export type ActionType =
       areasData: AreasData | undefined;
       areasDataIsLoading: boolean;
     }
-  | { type: "SET_SELECTED_AREA_BY_ID"; selectedAreaId: number | undefined }
+  | { type: "SET_SELECTED_AREA_BY_ID"; selectedAreaId: string | undefined }
   | {
       type: "SET_PENDING_SELECTED_AREA_ID";
-      pendingSelectedAreaId: number | undefined;
+      pendingSelectedAreaId: string | undefined;
     }
   | {
       type: "SET_SELECTED_AREA_TYPE_BY_KEY";
       selectedAreaTypeKey: string | undefined;
+    }
+  | {
+      type: "SHOW_AREA_SUMMARY_MORE_INSIGHTS";
+      showAreaSummaryMoreInsights: boolean;
     };
 
 export const Context = createContext<
@@ -56,6 +61,7 @@ const Store = ({ children }: Readonly<{ children: React.ReactNode }>) => {
     selectedAreaData: undefined,
     selectedAreaTypeKey: AREA_TYPES[0].key,
     selectedAreaType: AREA_TYPES[0],
+    showAreaSummaryMoreInsights: false,
   };
 
   const [state, dispatch] = useReducer(Reducer, initialState);
