@@ -40,7 +40,7 @@ export const AREA_TYPES = [
     key: "countries",
     dictionaryKey: "countries",
     dictionaryKeySingular: "country",
-    url: `${AREA_TYPES_BASE_URL}/national_admin/out/national_admin_impacts.geojson`,
+    url: `${AREA_TYPES_BASE_URL}/national_admin/out/national_admin_impacts_unfiltered.geojson`,
     isDefault: true,
     renderLabel: (properties: Record<string, any>) => properties.country,
     renderTitle: (properties: Record<string, any>) => properties.country,
@@ -51,7 +51,7 @@ export const AREA_TYPES = [
     key: "indigenous-territory",
     dictionaryKey: "indigenous_territories",
     dictionaryKeySingular: "indigenous_territory",
-    url: `${AREA_TYPES_BASE_URL}/protected_areas_and_indigenous_territories/out/indigenous_territories_impacts.geojson`,
+    url: `${AREA_TYPES_BASE_URL}/protected_areas_and_indigenous_territories/out/indigenous_territories_impacts_unfiltered.geojson`,
     isDefault: false,
     renderLabel: (properties: Record<string, any>) =>
       `${properties.name_field || "N/A"} ${
@@ -66,7 +66,7 @@ export const AREA_TYPES = [
     key: "protected-area",
     dictionaryKey: "protected_areas",
     dictionaryKeySingular: "protected_area",
-    url: `${AREA_TYPES_BASE_URL}/protected_areas_and_indigenous_territories/out/protected_areas_impacts.geojson`,
+    url: `${AREA_TYPES_BASE_URL}/protected_areas_and_indigenous_territories/out/protected_areas_impacts_unfiltered.geojson`,
     isDefault: false,
     renderLabel: (properties: Record<string, any>) =>
       `${properties.name_field || "N/A"} ${
