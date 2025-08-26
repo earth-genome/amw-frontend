@@ -22,11 +22,15 @@ export interface AreaSelectOption {
 const AreaSelect = ({ dictionary }: AreaSelectProps) => {
   const [state, dispatch] = useContext(Context)!;
 
-  const { selectedArea, selectedAreaType, areasData, areasDataIsLoading } = state;
+  const { selectedArea, selectedAreaType, areasData, areasDataIsLoading } =
+    state;
 
   const setSelectedArea = useCallback(
     (selectedArea: SingleValue<AreaSelectOption> | undefined) => {
-      dispatch({ type: "SET_SELECTED_AREA_BY_ID", selectedAreaId: selectedArea?.value });
+      dispatch({
+        type: "SET_SELECTED_AREA_BY_ID",
+        selectedAreaId: selectedArea?.value,
+      });
     },
     [dispatch]
   );
@@ -40,8 +44,6 @@ const AreaSelect = ({ dictionary }: AreaSelectProps) => {
     },
     [dispatch]
   );
-
-  
 
   const handleAreaSelect = (value: SingleValue<AreaSelectOption>) => {
     setSelectedArea(value);

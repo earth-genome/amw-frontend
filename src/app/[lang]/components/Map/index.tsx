@@ -70,7 +70,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
   const { areasData, selectedAreaData, selectedArea, selectedAreaTypeKey } =
     state;
 
-  const setMapPostionFromURL = useCallback(() => {
+  const setMapPositionFromURL = useCallback(() => {
     const searchParams = new URLSearchParams(window.location.search);
     const zoom = searchParams.get("zoom");
     const lng = searchParams.get("lng");
@@ -160,40 +160,39 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
       const map = event.target;
       const feature = features && features[0];
 
+      if (!feature?.properties) return;
+
       event.target.getCanvas().style.cursor = feature ? "pointer" : "";
+      setTooltip({
+        longitude: event.lngLat.lng,
+        latitude: event.lngLat.lat,
+        properties: feature.properties as [key: string],
+      });
 
-      if (feature?.properties) {
-        setTooltip({
-          longitude: event.lngLat.lng,
-          latitude: event.lngLat.lat,
-          properties: feature.properties as [key: string],
-        });
+      // don't use hover effect for countries, it is too distracting
+      if (selectedAreaTypeKey === "countries") return;
 
-        // don't use hover effect for countries, it is too distracting
-        if (selectedAreaTypeKey === "countries") return;
+      // remove hover state from previous feature
+      if (hoveredFeatureRef.current) {
+        map.setFeatureState(
+          {
+            source: "areas",
+            id: hoveredFeatureRef.current,
+          },
+          { hover: false }
+        );
+      }
 
-        // remove hover state from previous feature
-        if (hoveredFeatureRef.current) {
-          map.setFeatureState(
-            {
-              source: "areas",
-              id: hoveredFeatureRef.current,
-            },
-            { hover: false }
-          );
-        }
-
-        // set hover state on current feature
-        if (feature.id) {
-          hoveredFeatureRef.current = feature.id;
-          map.setFeatureState(
-            {
-              source: "areas",
-              id: feature.id,
-            },
-            { hover: true }
-          );
-        }
+      // set hover state on current feature
+      if (feature.id) {
+        hoveredFeatureRef.current = feature.id;
+        map.setFeatureState(
+          {
+            source: "areas",
+            id: feature.id,
+          },
+          { hover: true }
+        );
       }
     },
     [selectedAreaTypeKey]
@@ -201,16 +200,16 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
 
   const handleMouseLeave = useCallback((event: MapMouseEvent) => {
     setTooltip(null);
+    if (!hoveredFeatureRef.current) return;
+
     const map = event.target;
-    if (hoveredFeatureRef.current) {
-      map.setFeatureState(
-        {
-          source: "areas",
-          id: hoveredFeatureRef.current,
-        },
-        { hover: false }
-      );
-    }
+    map.setFeatureState(
+      {
+        source: "areas",
+        id: hoveredFeatureRef.current,
+      },
+      { hover: false }
+    );
   }, []);
 
   const handleClick = useCallback(
@@ -286,7 +285,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
           updateURLParamsMapPosition();
         }}
         onLoad={() => {
-          setMapPostionFromURL();
+          setMapPositionFromURL();
 
           // geocoder
           if (!mapRef.current) return;

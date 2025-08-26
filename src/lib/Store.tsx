@@ -1,6 +1,5 @@
 import { createContext, useReducer, Dispatch } from "react";
 import { AreaData, AreasData } from "@/types/types";
-import { Feature } from "geojson";
 import Reducer from "@/lib/Reducer";
 import { SingleValue } from "react-select";
 import { AreaSelectOption } from "@/app/[lang]/components/AreaSelect";

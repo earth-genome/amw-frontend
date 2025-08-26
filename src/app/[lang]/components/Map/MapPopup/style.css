@@ -4,27 +4,9 @@
   background: #fff;
   color: var(--green-dark);
   font-weight: 500;
-  /* min-width: 200px; */
   border-radius: 5px;
   position: relative;
-  /* min-height: 22px;
-  max-height: 22px; */
 }
-/* .mapboxgl-popup-content table {
-  border-collapse: collapse;
-  position: absolute;
-  top: 8px;
-}
-.mapboxgl-popup-content table td {
-  padding: 0 5px;
-  text-align: right;
-  text-transform: uppercase;
-  font-size: 10px;
-}
-.mapboxgl-popup-content table .number-value {
-  font-size: 14px;
-  line-height: 1;
-} */
 .mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip {
   border-top-color: #fff;
 }
