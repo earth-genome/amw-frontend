@@ -38,6 +38,7 @@ const Area: React.FC<AreaProps> = ({ dictionary, year, lang }) => {
     mining_affected_area_ha: affectedAreaHa,
     economic_impact_usd: economicCost,
     country,
+    id: areaId,
   } = areaProperties;
   const { showCountry, renderTitle, renderStatus } = selectedAreaType || {};
   const areaTitle = renderTitle && renderTitle(areaProperties);
@@ -60,7 +61,7 @@ const Area: React.FC<AreaProps> = ({ dictionary, year, lang }) => {
         <div>
           <div className={style.areaYear}>{year}</div>
           {areaTitle && <div className={style.areaTitleText}>{areaTitle}</div>}
-          {selectedAreaType ? (
+          {selectedAreaType && areaId !== "AMAZ" ? (
             <div className={style.areaType}>
               {dictionary?.map_ui?.[selectedAreaType?.dictionaryKeySingular]}
               {showCountry && country && <span> - {country}</span>}
