@@ -42,11 +42,17 @@ const Reducer = (state: IState, action: ActionType): IState => {
             country: d.country,
             showCountry: state.selectedAreaType?.showCountry,
           }))
-          ?.sort(
-            (a, b) =>
+          ?.sort((a, b) => {
+            // place "Whole Amazon" first
+            if (a?.value === "AMAZ" && b?.value !== "AMAZ") return -1;
+            if (b?.value === "AMAZ" && a?.value !== "AMAZ") return 1;
+
+            // sort by country, then title
+            return (
               a?.country?.localeCompare(b?.country) ||
               a?.title?.localeCompare(b?.title)
-          ),
+            );
+          }),
       };
     case "SET_SELECTED_AREA_BY_ID":
       return {
