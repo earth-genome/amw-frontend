@@ -6,11 +6,13 @@ import "./style.css";
 
 interface LegendWrapperProps extends LegendProps {
   showMinimap: boolean;
+  showMinimapBounds: boolean;
   bounds?: GeoJSONType | undefined;
 }
 
 const LegendWrapper = ({
   showMinimap,
+  showMinimapBounds,
   bounds,
   years,
   activeLayer,
@@ -34,7 +36,7 @@ const LegendWrapper = ({
             pointerEvents: "none",
           }}
         >
-          <MiniMap bounds={bounds} />
+          <MiniMap bounds={bounds} showMinimapBounds={showMinimapBounds} />
         </div>
         <div className="legend-card">
           <Legend

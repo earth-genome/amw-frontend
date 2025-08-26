@@ -1,9 +1,10 @@
 import { i18n, type Locale } from "../../../../i18n-config";
 import type { Metadata, ResolvingMetadata } from "next";
 import { getDictionary } from "../../../get-dictionary";
+import { PERMITTED_LANGUAGES } from "@/utils/content";
 
 type Props = {
-  params: { lang: "en" | "es" | "pt" };
+  params: { lang: PERMITTED_LANGUAGES };
 };
 
 export async function generateMetadata(

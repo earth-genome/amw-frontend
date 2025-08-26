@@ -10,14 +10,43 @@
 }
 
 .areaTitle {
-  font-size: 18px;
-  font-weight: 700;
   background: var(--green-light);
   padding: 12px 24px;
   border-top-left-radius: 12px;
   border-top-right-radius: 12px;
   display: flex;
   justify-content: space-between;
+  column-gap: 12px;
+}
+
+.areaTitleText {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.areaYear {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 3px;
+}
+
+.areaTitleRight {
+  display: flex;
+  gap: 6px;
+}
+
+.areaClose {
+  cursor: pointer;
+  font-size: 24px;
+}
+.areaClose:hover {
+  opacity: 80%;
+}
+
+.areaType {
+  font-size: 14px;
+  font-weight: 500;
+  margin-top: 3px;
 }
 
 .areaBody {
@@ -40,10 +69,7 @@
 }
 
 .areaFooter {
-  font-size: 18px;
-  font-weight: 700;
-  background: #fff;
-  color: var(--green-dark);
+  background: #efefef;
   padding: 12px 24px;
   border-bottom-left-radius: 12px;
   border-bottom-right-radius: 12px;
@@ -51,8 +77,18 @@
   justify-content: center;
 }
 
-.areaFooterText {
+.showMoreButton {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--green-dark);
+  border: none;
+  background: transparent;
   display: flex;
   align-items: center;
   gap: 6px;
+  cursor: pointer;
+}
+
+.showMoreButton:hover {
+  opacity: 80%;
 }

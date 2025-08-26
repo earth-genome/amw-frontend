@@ -44,6 +44,17 @@
     "map_mode": "OPÇÃO DE MAPA",
     "mining_areas_detected": "Area de mineração detectada",
     "search_for_a_place": "Busque por um lugar",
+    "countries": "Países",
+    "country": "País",
+    "indigenous_territories": "Territórios indígenas",
+    "indigenous_territory": "Território indígena",
+    "protected_areas": "Áreas protegidas",
+    "protected_area": "Área protegida",
+    "economic_cost": "Custo econômico acumulado na área",
+    "economic_cost_currency": "USD",
+    "unknown": "Desconhecido",
+    "area_status": "Status da área",
+    "hide_more_insights": "Ocultar mais informações",
     "see_more_insights": "Ver mais informações"
   },
   "map_legend": {

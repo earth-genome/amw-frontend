@@ -8,17 +8,18 @@ import Loader from "./components/Loader";
 import React from "react";
 import "./globals.css";
 import type { Metadata, ResolvingMetadata } from "next";
-import GoogleAnalytics from './components/Tracking';
+import GoogleAnalytics from "./components/Tracking";
 import "mapbox-gl/dist/mapbox-gl.css";
-
+import MapWrapper from "@/app/[lang]/components/Map/Wrapper";
+import { PERMITTED_LANGUAGES } from "@/utils/content";
 
 type Props = {
-  params: { lang: "en" | "es" | "pt" };
+  params: { lang: PERMITTED_LANGUAGES };
 };
 
 export async function generateMetadata(
   { params }: Props,
-  parent: ResolvingMetadata,
+  parent: ResolvingMetadata
 ): Promise<Metadata> {
   // read route params
   const { lang } = params;
@@ -45,11 +46,13 @@ export default async function RootLayout({
   return (
     <html lang={params.lang}>
       <AntdRegistry>
-      <GoogleAnalytics />
+        <GoogleAnalytics />
         <MenuProvider>
           <body>
             <Nav dictionary={dictionary} />
-            <MainMap dictionary={dictionary} />
+            <MapWrapper>
+              <MainMap dictionary={dictionary} lang={params.lang} />
+            </MapWrapper>
             {children}
             <Loader dictionary={dictionary} />
           </body>
