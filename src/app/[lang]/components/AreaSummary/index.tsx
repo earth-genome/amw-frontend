@@ -85,7 +85,7 @@ const Area: React.FC<AreaProps> = ({ dictionary, year, lang }) => {
         <div className={style.areaKm}>
           {affectedAreaHa ? (
             <>
-              {formatNumber(affectedAreaHa * 0.01, lang)} km<sup>2</sup>
+              {formatNumber(affectedAreaHa * 0.01, lang, 2)} km<sup>2</sup>
             </>
           ) : null}
         </div>
@@ -95,7 +95,7 @@ const Area: React.FC<AreaProps> = ({ dictionary, year, lang }) => {
         <div>
           <AreaSummaryFigure
             label={dictionary.map_ui.economic_cost}
-            figure={economicCost && formatNumber(economicCost, lang)}
+            figure={economicCost && formatNumber(economicCost, lang, 0)}
             currency={dictionary.map_ui.economic_cost_currency}
           />
         </div>
