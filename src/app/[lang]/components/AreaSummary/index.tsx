@@ -29,9 +29,10 @@ const Area: React.FC<AreaProps> = ({ dictionary, year, lang }) => {
   const {
     selectedAreaType,
     selectedAreaData,
-    showAreaSummaryMoreInsights: showMoreInsights,
+    // showAreaSummaryMoreInsights: showMoreInsights,
   } = state;
   const areaProperties = selectedAreaData?.properties || {};
+  const showMoreInsights = true;
 
   // const coverage: Coverage = coverageData;
   const {
@@ -97,7 +98,7 @@ const Area: React.FC<AreaProps> = ({ dictionary, year, lang }) => {
           />
         </div>
       )}
-      <div className={style.areaFooter}>
+      {/* <div className={style.areaFooter}>
         <div className={style.areaFooterText}>
           <button
             className={style.showMoreButton}
@@ -109,7 +110,7 @@ const Area: React.FC<AreaProps> = ({ dictionary, year, lang }) => {
             <Eye hide={showMoreInsights} />
           </button>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

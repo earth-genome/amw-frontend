@@ -48,6 +48,21 @@ export const AREA_TYPES = [
     showCountry: false,
   },
   {
+    key: "subnational-areas",
+    dictionaryKey: "subnational_areas",
+    dictionaryKeySingular: "subnational_area",
+    url: `${AREA_TYPES_BASE_URL}/subnational_admin/out/admin_areas_display_impacts_unfiltered.geojson`,
+    isDefault: true,
+    renderLabel: (properties: Record<string, any>) =>
+      `${properties.name_field || "N/A"} ${
+        properties.country ? `- ${properties.country}` : ""
+      }`,
+    renderTitle: (properties: Record<string, any>) =>
+      properties.name_field || "N/A",
+    renderStatus: () => "",
+    showCountry: true,
+  },
+  {
     key: "indigenous-territory",
     dictionaryKey: "indigenous_territories",
     dictionaryKeySingular: "indigenous_territory",
