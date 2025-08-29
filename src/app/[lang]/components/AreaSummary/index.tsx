@@ -85,6 +85,7 @@ const Area: React.FC<AreaProps> = ({ dictionary, year, lang }) => {
         <div>{dictionary.coverage.total_area_affected}</div>
         <div className={style.areaKm}>
           {affectedAreaHa ? formatNumber(affectedAreaHa * 0.01, lang, 2) : 0} km
+          <sup>2</sup>
         </div>
         {/* FIXME: calculate increase and display */}
       </div>
