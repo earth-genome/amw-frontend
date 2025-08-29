@@ -29,9 +29,10 @@ const Area: React.FC<AreaProps> = ({ dictionary, year, lang }) => {
   const {
     selectedAreaType,
     selectedAreaData,
-    showAreaSummaryMoreInsights: showMoreInsights,
+    // showAreaSummaryMoreInsights: showMoreInsights,
   } = state;
   const areaProperties = selectedAreaData?.properties || {};
+  const showMoreInsights = true;
 
   // const coverage: Coverage = coverageData;
   const {
@@ -83,11 +84,7 @@ const Area: React.FC<AreaProps> = ({ dictionary, year, lang }) => {
       <div className={style.areaBody}>
         <div>{dictionary.coverage.total_area_affected}</div>
         <div className={style.areaKm}>
-          {affectedAreaHa ? (
-            <>
-              {formatNumber(affectedAreaHa * 0.01, lang, 2)} km<sup>2</sup>
-            </>
-          ) : null}
+          {affectedAreaHa ? formatNumber(affectedAreaHa * 0.01, lang, 2) : 0} km
         </div>
         {/* FIXME: calculate increase and display */}
       </div>
@@ -100,7 +97,7 @@ const Area: React.FC<AreaProps> = ({ dictionary, year, lang }) => {
           />
         </div>
       )}
-      <div className={style.areaFooter}>
+      {/* <div className={style.areaFooter}>
         <div className={style.areaFooterText}>
           <button
             className={style.showMoreButton}
@@ -112,7 +109,7 @@ const Area: React.FC<AreaProps> = ({ dictionary, year, lang }) => {
             <Eye hide={showMoreInsights} />
           </button>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

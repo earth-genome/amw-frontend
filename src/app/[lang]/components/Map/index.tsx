@@ -705,7 +705,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
         </ConfigProvider>
       </div>
 
-      <div className="imagery-pills">
+      {/* <div className="imagery-pills">
         <Radio.Group
           size="small"
           options={[
@@ -730,7 +730,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
           optionType="button"
           buttonStyle="solid"
         />
-      </div>
+      </div> */}
 
       <AreaSelect dictionary={dictionary} />
 
