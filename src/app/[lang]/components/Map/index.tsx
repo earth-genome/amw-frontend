@@ -22,6 +22,9 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
     latitude: number;
     longitude: number;
     zoom: number;
+    regionId?: number;
+    affectedArea?: number;
+    country?: string;
   } | null>(null);
   const [popupVisible, setPopupVisible] = useState(false);
   const pathname = usePathname();
@@ -154,15 +157,27 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
             (feature) => feature.layer.id === 'hole-layer'
           );
           if (!clickedOnExcludedLayer) {
-          popupVisible ? setPopupVisible(false) : setPopupVisible(true);
-          setPopupInfo({
-            /* @ts-ignore */
-            latitude: lngLat.lat,
-            /* @ts-ignore */
-            longitude: lngLat.lng,
-            zoom: map?.getZoom(),
-          });
-         }
+            let regionId, affectedArea, country;
+            if (features.length > 0) {
+              const props = features[0].properties;
+              if (props) {
+                regionId = props.regionId || props.region_id;
+                affectedArea = props.affectedArea || props.affected_area;
+                country = props.country;
+              }
+            }
+            popupVisible ? setPopupVisible(false) : setPopupVisible(true);
+            setPopupInfo({
+              /* @ts-ignore */
+              latitude: lngLat.lat,
+              /* @ts-ignore */
+              longitude: lngLat.lng,
+              zoom: map?.getZoom(),
+              regionId,
+              affectedArea,
+              country
+            });
+          }
         }}
       >
 
@@ -491,41 +506,99 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         { /* ================== POPUP =================== */}
         {popupVisible && popupInfo && (
           <Popup
+          style={{ maxWidth: 320}}
             longitude={popupInfo?.longitude}
             latitude={popupInfo?.latitude}
             closeButton={false}
             closeOnClick={false}
             onClose={() => setPopupInfo(null)}
           >
-            <table>
-              <tr>
-                <td className="number-value">
-                  {popupInfo.longitude.toFixed(3)}
-                </td>
-                <td className="number-value">
-                  {popupInfo?.latitude.toFixed(3)}
-                </td>
-              </tr>
-              <tr>
-                <td>Longitude</td>
-                <td>Latitude</td>
-              </tr>
-            </table>
-
-            <a
-              className="copy-url"
-              onClick={async (e) => {
-                e.preventDefault();
-                copyToClipboard(
-                  `${process.env.NEXT_PUBLIC_DOMAIN}/#${popupInfo.zoom.toFixed(2)}/${popupInfo.longitude.toFixed(3)}/${popupInfo?.latitude.toFixed(3)}`,
-                ).then(() => {
-                  message.success("URL copied");
-                });
-              }}
-              href="#copy"
-            >
-              <CopyOutlined style={{ fontSize: "16px" }} /> Copy URL
-            </a>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12, width: 400 }}>
+              <table>
+                <tr>
+                  <td className="number-value">
+                    {popupInfo.longitude.toFixed(3)}
+                  </td>
+                  <td className="number-value">
+                    {popupInfo?.latitude.toFixed(3)}
+                  </td>
+                </tr>
+                <tr>
+                  <td>Longitude</td>
+                  <td>Latitude</td>
+                </tr>
+              </table>
+              <div style={{ display: "flex", flexDirection: "row", gap: 8, marginTop: 4 }}>
+                <a
+                  className="copy-url"
+                  onClick={async (e) => {
+                    e.preventDefault();
+                    copyToClipboard(
+                      `${process.env.NEXT_PUBLIC_DOMAIN}/#${popupInfo.zoom.toFixed(2)}/${popupInfo.longitude.toFixed(3)}/${popupInfo?.latitude.toFixed(3)}`,
+                    ).then(() => {
+                      message.success("URL copied");
+                    });
+                  }}
+                  href="#copy"
+                >
+                  <CopyOutlined style={{ fontSize: "16px" }} /> Copy URL
+                </a>
+                <a
+                  className="copy-url"
+                  style={{right: 95}}
+                  href="#calculator"
+                  onClick={async (e) => {
+                    e.preventDefault();
+                    if (!popupInfo?.regionId || !popupInfo?.affectedArea || !popupInfo?.country) {
+                      message.error('No mining data at this location');
+                      return;
+                    }
+                    const miningLocations = [
+                      {
+                        regionId: popupInfo.regionId,
+                        affectedArea: popupInfo.affectedArea,
+                        country: popupInfo.country
+                      }
+                    ];
+                    const BASE_URL = `${process.env.CALCULADORA_API_URL}/map-locations`;
+                    const VERCEL_SHARE = '_vercel_share=6yxqZ4JaSwdFvVKbApXO7D5Jrj5JVrAt';
+                    const API_KEY = process.env.CALCULADORA_API_KEY!;
+                    let response = await fetch(`${BASE_URL}?${VERCEL_SHARE}`, {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                        'x-api-key': API_KEY
+                      },
+                      body: JSON.stringify(miningLocations)
+                    });
+                    if (response.status === 307) {
+                      const location = response.headers.get('location');
+                      const setCookie = response.headers.get('set-cookie');
+                      if (location && setCookie) {
+                        response = await fetch(`${BASE_URL}${location}${VERCEL_SHARE}`, {
+                          method: 'POST',
+                          headers: {
+                            'Content-Type': 'application/json',
+                            'x-api-key': API_KEY,
+                            'Cookie': setCookie
+                          },
+                          body: JSON.stringify(miningLocations)
+                        });
+                      }
+                    }
+                    if (response.ok) {
+                      const result = await response.json();
+                      const calculatorUrl = `${BASE_URL}?dataId=${result.dataId}${VERCEL_SHARE}`;
+                      window.open(calculatorUrl, '_blank');
+                    } else {
+                      message.error('Failed to open calculator');
+                    }
+                  }}
+                >
+                  Calculator
+                </a>
+              </div>
+            </div>
           </Popup>
 
         )}
