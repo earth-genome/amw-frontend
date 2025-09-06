@@ -3,8 +3,8 @@
   right: 45px;
   bottom: -3px;
   z-index: 10000;
-  border-color: #fff;
-  color: #fff;
+  border-color: var(--green-dark);
+  color: var(--green-dark);
   background-color: transparent;
   border: none !important;
   width: 310px !important;
@@ -17,7 +17,7 @@
 .scale {
   position: fixed;
   width: 120px;
-  border-bottom: 1px solid #fff;
+  border-bottom: 1px solid var(--green-dark);
   bottom: 14px;
   right: 50px;
 }
@@ -31,12 +31,12 @@
   left: 0;
   height: 5px;
   bottom: 0px;
-  border-left: 1px solid #fff;
+  border-left: 1px solid var(--green-dark);
 }
 .scale .scale-right {
   position: absolute;
   right: 0;
   height: 5px;
   bottom: 0px;
-  border-left: 1px solid #fff;
+  border-left: 1px solid var(--green-dark);
 }

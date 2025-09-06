@@ -16,3 +16,5 @@ export interface GeoJSONFeature {
   properties: AreaProperties;
   [key: string]: any;
 }
+
+export type PERMITTED_AREA_UNITS = "hectares" | "squareKm" | "acres";

@@ -1,13 +1,12 @@
 .footer {
   position: fixed;
-  background: rgba(34, 181, 115, 0.6);
+  background: #fff;
   left: 0;
   bottom: 0;
   width: 100%;
   z-index: 100;
   height: 35px;
-  text-align: center;
-  color: #fff;
+  color: var(--green-dark);
 }
 .footer .mode {
   position: absolute;
@@ -19,31 +18,8 @@
   top: 8px;
   font-weight: bold;
 }
-@media(max-width: 900px) {
+@media (max-width: 900px) {
   .footer .mode {
     display: none;
   }
-}
-.mining-legend {
-  color: #fff;
-  right: 490px;
-  top: 10px;
-  font-size: 11px;
-  position: absolute;
-  text-transform: uppercase;
-}
-@media(max-width: 900px) {
-  .mining-legend {
-    right: 210px;
-  }
-}
-.mine-swatch {
-  display: block;
-  height: 10px;
-  width: 10px;
-  left: -20px;
-  top: 1px;
-  position: absolute;
-  background: rgba(236, 175, 0, 0.7);
-  border: 1px solid #ecaf00;
 }

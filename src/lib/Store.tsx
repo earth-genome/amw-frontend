@@ -1,5 +1,5 @@
 import { createContext, useReducer, Dispatch } from "react";
-import { AreaData, AreasData } from "@/types/types";
+import { AreaData, AreasData, PERMITTED_AREA_UNITS } from "@/types/types";
 import Reducer from "@/lib/Reducer";
 import { SingleValue } from "react-select";
 import { AreaSelectOption } from "@/app/[lang]/components/AreaSelect";
@@ -20,6 +20,7 @@ export interface IState {
   selectedAreaTypeKey: string | undefined;
   selectedAreaType: AreaType | undefined;
   showAreaSummaryMoreInsights: boolean;
+  areaUnits: PERMITTED_AREA_UNITS;
 }
 
 export type ActionType =
@@ -42,6 +43,10 @@ export type ActionType =
   | {
       type: "SHOW_AREA_SUMMARY_MORE_INSIGHTS";
       showAreaSummaryMoreInsights: boolean;
+    }
+  | {
+      type: "SET_AREA_UNITS";
+      areaUnits: PERMITTED_AREA_UNITS;
     };
 
 export const Context = createContext<
@@ -61,6 +66,7 @@ const Store = ({ children }: Readonly<{ children: React.ReactNode }>) => {
     selectedAreaTypeKey: AREA_TYPES[0].key,
     selectedAreaType: AREA_TYPES[0],
     showAreaSummaryMoreInsights: false,
+    areaUnits: "hectares",
   };
 
   const [state, dispatch] = useReducer(Reducer, initialState);
