@@ -22,6 +22,16 @@ interface Coverage {
 }
 
 
+export const numberToWords = (num: number): string => {
+  if (num >= 1_000_000_000) {
+    return (num / 1_000_000_000).toFixed(2).replace(/\.00$/, '') + ' billion';
+  } else if (num >= 1_000_000) {
+    return (num / 1_000_000).toFixed(2).replace(/\.00$/, '') + ' million';
+  } else {
+    return '';
+  }
+};
+
 const Area: React.FC<AreaProps> = ({ dictionary, year }) => {
   const [showArea, setShowArea] = useState(true);
   const coverage: Coverage = coverageData;
@@ -38,7 +48,13 @@ const Area: React.FC<AreaProps> = ({ dictionary, year }) => {
         <div className="area-title">
           {dictionary.coverage.area_affected_in} {year}
         </div>
-        <div className="area-km">{ coverage?.[year].km } km<sup>2</sup></div>
+        <div className="area-km">
+          {(() => {
+            const km = coverage?.[year].km ? parseFloat(coverage[year].km.replace(/,/g, '')) : 0;
+            const words = numberToWords(km);
+            return `${words.length > 0 ? words : km.toLocaleString(undefined, { maximumFractionDigits: 0 })} km`
+          })()}<sup>2</sup>
+        </div>
         <div className="area-or">
           <span className="area-line-left"></span>
           {dictionary.coverage.or}
