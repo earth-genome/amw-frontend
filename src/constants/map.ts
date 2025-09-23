@@ -49,8 +49,8 @@ export const AREA_TYPES = [
   },
   {
     key: "subnational-areas",
-    dictionaryKey: "subnational_areas",
-    dictionaryKeySingular: "subnational_area",
+    dictionaryKey: "subnational_jurisdictions",
+    dictionaryKeySingular: "subnational_jurisdiction",
     url: `${AREA_TYPES_BASE_URL}/subnational_admin/out/admin_areas_display_impacts_unfiltered.geojson`,
     isDefault: true,
     renderLabel: (properties: Record<string, any>) =>
