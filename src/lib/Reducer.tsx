@@ -85,6 +85,11 @@ const Reducer = (state: IState, action: ActionType): IState => {
         ...state,
         showAreaSummaryMoreInsights: action.showAreaSummaryMoreInsights,
       };
+    case "SET_AREA_UNITS":
+      return {
+        ...state,
+        areaUnits: action.areaUnits,
+      };
     default:
       return state;
   }

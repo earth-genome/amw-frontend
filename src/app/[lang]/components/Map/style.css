@@ -3,6 +3,24 @@
   position: fixed;
   right: 0;
 }
+
+.mapboxgl-ctrl-scale {
+  position: fixed;
+  right: 190px;
+  bottom: 5px;
+  margin: 0 !important;
+  z-index: 10000;
+  border-color: var(--green-dark);
+  color: var(--green-dark) !important;
+  background-color: transparent;
+  border-left: 1px solid;
+  border-right: 1px solid;
+  border-bottom: 1px solid;
+  pointer-events: none;
+  font-size: 12px;
+  /* width: 310px !important; */
+}
+
 .mapboxgl-ctrl-logo {
   display: none !important;
 }

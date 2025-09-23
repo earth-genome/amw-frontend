@@ -2,11 +2,16 @@
 import React, { useContext, useState } from "react";
 // import coverageData from "../../../../../configs/coverage.json";
 import style from "./style.module.css";
-import Eye from "@/app/[lang]/components/Icons/Eye";
+// import Eye from "@/app/[lang]/components/Icons/Eye";
 import { Context } from "@/lib/Store";
-import { formatNumber, PERMITTED_LANGUAGES } from "@/utils/content";
+import {
+  displayAreaInUnits,
+  formatNumber,
+  PERMITTED_LANGUAGES,
+} from "@/utils/content";
 import AreaSummaryFigure from "@/app/[lang]/components/AreaSummary/AreaSummaryFigure";
 import { CloseCircleFilled } from "@ant-design/icons";
+import { getAreaUnitByKey } from "@/app/[lang]/components/Footer";
 
 interface AreaProps {
   dictionary: { [key: string]: any };
@@ -30,6 +35,7 @@ const Area: React.FC<AreaProps> = ({ dictionary, year, lang }) => {
     selectedAreaType,
     selectedAreaData,
     // showAreaSummaryMoreInsights: showMoreInsights,
+    areaUnits,
   } = state;
   const areaProperties = selectedAreaData?.properties || {};
   const showMoreInsights = true;
@@ -84,8 +90,15 @@ const Area: React.FC<AreaProps> = ({ dictionary, year, lang }) => {
       <div className={style.areaBody}>
         <div>{dictionary.coverage.total_area_affected}</div>
         <div className={style.areaKm}>
-          {affectedAreaHa ? formatNumber(affectedAreaHa * 0.01, lang, 2) : 0} km
-          <sup>2</sup>
+          {affectedAreaHa !== undefined
+            ? formatNumber(
+                displayAreaInUnits(affectedAreaHa, areaUnits),
+                lang,
+                ",.1~s",
+                1
+              )
+            : 0}{" "}
+          {getAreaUnitByKey(areaUnits)?.unitAbbrev}
         </div>
         {/* FIXME: calculate increase and display */}
       </div>
@@ -93,7 +106,9 @@ const Area: React.FC<AreaProps> = ({ dictionary, year, lang }) => {
         <div>
           <AreaSummaryFigure
             label={dictionary.map_ui.economic_cost}
-            figure={economicCost && formatNumber(economicCost, lang, 0)}
+            figure={
+              economicCost && formatNumber(economicCost, lang, ",.2~s", 2)
+            }
             currency={dictionary.map_ui.economic_cost_currency}
           />
         </div>

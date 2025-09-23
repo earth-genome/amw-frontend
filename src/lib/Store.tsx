@@ -7,6 +7,10 @@ import { AREA_TYPES, AreaType } from "@/constants/map";
 import { useQueryParams } from "../../hooks/useQueryParams";
 import useAreasData from "../../hooks/useAreasData";
 import { MapRef } from "react-map-gl";
+import {
+  AREA_UNITS_OPTIONS,
+  PERMITTED_AREA_UNITS,
+} from "@/app/[lang]/components/Footer";
 
 export interface IState {
   map: MapRef | null;
@@ -20,6 +24,7 @@ export interface IState {
   selectedAreaTypeKey: string | undefined;
   selectedAreaType: AreaType | undefined;
   showAreaSummaryMoreInsights: boolean;
+  areaUnits: PERMITTED_AREA_UNITS;
 }
 
 export type ActionType =
@@ -42,6 +47,10 @@ export type ActionType =
   | {
       type: "SHOW_AREA_SUMMARY_MORE_INSIGHTS";
       showAreaSummaryMoreInsights: boolean;
+    }
+  | {
+      type: "SET_AREA_UNITS";
+      areaUnits: PERMITTED_AREA_UNITS;
     };
 
 export const Context = createContext<
@@ -61,6 +70,7 @@ const Store = ({ children }: Readonly<{ children: React.ReactNode }>) => {
     selectedAreaTypeKey: AREA_TYPES[0].key,
     selectedAreaType: AREA_TYPES[0],
     showAreaSummaryMoreInsights: false,
+    areaUnits: AREA_UNITS_OPTIONS[0].value as PERMITTED_AREA_UNITS,
   };
 
   const [state, dispatch] = useReducer(Reducer, initialState);
