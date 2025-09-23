@@ -9,7 +9,12 @@ import React, {
 } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { message, Radio, Select, ConfigProvider } from "antd";
-import Map, { Layer, Source, NavigationControl } from "react-map-gl";
+import Map, {
+  Layer,
+  Source,
+  NavigationControl,
+  ScaleControl,
+} from "react-map-gl";
 import type { MapGeoJSONFeature, MapMouseEvent, MapRef } from "react-map-gl";
 import AreaSummary from "../AreaSummary";
 import Footer from "../Footer";
@@ -67,8 +72,13 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
     isLoading: mineIsLoading,
   } = useSWR(mineDataUrl, fetcher);
 
-  const { areasData, selectedAreaData, selectedArea, selectedAreaTypeKey } =
-    state;
+  const {
+    areasData,
+    selectedAreaData,
+    selectedArea,
+    selectedAreaTypeKey,
+    areaUnits,
+  } = state;
 
   const setMapPositionFromURL = useCallback(() => {
     const searchParams = new URLSearchParams(window.location.search);
@@ -645,7 +655,8 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
         />
         {/* ================== POPUP =================== */}
         {tooltip && <MapPopup tooltip={tooltip} />}
-        <div className="map-scale-control"></div>
+
+        <ScaleControl unit={areaUnits === "imperial" ? "imperial" : "metric"} />
       </Map>
 
       <div className="year-pills">

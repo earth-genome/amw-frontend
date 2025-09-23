@@ -1,5 +1,5 @@
 import { createContext, useReducer, Dispatch } from "react";
-import { AreaData, AreasData, PERMITTED_AREA_UNITS } from "@/types/types";
+import { AreaData, AreasData } from "@/types/types";
 import Reducer from "@/lib/Reducer";
 import { SingleValue } from "react-select";
 import { AreaSelectOption } from "@/app/[lang]/components/AreaSelect";
@@ -7,6 +7,10 @@ import { AREA_TYPES, AreaType } from "@/constants/map";
 import { useQueryParams } from "../../hooks/useQueryParams";
 import useAreasData from "../../hooks/useAreasData";
 import { MapRef } from "react-map-gl";
+import {
+  AREA_UNITS_OPTIONS,
+  PERMITTED_AREA_UNITS,
+} from "@/app/[lang]/components/Footer";
 
 export interface IState {
   map: MapRef | null;
@@ -66,7 +70,7 @@ const Store = ({ children }: Readonly<{ children: React.ReactNode }>) => {
     selectedAreaTypeKey: AREA_TYPES[0].key,
     selectedAreaType: AREA_TYPES[0],
     showAreaSummaryMoreInsights: false,
-    areaUnits: "hectares",
+    areaUnits: AREA_UNITS_OPTIONS[0].value as PERMITTED_AREA_UNITS,
   };
 
   const [state, dispatch] = useReducer(Reducer, initialState);

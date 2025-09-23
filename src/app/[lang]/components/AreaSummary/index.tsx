@@ -2,7 +2,7 @@
 import React, { useContext, useState } from "react";
 // import coverageData from "../../../../../configs/coverage.json";
 import style from "./style.module.css";
-import Eye from "@/app/[lang]/components/Icons/Eye";
+// import Eye from "@/app/[lang]/components/Icons/Eye";
 import { Context } from "@/lib/Store";
 import {
   displayAreaInUnits,
@@ -11,6 +11,7 @@ import {
 } from "@/utils/content";
 import AreaSummaryFigure from "@/app/[lang]/components/AreaSummary/AreaSummaryFigure";
 import { CloseCircleFilled } from "@ant-design/icons";
+import { getAreaUnitByKey } from "@/app/[lang]/components/Footer";
 
 interface AreaProps {
   dictionary: { [key: string]: any };
@@ -93,10 +94,11 @@ const Area: React.FC<AreaProps> = ({ dictionary, year, lang }) => {
             ? formatNumber(
                 displayAreaInUnits(affectedAreaHa, areaUnits),
                 lang,
-                ",.2~f"
+                ",.1~s",
+                1
               )
             : 0}{" "}
-          {areaUnits}
+          {getAreaUnitByKey(areaUnits)?.unitAbbrev}
         </div>
         {/* FIXME: calculate increase and display */}
       </div>
@@ -104,7 +106,9 @@ const Area: React.FC<AreaProps> = ({ dictionary, year, lang }) => {
         <div>
           <AreaSummaryFigure
             label={dictionary.map_ui.economic_cost}
-            figure={economicCost && formatNumber(economicCost, lang, ",.4~s")}
+            figure={
+              economicCost && formatNumber(economicCost, lang, ",.2~s", 2)
+            }
             currency={dictionary.map_ui.economic_cost_currency}
           />
         </div>
