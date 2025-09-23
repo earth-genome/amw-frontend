@@ -776,11 +776,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
         <AreaSummary dictionary={dictionary} year={activeLayer} lang={lang} />
       )}
 
-      <Footer
-        year={activeLayer}
-        zoom={(mapRef.current && mapRef.current.getZoom()) || 4}
-        dictionary={dictionary}
-      />
+      <Footer />
     </div>
   );
 };

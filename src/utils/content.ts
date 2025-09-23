@@ -1,4 +1,4 @@
-import { PERMITTED_AREA_UNITS } from "@/types/types";
+import { PERMITTED_AREA_UNITS } from "@/app/[lang]/components/Footer";
 import { formatLocale } from "d3";
 
 export type PERMITTED_LANGUAGES = "en" | "es" | "pt";
