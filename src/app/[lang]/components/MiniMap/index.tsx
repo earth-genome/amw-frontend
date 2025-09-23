@@ -2,7 +2,7 @@
 import "./style.css";
 import React from "react";
 import Map, { Layer, Source } from "react-map-gl";
-import geojson from "../../data/amazon_basin.json";
+import geojson from "../../data/amazon_aca.json";
 import { GeoJSONType } from "../Map/helpers";
 
 interface MiniMapProps {
@@ -37,7 +37,7 @@ const MiniMap: React.FC<MiniMapProps> = ({ bounds, showMinimapBounds }) => {
           // Disable zooming with touch pinch gesture
           map.touchZoomRotate.disable();
         }}
-        mapStyle="mapbox://styles/mikolaj-huncwot/cl1kut8iy000015onarujw9l9"
+        mapStyle="mapbox://styles/earthrise/clvwchqxi06gh01pe1huv70id"
       >
         <Source
           id="boundaries"
