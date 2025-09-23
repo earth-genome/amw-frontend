@@ -29,7 +29,11 @@ const Footer = () => {
     <div className="footer">
       <div>
         Units{" "}
-        <select className="footer-units-select" onChange={handleUnitsChange}>
+        <select 
+          className="footer-units-select" 
+          value={state.areaUnits}
+          onChange={handleUnitsChange}
+        >
           <option value="hectares">Hectares</option>
           <option value="squareKm">Square km</option>
           <option value="imperial">Imperial</option>
