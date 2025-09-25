@@ -36,6 +36,7 @@ const Area: React.FC<AreaProps> = ({ dictionary, year, lang }) => {
     selectedAreaData,
     // showAreaSummaryMoreInsights: showMoreInsights,
     areaUnits,
+    selectedAreaTimeseriesData,
   } = state;
   const areaProperties = selectedAreaData?.properties || {};
   const showMoreInsights = true;
@@ -110,6 +111,7 @@ const Area: React.FC<AreaProps> = ({ dictionary, year, lang }) => {
               economicCost && formatNumber(economicCost, lang, ",.2~s", 2)
             }
             currency={dictionary.map_ui.economic_cost_currency}
+            selectedAreaTimeseriesData={selectedAreaTimeseriesData}
           />
         </div>
       )}

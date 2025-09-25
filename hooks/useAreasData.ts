@@ -16,6 +16,8 @@ const useAreasData = ({ state, dispatch }: Props) => {
   // wait for query to be checked before loading data
   const areasDataUrl =
     selectedAreaType && isQueryChecked ? selectedAreaType.url : null;
+  const areasTimeseriesDataUrl =
+    selectedAreaType && isQueryChecked ? selectedAreaType.timeseriesUrl : null;
 
   const {
     data: areasData,
@@ -55,6 +57,33 @@ const useAreasData = ({ state, dispatch }: Props) => {
     areasDataIsLoading,
     dispatch,
     pendingSelectedAreaId,
+  ]);
+
+  const {
+    data: areasTimeseriesData,
+    error: areasTimeseriesDataError,
+    isLoading: areasTimeseriesDataIsLoading,
+  } = useSWR<AreasData>(areasTimeseriesDataUrl, fetcher);
+
+  useEffect(() => {
+    if (areasTimeseriesDataIsLoading || areasTimeseriesDataError) {
+      dispatch({
+        type: "SET_AREAS_TIMESERIES_DATA",
+        areasTimeseriesData: undefined,
+        areasTimeseriesDataIsLoading: areasTimeseriesDataIsLoading,
+      });
+      return;
+    }
+    dispatch({
+      type: "SET_AREAS_TIMESERIES_DATA",
+      areasTimeseriesData: areasTimeseriesData,
+      areasTimeseriesDataIsLoading: areasTimeseriesDataIsLoading,
+    });
+  }, [
+    areasTimeseriesData,
+    areasTimeseriesDataError,
+    areasTimeseriesDataIsLoading,
+    dispatch,
   ]);
 
   return null;

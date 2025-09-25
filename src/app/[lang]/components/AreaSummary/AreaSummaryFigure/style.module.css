@@ -6,16 +6,15 @@
   padding: 12px 24px;
   border-bottom-left-radius: 12px;
   border-bottom-right-radius: 12px;
+  color: var(--green-dark);
 }
 
 .label {
   font-weight: 700;
   font-size: 14px;
-  color: var(--green-dark);
 }
 
 .figure {
   font-weight: 700;
   font-size: 32px;
-  color: var(--green-dark);
 }

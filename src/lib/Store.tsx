@@ -1,5 +1,5 @@
 import { createContext, useReducer, Dispatch } from "react";
-import { AreaData, AreasData } from "@/types/types";
+import { AreaData, AreasData, AreasTimeseriesData } from "@/types/types";
 import Reducer from "@/lib/Reducer";
 import { SingleValue } from "react-select";
 import { AreaSelectOption } from "@/app/[lang]/components/AreaSelect";
@@ -17,9 +17,12 @@ export interface IState {
   isQueryChecked: boolean;
   areasData: AreasData | undefined;
   areasDataIsLoading: boolean;
+  areasTimeseriesData: AreasTimeseriesData | undefined;
+  areasTimeseriesDataIsLoading: boolean;
   areasOptions: AreaSelectOption[] | undefined;
   selectedArea: SingleValue<AreaSelectOption> | undefined;
   selectedAreaData: AreaData;
+  selectedAreaTimeseriesData: AreasTimeseriesData | undefined;
   pendingSelectedAreaId: string | undefined;
   selectedAreaTypeKey: string | undefined;
   selectedAreaType: AreaType | undefined;
@@ -34,6 +37,11 @@ export type ActionType =
       type: "SET_AREAS_DATA";
       areasData: AreasData | undefined;
       areasDataIsLoading: boolean;
+    }
+  | {
+      type: "SET_AREAS_TIMESERIES_DATA";
+      areasTimeseriesData: AreasTimeseriesData | undefined;
+      areasTimeseriesDataIsLoading: boolean;
     }
   | { type: "SET_SELECTED_AREA_BY_ID"; selectedAreaId: string | undefined }
   | {
@@ -63,10 +71,13 @@ const Store = ({ children }: Readonly<{ children: React.ReactNode }>) => {
     isQueryChecked: false,
     areasData: undefined,
     areasDataIsLoading: false,
+    areasTimeseriesData: undefined,
+    areasTimeseriesDataIsLoading: false,
     areasOptions: undefined,
     selectedArea: undefined,
     pendingSelectedAreaId: undefined,
     selectedAreaData: undefined,
+    selectedAreaTimeseriesData: undefined,
     selectedAreaTypeKey: AREA_TYPES[0].key,
     selectedAreaType: AREA_TYPES[0],
     showAreaSummaryMoreInsights: false,

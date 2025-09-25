@@ -24,6 +24,7 @@ export interface AreaType {
   dictionaryKey: string;
   dictionaryKeySingular: string;
   url: string;
+  timeseriesUrl: string;
   isDefault?: boolean;
   renderLabel: (properties: Record<string, any>) => string;
   renderTitle: (properties: Record<string, any>) => string;
@@ -41,6 +42,7 @@ export const AREA_TYPES = [
     dictionaryKey: "countries",
     dictionaryKeySingular: "country",
     url: `${AREA_TYPES_BASE_URL}/national_admin/out/national_admin_impacts.geojson`,
+    timeseriesUrl: `${AREA_TYPES_BASE_URL}/national_admin/out/national_admin_yearly.json`,
     isDefault: true,
     renderLabel: (properties: Record<string, any>) => properties.country,
     renderTitle: (properties: Record<string, any>) => properties.country,
@@ -52,6 +54,7 @@ export const AREA_TYPES = [
     dictionaryKey: "subnational_jurisdictions",
     dictionaryKeySingular: "subnational_jurisdiction",
     url: `${AREA_TYPES_BASE_URL}/subnational_admin/out/admin_areas_display_impacts_unfiltered.geojson`,
+    timeseriesUrl: `${AREA_TYPES_BASE_URL}/subnational_admin/out/admin_areas_display_yearly.json`,
     isDefault: true,
     renderLabel: (properties: Record<string, any>) =>
       `${properties.name_field || "N/A"} ${
@@ -67,6 +70,7 @@ export const AREA_TYPES = [
     dictionaryKey: "indigenous_territories",
     dictionaryKeySingular: "indigenous_territory",
     url: `${AREA_TYPES_BASE_URL}/protected_areas_and_indigenous_territories/out/indigenous_territories_impacts.geojson`,
+    timeseriesUrl: `${AREA_TYPES_BASE_URL}/protected_areas_and_indigenous_territories/out/indigenous_territories_yearly.json`,
     isDefault: false,
     renderLabel: (properties: Record<string, any>) =>
       `${properties.name_field || "N/A"} ${
@@ -82,6 +86,7 @@ export const AREA_TYPES = [
     dictionaryKey: "protected_areas",
     dictionaryKeySingular: "protected_area",
     url: `${AREA_TYPES_BASE_URL}/protected_areas_and_indigenous_territories/out/protected_areas_impacts.geojson`,
+    timeseriesUrl: `${AREA_TYPES_BASE_URL}/protected_areas_and_indigenous_territories/out/protected_areas_yearly.json`,
     isDefault: false,
     renderLabel: (properties: Record<string, any>) =>
       `${properties.name_field || "N/A"} ${

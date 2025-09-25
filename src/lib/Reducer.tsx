@@ -54,6 +54,12 @@ const Reducer = (state: IState, action: ActionType): IState => {
             );
           }),
       };
+    case "SET_AREAS_TIMESERIES_DATA":
+      return {
+        ...state,
+        areasTimeseriesData: action.areasTimeseriesData,
+        areasTimeseriesDataIsLoading: action.areasTimeseriesDataIsLoading,
+      };
     case "SET_SELECTED_AREA_BY_ID":
       return {
         ...state,
@@ -62,6 +68,9 @@ const Reducer = (state: IState, action: ActionType): IState => {
         ),
         selectedAreaData: state.areasData?.features.find(
           (d) => d.properties.id === action.selectedAreaId
+        ),
+        selectedAreaTimeseriesData: state.areasTimeseriesData?.filter(
+          (d) => d.id === action.selectedAreaId
         ),
       };
     case "SET_PENDING_SELECTED_AREA_ID":
@@ -79,6 +88,7 @@ const Reducer = (state: IState, action: ActionType): IState => {
           : undefined,
         selectedArea: undefined, // clear when area type changes
         selectedAreaData: undefined,
+        selectedAreaTimeseriesData: undefined,
       };
     case "SHOW_AREA_SUMMARY_MORE_INSIGHTS":
       return {
