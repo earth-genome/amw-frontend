@@ -18,7 +18,9 @@ const AreaSummaryFigure = ({
   const figureText = figure ? `${figure} ${currency}` : "N/A";
   return (
     <div className={style.wrapper}>
-      <AreaSummaryLineChart data={selectedAreaTimeseriesData} />
+      {selectedAreaTimeseriesData && (
+        <AreaSummaryLineChart data={selectedAreaTimeseriesData} />
+      )}
 
       <div className={style.label}>{label}</div>
       <div className={style.figure}>{figureText}</div>

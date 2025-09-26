@@ -4,8 +4,8 @@ import Reducer from "@/lib/Reducer";
 import { SingleValue } from "react-select";
 import { AreaSelectOption } from "@/app/[lang]/components/AreaSelect";
 import { AREA_TYPES, AreaType } from "@/constants/map";
-import { useQueryParams } from "../../hooks/useQueryParams";
-import useAreasData from "../../hooks/useAreasData";
+import { useQueryParams } from "@/hooks/useQueryParams";
+import useAreasData from "@/hooks/useAreasData";
 import { MapRef } from "react-map-gl";
 import {
   AREA_UNITS_OPTIONS,

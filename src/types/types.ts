@@ -10,7 +10,14 @@ export interface AreaProperties {
 export interface AreasData
   extends GeoJSON.FeatureCollection<GeoJSON.Geometry, AreaProperties> {}
 
-export interface AreasTimeseriesData<T = any> extends Array<T> {}
+export interface AreasTimeseriesDataItem {
+  id: string;
+  admin_year: number;
+  intersected_area_ha: number;
+  intersected_area_ha_cumulative: number;
+}
+
+export interface AreasTimeseriesData extends Array<AreasTimeseriesDataItem> {}
 
 export type AreaData = Feature | undefined;
 
