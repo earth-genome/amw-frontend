@@ -25,7 +25,11 @@ import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import * as turf from "@turf/turf";
 import useSWR from "swr";
-import { createYearsColorScale, MAP_MISSING_DATA_COLOR, PERMITTED_AREA_TYPES_KEYS } from "@/constants/map";
+import {
+  createYearsColorScale,
+  MAP_MISSING_DATA_COLOR,
+  PERMITTED_AREA_TYPES_KEYS,
+} from "@/constants/map";
 import { Expression } from "mapbox-gl";
 import AreaSelect from "@/app/[lang]/components/AreaSelect";
 import { Context } from "@/lib/Store";
@@ -275,6 +279,10 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
       essential: true,
     });
   }, [selectedAreaData]);
+
+  const getBeforeId = (targetLayerId: string) =>
+    // make sure the layer exists to avoid errors
+    mapRef.current?.getLayer(targetLayerId) ? targetLayerId : undefined;
 
   return (
     <div className="main-map">
@@ -558,7 +566,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
           <>
             <Layer
               id={"areas-layer"}
-              beforeId="mines-layer"
+              beforeId={getBeforeId("mines-layer")}
               source={"areas"}
               type="line"
               paint={{
@@ -579,7 +587,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
             />
             <Layer
               id={"areas-layer-fill"}
-              beforeId="areas-layer"
+              beforeId={getBeforeId("areas-layer")}
               source={"areas"}
               type="fill"
               paint={{
@@ -599,7 +607,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
           <>
             <Layer
               id={"selected-area-layer-fill"}
-              beforeId="areas-layer"
+              beforeId={getBeforeId("areas-layer")}
               source={"selected-area"}
               type="fill"
               paint={{
@@ -610,7 +618,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
             />
             <Layer
               id={"selected-area-layer"}
-              beforeId="selected-area-layer-fill"
+              beforeId={getBeforeId("selected-area-layer-fill")}
               source={"selected-area"}
               type="line"
               paint={{
@@ -635,7 +643,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
         {mineData && (
           <Layer
             id={"mines-layer"}
-            beforeId="hotspots-fill"
+            beforeId={getBeforeId("hotspots-fill")}
             source={"mines"}
             type="line"
             filter={["<=", ["get", "year"], Number(activeLayer)]}
