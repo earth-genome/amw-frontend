@@ -32,6 +32,7 @@ import { Context } from "@/lib/Store";
 import GeocoderIcon from "@/app/[lang]/components/Icons/GeocoderIcon";
 import { PERMITTED_LANGUAGES } from "@/utils/content";
 import MapPopup, { TooltipInfo } from "@/app/[lang]/components/Map/MapPopup";
+import Hotspots from "@/app/[lang]/components/Map/Hotspots";
 
 interface MainMapProps {
   dictionary: { [key: string]: any };
@@ -234,7 +235,17 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
 
       const feature = features[0];
       const id = feature?.properties?.id;
+      const type = feature?.properties?.type;
+
       if (!id) return;
+
+      if (type === "hotspot") {
+        // FIXME: need to set id at the same time
+        dispatch({
+          type: "SET_SELECTED_AREA_TYPE_BY_KEY",
+          selectedAreaTypeKey: "hotspots",
+        });
+      }
 
       dispatch({ type: "SET_SELECTED_AREA_BY_ID", selectedAreaId: id });
     },
@@ -290,6 +301,9 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
           if (!bounds) return;
           const currentBounds = convertBoundsToGeoJSON(bounds);
           setBounds(currentBounds);
+
+          // FIXME: allow to use this for CMS
+          console.log(currentBounds?.geometry?.coordinates);
         }}
         onZoomEnd={() => {
           updateURLParamsMapPosition();
@@ -338,7 +352,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
         onClick={handleClick}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
-        interactiveLayerIds={["areas-layer-fill"]}
+        interactiveLayerIds={["areas-layer-fill", "hotspots-fill"]}
       >
         <NavigationControl position={"top-right"} />
         {/* ================== SENTINEL2 SOURCES =================== */}
@@ -538,6 +552,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
           <>
             <Layer
               id={"areas-layer"}
+              beforeId="mines-layer"
               source={"areas"}
               type="line"
               paint={{
@@ -558,6 +573,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
             />
             <Layer
               id={"areas-layer-fill"}
+              beforeId="areas-layer"
               source={"areas"}
               type="fill"
               paint={{
@@ -577,6 +593,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
           <>
             <Layer
               id={"selected-area-layer-fill"}
+              beforeId="areas-layer"
               source={"selected-area"}
               type="fill"
               paint={{
@@ -587,6 +604,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
             />
             <Layer
               id={"selected-area-layer"}
+              beforeId="selected-area-layer-fill"
               source={"selected-area"}
               type="line"
               paint={{
@@ -611,6 +629,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
         {mineData && (
           <Layer
             id={"mines-layer"}
+            beforeId="hotspots-fill"
             source={"mines"}
             type="line"
             filter={["<=", ["get", "year"], Number(activeLayer)]}
@@ -653,6 +672,10 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
             "text-color": "#ffffff",
           }}
         />
+
+        {/* wait for mines to load so that hotspots are layered on top of mines */}
+        {mineData && <Hotspots />}
+
         {/* ================== POPUP =================== */}
         {tooltip && <MapPopup tooltip={tooltip} />}
 

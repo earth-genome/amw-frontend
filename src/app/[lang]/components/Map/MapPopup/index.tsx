@@ -20,7 +20,11 @@ const MapPopup = ({ tooltip }: MapPopupProps) => {
 
   const { properties, longitude, latitude } = tooltip;
 
-  const title = state.selectedAreaType?.renderTitle(properties);
+  // FIXME:
+  const title =
+    properties?.type === "hotspot"
+      ? properties.title
+      : state.selectedAreaType?.renderTitle(properties);
   const status = state.selectedAreaType?.renderStatus(properties);
   const country = properties?.country;
   return (

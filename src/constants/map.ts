@@ -1,5 +1,6 @@
 import { scaleSequential } from "d3-scale";
 import { interpolateRgbBasis } from "d3-interpolate";
+import { API_URL } from "@/utils/hotspots";
 
 export const MAP_COLOR_SCALE = [
   "#F7E4BC",
@@ -35,6 +36,8 @@ export interface AreaType {
 const AREA_TYPES_BASE_URL =
   // "/test-data";
   "https://raw.githubusercontent.com/earthrise-media/mining-detector/standardize-it-and-pa-areas/data/boundaries";
+
+const HOTSPOTS_BASE_URL = API_URL;
 
 export const AREA_TYPES = [
   {
@@ -96,5 +99,18 @@ export const AREA_TYPES = [
       properties.name_field || "N/A",
     renderStatus: (properties: Record<string, any>) => properties.status_field,
     showCountry: true,
+  },
+  {
+    key: "hotspots",
+    dictionaryKey: "hotspots",
+    dictionaryKeySingular: "hotspot",
+    url: `${HOTSPOTS_BASE_URL}/hotspots/geojson`,
+    // FIXME:
+    timeseriesUrl: "",
+    isDefault: false,
+    renderLabel: (properties: Record<string, any>) => properties.title,
+    renderTitle: (properties: Record<string, any>) => properties.title,
+    renderStatus: (properties: Record<string, any>) => "",
+    showCountry: false,
   },
 ] as const;
