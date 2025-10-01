@@ -3,7 +3,11 @@ import { AreaData, AreasData, AreasTimeseriesData } from "@/types/types";
 import Reducer from "@/lib/Reducer";
 import { SingleValue } from "react-select";
 import { AreaSelectOption } from "@/app/[lang]/components/AreaSelect";
-import { AREA_TYPES, AreaType } from "@/constants/map";
+import {
+  AREA_TYPES,
+  AreaType,
+  PERMITTED_AREA_TYPES_KEYS,
+} from "@/constants/map";
 import { useQueryParams } from "@/hooks/useQueryParams";
 import useAreasData from "@/hooks/useAreasData";
 import { MapRef } from "react-map-gl";
@@ -24,7 +28,7 @@ export interface IState {
   selectedAreaData: AreaData;
   selectedAreaTimeseriesData: AreasTimeseriesData | undefined;
   pendingSelectedAreaId: string | undefined;
-  selectedAreaTypeKey: string | undefined;
+  selectedAreaTypeKey: PERMITTED_AREA_TYPES_KEYS | undefined;
   selectedAreaType: AreaType | undefined;
   showAreaSummaryMoreInsights: boolean;
   areaUnits: PERMITTED_AREA_UNITS;
@@ -50,7 +54,7 @@ export type ActionType =
     }
   | {
       type: "SET_SELECTED_AREA_TYPE_BY_KEY";
-      selectedAreaTypeKey: string | undefined;
+      selectedAreaTypeKey: PERMITTED_AREA_TYPES_KEYS | undefined;
     }
   | {
       type: "SHOW_AREA_SUMMARY_MORE_INSIGHTS";

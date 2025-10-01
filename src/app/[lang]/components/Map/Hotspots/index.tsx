@@ -18,7 +18,10 @@ const Hotspots = () => {
         type: "Feature",
         // @ts-ignore
         geometry: centroid(polygon(hotspot.bounds)).geometry,
-        properties: hotspot,
+        properties: {
+          ...hotspot,
+          id: String(hotspot.id),
+        },
       })),
     };
   }, [hotspots]);
@@ -34,7 +37,8 @@ const Hotspots = () => {
         },
         properties: {
           ...hotspot,
-          type: "hotspot",
+          id: String(hotspot.id),
+          type: "hotspots",
         },
       })),
     };
@@ -48,7 +52,10 @@ const Hotspots = () => {
         type: "Point",
         coordinates: hotspot.bounds[0][1], // NW corner
       },
-      properties: hotspot,
+      properties: {
+        ...hotspot,
+        id: String(hotspot.id),
+      },
     })),
   };
 

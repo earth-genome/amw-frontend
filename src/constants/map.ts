@@ -114,3 +114,5 @@ export const AREA_TYPES = [
     showCountry: false,
   },
 ] as const;
+
+export type PERMITTED_AREA_TYPES_KEYS = typeof AREA_TYPES[number]['key'];

@@ -101,7 +101,6 @@ const Area: React.FC<AreaProps> = ({ dictionary, year, lang }) => {
             : 0}{" "}
           {getAreaUnitByKey(areaUnits)?.unitAbbrev}
         </div>
-        {/* FIXME: calculate increase and display */}
       </div>
       {showMoreInsights && (
         <div>

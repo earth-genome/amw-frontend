@@ -25,7 +25,7 @@ import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import * as turf from "@turf/turf";
 import useSWR from "swr";
-import { createYearsColorScale, MAP_MISSING_DATA_COLOR } from "@/constants/map";
+import { createYearsColorScale, MAP_MISSING_DATA_COLOR, PERMITTED_AREA_TYPES_KEYS } from "@/constants/map";
 import { Expression } from "mapbox-gl";
 import AreaSelect from "@/app/[lang]/components/AreaSelect";
 import { Context } from "@/lib/Store";
@@ -235,16 +235,22 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
 
       const feature = features[0];
       const id = feature?.properties?.id;
-      const type = feature?.properties?.type;
+      const type = feature?.properties?.type as PERMITTED_AREA_TYPES_KEYS;
 
       if (!id) return;
 
-      if (type === "hotspot") {
-        // FIXME: need to set id at the same time
+      if (type === "hotspots") {
         dispatch({
           type: "SET_SELECTED_AREA_TYPE_BY_KEY",
           selectedAreaTypeKey: "hotspots",
         });
+        // because this will trigger a change in area type, we need to wait
+        // for the data to load, so we set it as pending
+        dispatch({
+          type: "SET_PENDING_SELECTED_AREA_ID",
+          pendingSelectedAreaId: id,
+        });
+        return;
       }
 
       dispatch({ type: "SET_SELECTED_AREA_BY_ID", selectedAreaId: id });
