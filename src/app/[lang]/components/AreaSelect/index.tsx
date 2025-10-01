@@ -4,7 +4,7 @@ import "./style.css";
 import { Context } from "@/lib/Store";
 import AreaSearch from "@/app/[lang]/components/AreaSelect/AreaSearch";
 import { SingleValue } from "react-select";
-import { AREA_TYPES } from "@/constants/map";
+import { AREA_TYPES, PERMITTED_AREA_TYPES_KEYS } from "@/constants/map";
 
 interface AreaSelectProps {
   dictionary: { [key: string]: any };
@@ -36,7 +36,7 @@ const AreaSelect = ({ dictionary }: AreaSelectProps) => {
   );
 
   const setSelectedAreaType = useCallback(
-    (selectedAreaTypeKey: string) => {
+    (selectedAreaTypeKey: PERMITTED_AREA_TYPES_KEYS) => {
       dispatch({
         type: "SET_SELECTED_AREA_TYPE_BY_KEY",
         selectedAreaTypeKey: selectedAreaTypeKey,
