@@ -1,29 +1,31 @@
 import useSWR from "swr";
 import type { SWRConfiguration } from "swr";
 
-type ClosedPolygon = [number, number][];
+type HotspotCollection = GeoJSON.FeatureCollection<GeoJSON.Polygon>;
 
-interface HotspotData {
-  id: number;
-  title: string;
-  bounds: ClosedPolygon;
-  description?: string;
-  createdAt: string;
-  updatedAt: string;
-  publishedAt: string | null;
-}
+// type ClosedPolygon = [number, number][];
 
-interface StrapiResponse<T> {
-  data: T;
-  meta: {
-    pagination?: {
-      page: number;
-      pageSize: number;
-      pageCount: number;
-      total: number;
-    };
-  };
-}
+// interface HotspotData {
+//   id: number;
+//   title: string;
+//   bounds: ClosedPolygon;
+//   description?: string;
+//   createdAt: string;
+//   updatedAt: string;
+//   publishedAt: string | null;
+// }
+
+// interface StrapiResponse<T> {
+//   data: T;
+//   meta: {
+//     pagination?: {
+//       page: number;
+//       pageSize: number;
+//       pageCount: number;
+//       total: number;
+//     };
+//   };
+// }
 
 interface StrapiError {
   error: {
@@ -56,6 +58,8 @@ const fetcher = async <T>(url: string): Promise<T> => {
   return response.json();
 };
 
+export const HOTSPOTS_GEOJSON_URL = `${API_URL}/hotspots/geojson`;
+
 // GET all hotspots hook
 export function useHotspots(config?: SWRConfiguration) {
   const {
@@ -64,16 +68,10 @@ export function useHotspots(config?: SWRConfiguration) {
     isLoading,
     isValidating,
     mutate: refetch,
-  } = useSWR<StrapiResponse<HotspotData[]>>(
-    // `${API_URL}/hotspots/geojson`,
-    `${API_URL}/hotspots?populate=*&pagination[pageSize]=1000`,
-    fetcher,
-    config
-  );
+  } = useSWR<HotspotCollection>(HOTSPOTS_GEOJSON_URL, fetcher, config);
 
   return {
-    hotspots: data?.data || [],
-    meta: data?.meta,
+    hotspots: data,
     isLoading,
     isValidating,
     error,
@@ -81,25 +79,25 @@ export function useHotspots(config?: SWRConfiguration) {
   };
 }
 
-// GET single hotspot by ID hook
-export function useHotspot(id: number | null, config?: SWRConfiguration) {
-  const {
-    data,
-    error,
-    isLoading,
-    isValidating,
-    mutate: refetch,
-  } = useSWR<StrapiResponse<HotspotData>>(
-    id ? `${API_URL}/hotspots/${id}` : null,
-    fetcher,
-    config
-  );
+// // GET single hotspot by ID hook
+// export function useHotspot(id: number | null, config?: SWRConfiguration) {
+//   const {
+//     data,
+//     error,
+//     isLoading,
+//     isValidating,
+//     mutate: refetch,
+//   } = useSWR<StrapiResponse<HotspotData>>(
+//     id ? `${API_URL}/hotspots/${id}` : null,
+//     fetcher,
+//     config
+//   );
 
-  return {
-    hotspot: data,
-    isLoading,
-    isValidating,
-    isError: error,
-    refetch,
-  };
-}
+//   return {
+//     hotspot: data,
+//     isLoading,
+//     isValidating,
+//     isError: error,
+//     refetch,
+//   };
+// }

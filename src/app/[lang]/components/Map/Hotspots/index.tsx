@@ -8,56 +8,35 @@ import { Fragment, useMemo } from "react";
 import { Layer, Source } from "react-map-gl";
 
 const Hotspots = () => {
-  const { hotspots, meta, isLoading, error } = useHotspots();
-  // console.log(hotspots, error, meta);
+  const { hotspots: hotspotsData, isLoading, error } = useHotspots();
 
-  const geojsonDataPoints = useMemo(() => {
+  const hotspotsCentroidsData = useMemo(() => {
+    // the centroid of the polygons
     return {
       type: "FeatureCollection",
-      features: hotspots.map((hotspot) => ({
+      features: hotspotsData?.features?.map((hotspot) => ({
         type: "Feature",
-        // @ts-ignore
-        geometry: centroid(polygon(hotspot.bounds)).geometry,
-        properties: {
-          ...hotspot,
-          id: String(hotspot.id),
-        },
+        geometry: centroid(polygon(hotspot.geometry.coordinates)).geometry,
+        properties: hotspot.properties,
       })),
     };
-  }, [hotspots]);
+  }, [hotspotsData]);
 
-  const geojsonDataPolygons = useMemo(() => {
-    return {
+  const labelData = useMemo(
+    // label is a point to be places on the NW corner of the polygon
+    () => ({
       type: "FeatureCollection",
-      features: hotspots.map((hotspot) => ({
+      features: hotspotsData?.features.map((hotspot) => ({
         type: "Feature",
         geometry: {
-          type: "Polygon",
-          coordinates: hotspot.bounds,
+          type: "Point",
+          coordinates: hotspot.geometry.coordinates[0][1], // NW corner
         },
-        properties: {
-          ...hotspot,
-          id: String(hotspot.id),
-          type: "hotspots",
-        },
+        properties: hotspot.properties,
       })),
-    };
-  }, [hotspots]);
-
-  const labelData = {
-    type: "FeatureCollection",
-    features: hotspots.map((hotspot) => ({
-      type: "Feature",
-      geometry: {
-        type: "Point",
-        coordinates: hotspot.bounds[0][1], // NW corner
-      },
-      properties: {
-        ...hotspot,
-        id: String(hotspot.id),
-      },
-    })),
-  };
+    }),
+    [hotspotsData]
+  );
 
   const circleLayer: CircleLayer = {
     source: "hotspots-points",
@@ -179,17 +158,21 @@ const Hotspots = () => {
     },
   };
 
-  if (!hotspots?.length) return null;
+  if (!hotspotsData?.features?.length) return null;
 
   return (
     <Fragment>
-      {geojsonDataPoints?.features?.length && (
-        <Source id="hotspots-points" type="geojson" data={geojsonDataPoints}>
+      {hotspotsCentroidsData?.features?.length && (
+        <Source
+          id="hotspots-points"
+          type="geojson"
+          data={hotspotsCentroidsData}
+        >
           <Layer {...circleLayer} />
           <Layer {...dotLayer} />
         </Source>
       )}
-      <Source id="hotspots-polygon" type="geojson" data={geojsonDataPolygons}>
+      <Source id="hotspots-polygon" type="geojson" data={hotspotsData}>
         <Layer {...outlineLayer} />
         <Layer {...fillLayer} beforeId={"hotspots-outline"} />
       </Source>
