@@ -11,12 +11,20 @@ const Hotspots = () => {
   const { hotspots: hotspotsData, isLoading, error } = useHotspots();
 
   const hotspotsCentroidsData = useMemo(() => {
+    /* @ts-ignore */
+    const calculateCentroid = (feature) => {
+      try {
+        return centroid(polygon(feature.geometry.coordinates)).geometry;
+      } catch (error) {
+        console.error("Error calculating centroid for this feature:", feature);
+      }
+    };
     // the centroid of the polygons
     return {
       type: "FeatureCollection",
       features: hotspotsData?.features?.map((hotspot) => ({
         type: "Feature",
-        geometry: centroid(polygon(hotspot.geometry.coordinates)).geometry,
+        geometry: calculateCentroid(hotspot),
         properties: hotspot.properties,
       })),
     };

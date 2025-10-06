@@ -1,5 +1,8 @@
 import { Feature } from "geojson";
 
+export interface MiningData
+  extends GeoJSON.FeatureCollection<GeoJSON.Geometry, AreaProperties> {}
+
 export interface AreaProperties {
   id: string;
   country: string;

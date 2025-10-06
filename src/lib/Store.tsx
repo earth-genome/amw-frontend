@@ -1,5 +1,10 @@
 import { createContext, useReducer, Dispatch } from "react";
-import { AreaData, AreasData, AreasTimeseriesData } from "@/types/types";
+import {
+  AreaData,
+  AreasData,
+  AreasTimeseriesData,
+  MiningData,
+} from "@/types/types";
 import Reducer from "@/lib/Reducer";
 import { SingleValue } from "react-select";
 import { AreaSelectOption } from "@/app/[lang]/components/AreaSelect";
@@ -15,10 +20,13 @@ import {
   AREA_UNITS_OPTIONS,
   PERMITTED_AREA_UNITS,
 } from "@/app/[lang]/components/Footer";
+import useMiningData from "@/hooks/useMiningData";
 
 export interface IState {
   map: MapRef | null;
   isQueryChecked: boolean;
+  miningData: MiningData | undefined;
+  miningDataIsLoading: boolean;
   areasData: AreasData | undefined;
   areasDataIsLoading: boolean;
   areasTimeseriesData: AreasTimeseriesData | undefined;
@@ -37,6 +45,11 @@ export interface IState {
 export type ActionType =
   | { type: "SET_MAP_REF"; map: MapRef | null }
   | { type: "SET_IS_QUERY_CHECKED"; isQueryChecked: boolean }
+  | {
+      type: "SET_MINING_DATA";
+      miningData: MiningData | undefined;
+      miningDataIsLoading: boolean;
+    }
   | {
       type: "SET_AREAS_DATA";
       areasData: AreasData | undefined;
@@ -73,6 +86,8 @@ const Store = ({ children }: Readonly<{ children: React.ReactNode }>) => {
   const initialState: IState = {
     map: null,
     isQueryChecked: false,
+    miningData: undefined,
+    miningDataIsLoading: false,
     areasData: undefined,
     areasDataIsLoading: false,
     areasTimeseriesData: undefined,
@@ -91,6 +106,7 @@ const Store = ({ children }: Readonly<{ children: React.ReactNode }>) => {
   const [state, dispatch] = useReducer(Reducer, initialState);
 
   useQueryParams({ state, dispatch });
+  useMiningData({ state, dispatch });
   useAreasData({ state, dispatch });
 
   return (

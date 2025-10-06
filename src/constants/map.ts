@@ -33,6 +33,8 @@ export interface AreaType {
   showCountry: boolean;
 }
 
+export const MINING_DATA_URL = `https://raw.githubusercontent.com/earthrise-media/mining-detector/8a076bf0d6fdc3dde16b9abed68087fa40ee8c92/data/outputs/48px_v3.2-3.7ensemble/difference/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2024_all_differences.geojson`;
+
 const AREA_TYPES_BASE_URL =
   // "/test-data";
   "https://raw.githubusercontent.com/earthrise-media/mining-detector/standardize-it-and-pa-areas/data/boundaries";

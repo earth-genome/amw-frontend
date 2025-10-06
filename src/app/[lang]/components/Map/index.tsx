@@ -37,6 +37,8 @@ import GeocoderIcon from "@/app/[lang]/components/Icons/GeocoderIcon";
 import { PERMITTED_LANGUAGES } from "@/utils/content";
 import MapPopup, { TooltipInfo } from "@/app/[lang]/components/Map/MapPopup";
 import Hotspots from "@/app/[lang]/components/Map/Hotspots";
+import { GeoJSONFeature } from "@/types/types";
+import calculateMiningAreaInBbox from "@/utils/calculateMiningAreaInBbox";
 
 interface MainMapProps {
   dictionary: { [key: string]: any };
@@ -54,9 +56,6 @@ const SATELLITE_LAYERS = {
   hiRes: "mapbox://styles/earthrise/cmdxgrceq014x01s22jfm5muv", // Mapbox satellite
 };
 
-const fetcher = (...args: Parameters<typeof fetch>) =>
-  fetch(...args).then((res) => res.json());
-
 const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
   const [state, dispatch] = useContext(Context)!;
   const pathname = usePathname();
@@ -70,14 +69,8 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
   const [tooltip, setTooltip] = useState<TooltipInfo | null>(null);
   const hoveredFeatureRef = useRef<string | number | undefined>(undefined);
 
-  const mineDataUrl = `https://raw.githubusercontent.com/earthrise-media/mining-detector/8a076bf0d6fdc3dde16b9abed68087fa40ee8c92/data/outputs/48px_v3.2-3.7ensemble/difference/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2024_all_differences.geojson`;
   const {
-    data: mineData,
-    error: mineError,
-    isLoading: mineIsLoading,
-  } = useSWR(mineDataUrl, fetcher);
-
-  const {
+    miningData,
     areasData,
     selectedAreaData,
     selectedArea,
@@ -117,9 +110,8 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
     router.replace(`${pathname}?${params.toString()}`);
   }, [pathname, router]);
 
-  const calculateMiningAreaInView = useCallback(() => {
+  const getCurrentBounds = useCallback(() => {
     if (!mapRef.current) return;
-    if (mapRef.current.getZoom() <= 5) return; // don't run if too zoomed out
     const currentBounds = mapRef.current.getBounds();
     if (!currentBounds) return;
 
@@ -129,21 +121,8 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
       currentBounds.getEast(),
       currentBounds.getNorth(),
     ] as [number, number, number, number];
-    // filter features based on active year
-    const filteredFeatures = mineData?.features?.filter(
-      (feature: MapGeoJSONFeature) =>
-        Number(feature?.properties?.year) <= Number(activeLayer)
-    );
-    let areaMinesSquareMeters = 0;
-    for (const feature of filteredFeatures) {
-      const clipped = turf.bboxClip(feature, bbox);
-      areaMinesSquareMeters += turf.area(clipped);
-    }
-    console.info(
-      "Area of mine squares in view (square km): ",
-      areaMinesSquareMeters / 1000000
-    );
-  }, [activeLayer, mineData?.features]);
+    return bbox;
+  }, []);
 
   const getSatelliteOpacity = (layerId: string) => {
     if (yearly && layerId === `sentinel-layer-${activeLayer}`) {
@@ -303,8 +282,18 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
         }}
         mapStyle={mapStyle}
         onIdle={() => {
+          if (!mapRef.current) return;
+          if (mapRef.current.getZoom() <= 11) return; // don't run if too zoomed out
+
+          let bbox = getCurrentBounds();
+          if (!bbox) return;
           // FIXME: we're not using the mining areas yet
-          // calculateMiningAreaInView();
+          const miningArea = calculateMiningAreaInBbox(
+            bbox,
+            activeLayer,
+            miningData
+          );
+          console.log("using viewport, mining area in ha", miningArea);
         }}
         onMoveEnd={() => {
           updateURLParamsMapPosition();
@@ -631,16 +620,16 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
         )}
 
         {/* ================== MINE SOURCES =================== */}
-        {mineData && (
+        {miningData && (
           <Source
             id={"mines"}
             type="geojson"
             tolerance={0.05}
-            data={mineData}
+            data={miningData}
           />
         )}
         {/* ================== MINE LAYER =================== */}
-        {mineData && (
+        {miningData && (
           <Layer
             id={"mines-layer"}
             beforeId={getBeforeId("hotspots-fill")}
@@ -688,7 +677,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
         />
 
         {/* wait for mines to load so that hotspots are layered on top of mines */}
-        {mineData && <Hotspots />}
+        {miningData && <Hotspots />}
 
         {/* ================== POPUP =================== */}
         {tooltip && <MapPopup tooltip={tooltip} />}
@@ -810,7 +799,12 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
       />
 
       {selectedArea && (
-        <AreaSummary dictionary={dictionary} year={activeLayer} lang={lang} />
+        <AreaSummary
+          dictionary={dictionary}
+          year={activeLayer}
+          lang={lang}
+          activeLayer={activeLayer}
+        />
       )}
 
       <Footer />

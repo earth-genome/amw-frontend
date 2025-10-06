@@ -1,6 +1,5 @@
 "use client";
-import React, { useContext, useState } from "react";
-// import coverageData from "../../../../../configs/coverage.json";
+import React, { useContext, useMemo, useState } from "react";
 import style from "./style.module.css";
 // import Eye from "@/app/[lang]/components/Icons/Eye";
 import { Context } from "@/lib/Store";
@@ -12,24 +11,17 @@ import {
 import AreaSummaryFigure from "@/app/[lang]/components/AreaSummary/AreaSummaryFigure";
 import { CloseCircleFilled } from "@ant-design/icons";
 import { getAreaUnitByKey } from "@/app/[lang]/components/Footer";
+import * as turf from "@turf/turf";
+import calculateMiningAreaInBbox from "@/utils/calculateMiningAreaInBbox";
 
 interface AreaProps {
   dictionary: { [key: string]: any };
   year: string;
   lang: PERMITTED_LANGUAGES;
+  activeLayer: string;
 }
 
-// Define the interface for the coverage JSON structure
-interface CoverageYear {
-  km: string;
-  acres: number;
-}
-
-// interface Coverage {
-//   [key: string]: CoverageYear;
-// }
-
-const Area: React.FC<AreaProps> = ({ dictionary, year, lang }) => {
+const Area: React.FC<AreaProps> = ({ dictionary, year, lang, activeLayer }) => {
   const [state, dispatch] = useContext(Context)!;
   const {
     selectedAreaType,
@@ -37,17 +29,44 @@ const Area: React.FC<AreaProps> = ({ dictionary, year, lang }) => {
     // showAreaSummaryMoreInsights: showMoreInsights,
     areaUnits,
     selectedAreaTimeseriesData,
+    selectedAreaTypeKey,
+    miningData,
   } = state;
   const areaProperties = selectedAreaData?.properties || {};
   const showMoreInsights = true;
 
-  // const coverage: Coverage = coverageData;
-  const {
-    mining_affected_area_ha: affectedAreaHa,
-    economic_impact_usd: economicCost,
-    country,
-    id: areaId,
-  } = areaProperties;
+  const [affectedAreaHa, economicCost] = useMemo(() => {
+    if (selectedAreaTypeKey === "hotspots" && selectedAreaData) {
+      // if hotspots, calculate mining affected area on the fly
+      const bbox = turf.bbox(selectedAreaData) as [
+        number,
+        number,
+        number,
+        number
+      ];
+      const affectedAreaHa = calculateMiningAreaInBbox(
+        bbox,
+        activeLayer,
+        miningData
+      );
+      return [affectedAreaHa, null];
+    } else {
+      // else use the data that is pre-calculated and baked into the geojson
+      return [
+        areaProperties?.mining_affected_area_ha,
+        areaProperties?.economic_impact_usd,
+      ];
+    }
+  }, [
+    activeLayer,
+    areaProperties?.economic_impact_usd,
+    areaProperties?.mining_affected_area_ha,
+    miningData,
+    selectedAreaData,
+    selectedAreaTypeKey,
+  ]);
+
+  const { country, id: areaId } = areaProperties;
   const { showCountry, renderTitle, renderStatus } = selectedAreaType || {};
   const areaTitle = renderTitle && renderTitle(areaProperties);
   const areaStatus = renderStatus && renderStatus(areaProperties);
