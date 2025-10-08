@@ -1,10 +1,15 @@
 import AreaSummaryLineChart from "@/app/[lang]/components/AreaSummary/AreaSummaryLineChart";
 import style from "./style.module.css";
 import { AreasTimeseriesData } from "@/types/types";
+import CustomTooltip from "@/app/[lang]/components/CustomTooltip";
+import Link from "next/link";
+import QuestionMark from "@/app/[lang]/components/Icons/QuestionMark";
 
 interface AreaSummaryFigureProps {
   label: string;
-  figure: string;
+  figure: string | undefined;
+  calculatorIsLoading: boolean;
+  calculatorUrl?: string;
   currency: string;
   selectedAreaTimeseriesData: AreasTimeseriesData | undefined;
 }
@@ -12,10 +17,49 @@ interface AreaSummaryFigureProps {
 const AreaSummaryFigure = ({
   label,
   figure,
+  calculatorIsLoading,
+  calculatorUrl,
   currency,
   selectedAreaTimeseriesData,
 }: AreaSummaryFigureProps) => {
-  const figureText = figure ? `${figure} ${currency}` : "N/A";
+  const figureText = calculatorIsLoading
+    ? "Loading..."
+    : figure
+    ? `${figure} ${currency}`
+    : "N/A";
+
+  const FigureTooltip = () =>
+    !calculatorUrl ? null : (
+      <div>
+        <CustomTooltip
+          content={
+            <div>
+              <p>
+                Economic cost is estimated using the Mining Impacts Calculator.
+              </p>
+              <p>
+                See the{" "}
+                <Link
+                  href={calculatorUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: "#ecaf00" }}
+                >
+                  detailed analysis here
+                </Link>
+                .
+              </p>
+            </div>
+          }
+          placement="left"
+        >
+          <button className={style.tooltipButton}>
+            <QuestionMark />
+          </button>
+        </CustomTooltip>
+      </div>
+    );
+
   return (
     <div className={style.wrapper}>
       {selectedAreaTimeseriesData && (
@@ -23,7 +67,10 @@ const AreaSummaryFigure = ({
       )}
 
       <div className={style.label}>{label}</div>
-      <div className={style.figure}>{figureText}</div>
+      <div className={style.figure}>
+        <div>{figureText}</div>
+        <FigureTooltip />
+      </div>
     </div>
   );
 };

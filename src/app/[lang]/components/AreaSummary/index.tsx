@@ -13,6 +13,7 @@ import { CloseCircleFilled } from "@ant-design/icons";
 import { getAreaUnitByKey } from "@/app/[lang]/components/Footer";
 import * as turf from "@turf/turf";
 import calculateMiningAreaInBbox from "@/utils/calculateMiningAreaInBbox";
+import useMiningCalculator from "@/hooks/useMiningCalculator";
 
 interface AreaProps {
   dictionary: { [key: string]: any };
@@ -35,6 +36,13 @@ const Area: React.FC<AreaProps> = ({ dictionary, year, lang, activeLayer }) => {
   const areaProperties = selectedAreaData?.properties || {};
   const showMoreInsights = true;
 
+  const {
+    calculatorData,
+    calculatorUrl,
+    calculatorIsLoading,
+    calculatorError,
+  } = useMiningCalculator(selectedAreaData?.properties?.locations);
+
   const [affectedAreaHa, economicCost] = useMemo(() => {
     if (selectedAreaTypeKey === "hotspots" && selectedAreaData) {
       // if hotspots, calculate mining affected area on the fly
@@ -51,16 +59,17 @@ const Area: React.FC<AreaProps> = ({ dictionary, year, lang, activeLayer }) => {
       );
       return [affectedAreaHa, null];
     } else {
-      // else use the data that is pre-calculated and baked into the geojson
+      // else use the data that is pre-calculated and baked into the geojson,
+      // and mining calculator data that is fetched on the fly
       return [
         areaProperties?.mining_affected_area_ha,
-        areaProperties?.economic_impact_usd,
+        calculatorData?.totalImpact,
       ];
     }
   }, [
     activeLayer,
-    areaProperties?.economic_impact_usd,
     areaProperties?.mining_affected_area_ha,
+    calculatorData?.totalImpact,
     miningData,
     selectedAreaData,
     selectedAreaTypeKey,
@@ -126,8 +135,12 @@ const Area: React.FC<AreaProps> = ({ dictionary, year, lang, activeLayer }) => {
           <AreaSummaryFigure
             label={dictionary.map_ui.economic_cost}
             figure={
-              economicCost && formatNumber(economicCost, lang, ",.2~s", 2)
+              economicCost
+                ? formatNumber(economicCost, lang, ",.2~s", 2) || undefined
+                : undefined
             }
+            calculatorIsLoading={calculatorIsLoading}
+            calculatorUrl={calculatorUrl}
             currency={dictionary.map_ui.economic_cost_currency}
             selectedAreaTimeseriesData={selectedAreaTimeseriesData}
           />

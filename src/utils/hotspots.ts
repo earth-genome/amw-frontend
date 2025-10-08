@@ -36,12 +36,12 @@ interface StrapiError {
   };
 }
 
-export const API_URL: string = "http://localhost:1337/api";
+export const API_URL: string | undefined = process.env.NEXT_PUBLIC_STRAPI_API_ENDPOINT;
 const API_TOKEN: string | undefined = process.env.NEXT_PUBLIC_STRAPI_API_TOKEN;
 
 const headers: HeadersInit = {
   "Content-Type": "application/json",
-  Authorization: `Bearer ${API_TOKEN}`,
+  // Authorization: `Bearer ${API_TOKEN}`,
 };
 
 const fetcher = async <T>(url: string): Promise<T> => {

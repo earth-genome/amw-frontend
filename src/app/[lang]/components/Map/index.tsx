@@ -8,14 +8,14 @@ import React, {
   useEffect,
 } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { message, Radio, Select, ConfigProvider } from "antd";
+import { Radio, Select, ConfigProvider } from "antd";
 import Map, {
   Layer,
   Source,
   NavigationControl,
   ScaleControl,
 } from "react-map-gl";
-import type { MapGeoJSONFeature, MapMouseEvent, MapRef } from "react-map-gl";
+import type { MapMouseEvent, MapRef } from "react-map-gl";
 import AreaSummary from "../AreaSummary";
 import Footer from "../Footer";
 import { convertBoundsToGeoJSON, GeoJSONType } from "./helpers";
@@ -24,7 +24,6 @@ const { Option } = Select;
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import * as turf from "@turf/turf";
-import useSWR from "swr";
 import {
   createYearsColorScale,
   MAP_MISSING_DATA_COLOR,
@@ -37,7 +36,6 @@ import GeocoderIcon from "@/app/[lang]/components/Icons/GeocoderIcon";
 import { PERMITTED_LANGUAGES } from "@/utils/content";
 import MapPopup, { TooltipInfo } from "@/app/[lang]/components/Map/MapPopup";
 import Hotspots from "@/app/[lang]/components/Map/Hotspots";
-import { GeoJSONFeature } from "@/types/types";
 import calculateMiningAreaInBbox from "@/utils/calculateMiningAreaInBbox";
 
 interface MainMapProps {

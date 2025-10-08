@@ -32,7 +32,7 @@ export const formatNumber = (
   language: string,
   formatString = ",",
   significantDigits = 1
-) => {
+): string => {
   const locale = formatLocale(
     localeDefinitions[language as PERMITTED_LANGUAGES]
   );
