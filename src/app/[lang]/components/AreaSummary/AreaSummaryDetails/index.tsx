@@ -5,29 +5,25 @@ import CustomTooltip from "@/app/[lang]/components/CustomTooltip";
 import Link from "next/link";
 import QuestionMark from "@/app/[lang]/components/Icons/QuestionMark";
 
-interface AreaSummaryFigureProps {
+interface AreaSummaryDetailsProps {
   dictionary: { [key: string]: any };
-  label: string;
-  figure: string | undefined;
+  economicCost: string | undefined;
   calculatorIsLoading: boolean;
   calculatorUrl?: string;
-  currency: string;
   selectedAreaTimeseriesData: AreasTimeseriesData | undefined;
 }
 
-const AreaSummaryFigure = ({
-  label,
-  figure,
+const AreaSummaryDetails = ({
+  economicCost,
   calculatorIsLoading,
   calculatorUrl,
-  currency,
   selectedAreaTimeseriesData,
   dictionary,
-}: AreaSummaryFigureProps) => {
-  const figureText = calculatorIsLoading
+}: AreaSummaryDetailsProps) => {
+  const economicCostText = calculatorIsLoading
     ? `${dictionary?.map_ui?.loading}...`
-    : figure
-    ? `${figure} ${currency}`
+    : economicCost
+    ? `${economicCost} ${dictionary?.map_ui?.economic_cost_currency}`
     : "N/A";
 
   const FigureTooltip = () =>
@@ -36,18 +32,16 @@ const AreaSummaryFigure = ({
         <CustomTooltip
           content={
             <div>
+              <p>{dictionary?.map_ui?.economic_cost_calculator_intro}</p>
               <p>
-                Economic cost is estimated using the Mining Impacts Calculator.
-              </p>
-              <p>
-                See the{" "}
+                {dictionary?.map_ui?.see_detailed_analysis}{" "}
                 <Link
                   href={calculatorUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{ color: "#ecaf00" }}
                 >
-                  detailed analysis here
+                  {dictionary?.map_ui?.detailed_analysis_link}
                 </Link>
                 .
               </p>
@@ -69,13 +63,13 @@ const AreaSummaryFigure = ({
         <AreaSummaryLineChart data={selectedAreaTimeseriesData} />
       )}
 
-      <div className={style.label}>{label}</div>
+      <div className={style.label}>{dictionary?.map_ui?.economic_cost}</div>
       <div className={style.figure}>
-        <div className={style.figureText}>{figureText}</div>
+        <div className={style.figureText}>{economicCostText}</div>
         <FigureTooltip />
       </div>
     </div>
   );
 };
 
-export default AreaSummaryFigure;
+export default AreaSummaryDetails;

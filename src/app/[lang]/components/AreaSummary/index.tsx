@@ -8,7 +8,7 @@ import {
   formatNumber,
   PERMITTED_LANGUAGES,
 } from "@/utils/content";
-import AreaSummaryFigure from "@/app/[lang]/components/AreaSummary/AreaSummaryFigure";
+import AreaSummaryDetails from "@/app/[lang]/components/AreaSummary/AreaSummaryDetails";
 import { CloseCircleFilled } from "@ant-design/icons";
 import { getAreaUnitByKey } from "@/app/[lang]/components/Footer";
 import * as turf from "@turf/turf";
@@ -132,16 +132,14 @@ const Area: React.FC<AreaProps> = ({ dictionary, year, lang, activeLayer }) => {
       </div>
       {showMoreInsights && (
         <div>
-          <AreaSummaryFigure
-            label={dictionary.map_ui.economic_cost}
-            figure={
+          <AreaSummaryDetails
+            economicCost={
               economicCost
                 ? formatNumber(economicCost, lang, ",.2~s", 2) || undefined
                 : undefined
             }
             calculatorIsLoading={calculatorIsLoading}
             calculatorUrl={calculatorUrl}
-            currency={dictionary.map_ui.economic_cost_currency}
             selectedAreaTimeseriesData={selectedAreaTimeseriesData}
             dictionary={dictionary}
           />
