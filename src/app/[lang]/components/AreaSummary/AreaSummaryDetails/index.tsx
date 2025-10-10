@@ -58,10 +58,14 @@ const AreaSummaryDetails = ({
 
   return (
     <div className={style.wrapper}>
-      <div className={style.label}>{dictionary?.map_ui?.area_over_time}</div>
-      {selectedAreaTimeseriesData && (
-        <AreaSummaryLineChart data={selectedAreaTimeseriesData} />
-      )}
+      {selectedAreaTimeseriesData?.length ? (
+        <>
+          <div className={style.label}>
+            {dictionary?.map_ui?.area_over_time}
+          </div>
+          <AreaSummaryLineChart data={selectedAreaTimeseriesData} />
+        </>
+      ) : null}
 
       <div className={style.label}>{dictionary?.map_ui?.economic_cost}</div>
       <div className={style.figure}>
