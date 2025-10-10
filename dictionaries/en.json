@@ -53,6 +53,8 @@
     "economic_cost_currency": "USD",
     "unknown": "Unknown",
     "area_status": "Area status",
+    "select_area_placeholder": "Select an area...",
+    "area_over_time": "Area over time",
     "hide_more_insights": "Hide more insights",
     "see_more_insights": "See more insights"
   },

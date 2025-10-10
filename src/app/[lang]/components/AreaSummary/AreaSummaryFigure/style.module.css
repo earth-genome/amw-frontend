@@ -22,6 +22,10 @@
   font-size: 32px;
 }
 
+.figureText {
+  text-transform: capitalize;
+}
+
 .tooltipButton {
   border: none;
   background: transparent;

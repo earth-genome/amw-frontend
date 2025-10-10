@@ -15,14 +15,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const apiUrl = `${BASE_URL}/api/map-locations`;
+    const apiUrl = `${BASE_URL}/api`;
     const defaultHeaders = {
       "Content-Type": "application/json",
       "x-api-key": API_KEY,
     };
 
     // first request: post mining locations
-    const response = await fetch(`${apiUrl}?${VERCEL_SHARE_ID}`, {
+    const response = await fetch(`${apiUrl}/map-locations?${VERCEL_SHARE_ID}`, {
       method: "POST",
       headers: defaultHeaders,
       body: JSON.stringify(miningLocations),
@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
     }
 
     // second request: follow redirect
-    const redirectRes = await fetch(`${apiUrl}?${VERCEL_SHARE_ID}`, {
+    const redirectRes = await fetch(`${apiUrl}/map-locations?${VERCEL_SHARE_ID}`, {
       method: "POST",
       headers: {
         ...defaultHeaders,

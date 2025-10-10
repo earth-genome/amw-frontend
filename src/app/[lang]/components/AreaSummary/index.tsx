@@ -143,6 +143,7 @@ const Area: React.FC<AreaProps> = ({ dictionary, year, lang, activeLayer }) => {
             calculatorUrl={calculatorUrl}
             currency={dictionary.map_ui.economic_cost_currency}
             selectedAreaTimeseriesData={selectedAreaTimeseriesData}
+            dictionary={dictionary}
           />
         </div>
       )}

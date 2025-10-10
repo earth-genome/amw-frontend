@@ -6,6 +6,7 @@ import { Context } from "@/lib/Store";
 interface AreaSearchProps {
   handleAreaSelect: (value: SingleValue<AreaSelectOption>) => void;
   selectedArea?: SingleValue<AreaSelectOption>;
+  dictionary: { [key: string]: any };
 }
 
 const CustomOption = (props: OptionProps<AreaSelectOption>) => {
@@ -36,7 +37,11 @@ const CustomOption = (props: OptionProps<AreaSelectOption>) => {
   );
 };
 
-const AreaSearch = ({ handleAreaSelect, selectedArea }: AreaSearchProps) => {
+const AreaSearch = ({
+  handleAreaSelect,
+  selectedArea,
+  dictionary,
+}: AreaSearchProps) => {
   const [state] = useContext(Context)!;
   const { areasOptions } = state;
 
@@ -118,7 +123,7 @@ const AreaSearch = ({ handleAreaSelect, selectedArea }: AreaSearchProps) => {
           Option: CustomOption,
         }}
         isSearchable={true}
-        placeholder="Select an area..."
+        placeholder={dictionary?.map_ui?.select_area_placeholder}
         onChange={(newValue) =>
           handleAreaSelect(newValue as SingleValue<AreaSelectOption>)
         }

@@ -6,6 +6,7 @@ import Link from "next/link";
 import QuestionMark from "@/app/[lang]/components/Icons/QuestionMark";
 
 interface AreaSummaryFigureProps {
+  dictionary: { [key: string]: any };
   label: string;
   figure: string | undefined;
   calculatorIsLoading: boolean;
@@ -21,9 +22,10 @@ const AreaSummaryFigure = ({
   calculatorUrl,
   currency,
   selectedAreaTimeseriesData,
+  dictionary,
 }: AreaSummaryFigureProps) => {
   const figureText = calculatorIsLoading
-    ? "Loading..."
+    ? `${dictionary?.map_ui?.loading}...`
     : figure
     ? `${figure} ${currency}`
     : "N/A";
@@ -62,13 +64,14 @@ const AreaSummaryFigure = ({
 
   return (
     <div className={style.wrapper}>
+      <div className={style.label}>{dictionary?.map_ui?.area_over_time}</div>
       {selectedAreaTimeseriesData && (
         <AreaSummaryLineChart data={selectedAreaTimeseriesData} />
       )}
 
       <div className={style.label}>{label}</div>
       <div className={style.figure}>
-        <div>{figureText}</div>
+        <div className={style.figureText}>{figureText}</div>
         <FigureTooltip />
       </div>
     </div>
