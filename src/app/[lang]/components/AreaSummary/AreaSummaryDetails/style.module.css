@@ -15,6 +15,20 @@
 }
 
 .figure {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   font-weight: 700;
   font-size: 32px;
+}
+
+.figureText {
+  text-transform: capitalize;
+}
+
+.tooltipButton {
+  border: none;
+  background: transparent;
+  padding: none;
+  cursor: pointer;
 }

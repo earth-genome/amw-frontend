@@ -27,11 +27,15 @@
   white-space: nowrap;
 }
 
+.area-types .ant-select {
+  height: 38px;
+}
+
 .area-types .ant-radio-button-wrapper {
   padding-inline: 20px !important;
   font-size: 14px;
   flex-shrink: 0;
-  height: 37px;
+  height: 38px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -71,6 +75,7 @@
 
 .area-select {
   margin-left: 24px;
+  width: 250px;
 }
 
 .area-loading {
@@ -78,8 +83,9 @@
   color: #003e36b2;
   border-radius: 5px;
   display: flex;
-  justify-content: center;
+  justify-content: start;
   align-items: center;
   height: 37px;
   padding: 0 24px;
+  text-transform: capitalize;
 }

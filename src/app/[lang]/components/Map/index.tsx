@@ -8,14 +8,14 @@ import React, {
   useEffect,
 } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { message, Radio, Select, ConfigProvider } from "antd";
+import { Radio, Select, ConfigProvider } from "antd";
 import Map, {
   Layer,
   Source,
   NavigationControl,
   ScaleControl,
 } from "react-map-gl";
-import type { MapGeoJSONFeature, MapMouseEvent, MapRef } from "react-map-gl";
+import type { MapMouseEvent, MapRef } from "react-map-gl";
 import AreaSummary from "../AreaSummary";
 import Footer from "../Footer";
 import { convertBoundsToGeoJSON, GeoJSONType } from "./helpers";
@@ -24,14 +24,19 @@ const { Option } = Select;
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import * as turf from "@turf/turf";
-import useSWR from "swr";
-import { createYearsColorScale, MAP_MISSING_DATA_COLOR } from "@/constants/map";
+import {
+  createYearsColorScale,
+  MAP_MISSING_DATA_COLOR,
+  PERMITTED_AREA_TYPES_KEYS,
+} from "@/constants/map";
 import { Expression } from "mapbox-gl";
 import AreaSelect from "@/app/[lang]/components/AreaSelect";
 import { Context } from "@/lib/Store";
 import GeocoderIcon from "@/app/[lang]/components/Icons/GeocoderIcon";
 import { PERMITTED_LANGUAGES } from "@/utils/content";
 import MapPopup, { TooltipInfo } from "@/app/[lang]/components/Map/MapPopup";
+import Hotspots from "@/app/[lang]/components/Map/Hotspots";
+import calculateMiningAreaInBbox from "@/utils/calculateMiningAreaInBbox";
 
 interface MainMapProps {
   dictionary: { [key: string]: any };
@@ -49,9 +54,6 @@ const SATELLITE_LAYERS = {
   hiRes: "mapbox://styles/earthrise/cmdxgrceq014x01s22jfm5muv", // Mapbox satellite
 };
 
-const fetcher = (...args: Parameters<typeof fetch>) =>
-  fetch(...args).then((res) => res.json());
-
 const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
   const [state, dispatch] = useContext(Context)!;
   const pathname = usePathname();
@@ -65,14 +67,8 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
   const [tooltip, setTooltip] = useState<TooltipInfo | null>(null);
   const hoveredFeatureRef = useRef<string | number | undefined>(undefined);
 
-  const mineDataUrl = `https://raw.githubusercontent.com/earthrise-media/mining-detector/8a076bf0d6fdc3dde16b9abed68087fa40ee8c92/data/outputs/48px_v3.2-3.7ensemble/difference/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2024_all_differences.geojson`;
   const {
-    data: mineData,
-    error: mineError,
-    isLoading: mineIsLoading,
-  } = useSWR(mineDataUrl, fetcher);
-
-  const {
+    miningData,
     areasData,
     selectedAreaData,
     selectedArea,
@@ -112,9 +108,8 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
     router.replace(`${pathname}?${params.toString()}`);
   }, [pathname, router]);
 
-  const calculateMiningAreaInView = useCallback(() => {
+  const getCurrentBounds = useCallback(() => {
     if (!mapRef.current) return;
-    if (mapRef.current.getZoom() <= 5) return; // don't run if too zoomed out
     const currentBounds = mapRef.current.getBounds();
     if (!currentBounds) return;
 
@@ -124,21 +119,8 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
       currentBounds.getEast(),
       currentBounds.getNorth(),
     ] as [number, number, number, number];
-    // filter features based on active year
-    const filteredFeatures = mineData?.features?.filter(
-      (feature: MapGeoJSONFeature) =>
-        Number(feature?.properties?.year) <= Number(activeLayer)
-    );
-    let areaMinesSquareMeters = 0;
-    for (const feature of filteredFeatures) {
-      const clipped = turf.bboxClip(feature, bbox);
-      areaMinesSquareMeters += turf.area(clipped);
-    }
-    console.info(
-      "Area of mine squares in view (square km): ",
-      areaMinesSquareMeters / 1000000
-    );
-  }, [activeLayer, mineData?.features]);
+    return bbox;
+  }, []);
 
   const getSatelliteOpacity = (layerId: string) => {
     if (yearly && layerId === `sentinel-layer-${activeLayer}`) {
@@ -234,7 +216,23 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
 
       const feature = features[0];
       const id = feature?.properties?.id;
+      const type = feature?.properties?.type as PERMITTED_AREA_TYPES_KEYS;
+
       if (!id) return;
+
+      if (type === "hotspots") {
+        dispatch({
+          type: "SET_SELECTED_AREA_TYPE_BY_KEY",
+          selectedAreaTypeKey: "hotspots",
+        });
+        // because this will trigger a change in area type, we need to wait
+        // for the data to load, so we set it as pending
+        dispatch({
+          type: "SET_PENDING_SELECTED_AREA_ID",
+          pendingSelectedAreaId: id,
+        });
+        return;
+      }
 
       dispatch({ type: "SET_SELECTED_AREA_BY_ID", selectedAreaId: id });
     },
@@ -259,6 +257,10 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
     });
   }, [selectedAreaData]);
 
+  const getBeforeId = (targetLayerId: string) =>
+    // make sure the layer exists to avoid errors
+    mapRef.current?.getLayer(targetLayerId) ? targetLayerId : undefined;
+
   return (
     <div className="main-map">
       <Map
@@ -278,8 +280,18 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
         }}
         mapStyle={mapStyle}
         onIdle={() => {
+          if (!mapRef.current) return;
+          if (mapRef.current.getZoom() <= 11) return; // don't run if too zoomed out
+
+          let bbox = getCurrentBounds();
+          if (!bbox) return;
           // FIXME: we're not using the mining areas yet
-          // calculateMiningAreaInView();
+          const miningArea = calculateMiningAreaInBbox(
+            bbox,
+            activeLayer,
+            miningData
+          );
+          console.log("using viewport, mining area in ha", miningArea);
         }}
         onMoveEnd={() => {
           updateURLParamsMapPosition();
@@ -290,6 +302,9 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
           if (!bounds) return;
           const currentBounds = convertBoundsToGeoJSON(bounds);
           setBounds(currentBounds);
+
+          // FIXME: allow to use this for CMS
+          console.log(currentBounds?.geometry?.coordinates);
         }}
         onZoomEnd={() => {
           updateURLParamsMapPosition();
@@ -338,7 +353,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
         onClick={handleClick}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
-        interactiveLayerIds={["areas-layer-fill"]}
+        interactiveLayerIds={["areas-layer-fill", "hotspots-fill"]}
       >
         <NavigationControl position={"top-right"} />
         {/* ================== SENTINEL2 SOURCES =================== */}
@@ -538,6 +553,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
           <>
             <Layer
               id={"areas-layer"}
+              beforeId={getBeforeId("mines-layer")}
               source={"areas"}
               type="line"
               paint={{
@@ -558,6 +574,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
             />
             <Layer
               id={"areas-layer-fill"}
+              beforeId={getBeforeId("areas-layer")}
               source={"areas"}
               type="fill"
               paint={{
@@ -577,6 +594,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
           <>
             <Layer
               id={"selected-area-layer-fill"}
+              beforeId={getBeforeId("areas-layer")}
               source={"selected-area"}
               type="fill"
               paint={{
@@ -587,6 +605,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
             />
             <Layer
               id={"selected-area-layer"}
+              beforeId={getBeforeId("selected-area-layer-fill")}
               source={"selected-area"}
               type="line"
               paint={{
@@ -599,18 +618,19 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
         )}
 
         {/* ================== MINE SOURCES =================== */}
-        {mineData && (
+        {miningData && (
           <Source
             id={"mines"}
             type="geojson"
             tolerance={0.05}
-            data={mineData}
+            data={miningData}
           />
         )}
         {/* ================== MINE LAYER =================== */}
-        {mineData && (
+        {miningData && (
           <Layer
             id={"mines-layer"}
+            beforeId={getBeforeId("hotspots-fill")}
             source={"mines"}
             type="line"
             filter={["<=", ["get", "year"], Number(activeLayer)]}
@@ -653,6 +673,10 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
             "text-color": "#ffffff",
           }}
         />
+
+        {/* wait for mines to load so that hotspots are layered on top of mines */}
+        {miningData && <Hotspots />}
+
         {/* ================== POPUP =================== */}
         {tooltip && <MapPopup tooltip={tooltip} />}
 
@@ -773,7 +797,12 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
       />
 
       {selectedArea && (
-        <AreaSummary dictionary={dictionary} year={activeLayer} lang={lang} />
+        <AreaSummary
+          dictionary={dictionary}
+          year={activeLayer}
+          lang={lang}
+          activeLayer={activeLayer}
+        />
       )}
 
       <Footer />

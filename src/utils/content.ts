@@ -32,7 +32,7 @@ export const formatNumber = (
   language: string,
   formatString = ",",
   significantDigits = 1
-) => {
+): string => {
   const locale = formatLocale(
     localeDefinitions[language as PERMITTED_LANGUAGES]
   );
@@ -55,12 +55,12 @@ const haToSquareKm = (n: number) => n * 0.01;
 const haToAcre = (n: number) => n * 2.471054;
 
 export const displayAreaInUnits = (
-  area: number | undefined,
+  areaHa: number | undefined,
   units: PERMITTED_AREA_UNITS
 ): number => {
-  if (!area) return 0;
-  if (units === "hectares") return area;
-  if (units === "squareKm") return haToSquareKm(area);
-  if (units === "imperial") return haToAcre(area);
+  if (!areaHa) return 0;
+  if (units === "hectares") return areaHa;
+  if (units === "squareKm") return haToSquareKm(areaHa);
+  if (units === "imperial") return haToAcre(areaHa);
   return 0; // Add default return value
 };

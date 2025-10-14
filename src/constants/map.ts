@@ -1,5 +1,6 @@
 import { scaleSequential } from "d3-scale";
 import { interpolateRgbBasis } from "d3-interpolate";
+import { HOTSPOTS_GEOJSON_URL } from "@/utils/hotspots";
 
 export const MAP_COLOR_SCALE = [
   "#F7E4BC",
@@ -31,6 +32,8 @@ export interface AreaType {
   renderStatus: (properties: Record<string, any>) => string;
   showCountry: boolean;
 }
+
+export const MINING_DATA_URL = `https://raw.githubusercontent.com/earthrise-media/mining-detector/8a076bf0d6fdc3dde16b9abed68087fa40ee8c92/data/outputs/48px_v3.2-3.7ensemble/difference/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2024_all_differences.geojson`;
 
 const AREA_TYPES_BASE_URL =
   // "/test-data";
@@ -97,4 +100,19 @@ export const AREA_TYPES = [
     renderStatus: (properties: Record<string, any>) => properties.status_field,
     showCountry: true,
   },
+  {
+    key: "hotspots",
+    dictionaryKey: "hotspots",
+    dictionaryKeySingular: "hotspot",
+    url: HOTSPOTS_GEOJSON_URL,
+    // FIXME:
+    timeseriesUrl: "",
+    isDefault: false,
+    renderLabel: (properties: Record<string, any>) => properties.title,
+    renderTitle: (properties: Record<string, any>) => properties.title,
+    renderStatus: (properties: Record<string, any>) => "",
+    showCountry: false,
+  },
 ] as const;
+
+export type PERMITTED_AREA_TYPES_KEYS = (typeof AREA_TYPES)[number]["key"];

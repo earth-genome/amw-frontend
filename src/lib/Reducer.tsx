@@ -17,6 +17,12 @@ const Reducer = (state: IState, action: ActionType): IState => {
         ...state,
         isQueryChecked: action.isQueryChecked,
       };
+    case "SET_MINING_DATA":
+      return {
+        ...state,
+        miningData: action.miningData,
+        miningDataIsLoading: action.miningDataIsLoading,
+      };
     case "SET_AREAS_DATA":
       return {
         ...state,
@@ -66,11 +72,11 @@ const Reducer = (state: IState, action: ActionType): IState => {
         selectedArea: state.areasOptions?.find(
           (d) => d?.value === action.selectedAreaId
         ),
-        selectedAreaData: state.areasData?.features.find(
-          (d) => d.properties.id === action.selectedAreaId
+        selectedAreaData: state.areasData?.features?.find(
+          (d) => d?.properties?.id === action.selectedAreaId
         ),
         selectedAreaTimeseriesData: state.areasTimeseriesData?.filter(
-          (d) => d.id === action.selectedAreaId
+          (d) => d?.id === action.selectedAreaId
         ),
       };
     case "SET_PENDING_SELECTED_AREA_ID":

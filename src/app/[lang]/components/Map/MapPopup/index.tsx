@@ -2,6 +2,7 @@ import { Context } from "@/lib/Store";
 import { useContext } from "react";
 import { Popup } from "react-map-gl";
 import "./style.css";
+import { PERMITTED_AREA_TYPES_KEYS } from "@/constants/map";
 
 export interface TooltipInfo {
   longitude: number;
@@ -20,7 +21,12 @@ const MapPopup = ({ tooltip }: MapPopupProps) => {
 
   const { properties, longitude, latitude } = tooltip;
 
-  const title = state.selectedAreaType?.renderTitle(properties);
+  // HACK: because hotspots need to show title independent 
+  // of what kind of area is displaying
+  const title =
+    (properties?.type as PERMITTED_AREA_TYPES_KEYS) === "hotspots"
+      ? properties.title
+      : state.selectedAreaType?.renderTitle(properties);
   const status = state.selectedAreaType?.renderStatus(properties);
   const country = properties?.country;
   return (
