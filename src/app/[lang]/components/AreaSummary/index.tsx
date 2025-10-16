@@ -35,13 +35,17 @@ const Area: React.FC<AreaProps> = ({ dictionary, year, lang, activeLayer }) => {
   } = state;
   const areaProperties = selectedAreaData?.properties || {};
   const showMoreInsights = true;
+  // don't use mining calculator for countries because it is not reliable for such large areas
+  const hideMiningCalculator = selectedAreaTypeKey === "countries";
 
   const {
     calculatorData,
     calculatorUrl,
     calculatorIsLoading,
     calculatorError,
-  } = useMiningCalculator(selectedAreaData?.properties?.locations);
+  } = useMiningCalculator(
+    hideMiningCalculator ? [] : selectedAreaData?.properties?.locations
+  );
 
   const [affectedAreaHa, economicCost] = useMemo(() => {
     if (selectedAreaTypeKey === "hotspots" && selectedAreaData) {
@@ -133,6 +137,7 @@ const Area: React.FC<AreaProps> = ({ dictionary, year, lang, activeLayer }) => {
       {showMoreInsights && (
         <div>
           <AreaSummaryDetails
+            hideMiningCalculator={hideMiningCalculator}
             economicCost={
               economicCost
                 ? formatNumber(economicCost, lang, ",.2~s", 2) || undefined

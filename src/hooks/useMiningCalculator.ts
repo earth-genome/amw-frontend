@@ -56,7 +56,7 @@ export const useMiningCalculator = (
     MiningCalculatorResponse,
     Error
   >(
-    miningLocationsFiltered
+    miningLocationsFiltered?.length
       ? ["/api/mining-calculator", miningLocationsFiltered]
       : null,
     ([url, locations]: [string, MiningLocation[]]) => fetcher(url, locations),

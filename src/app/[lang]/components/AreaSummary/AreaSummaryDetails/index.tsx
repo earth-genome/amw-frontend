@@ -11,6 +11,7 @@ interface AreaSummaryDetailsProps {
   calculatorIsLoading: boolean;
   calculatorUrl?: string;
   selectedAreaTimeseriesData: AreasTimeseriesData | undefined;
+  hideMiningCalculator: boolean;
 }
 
 const AreaSummaryDetails = ({
@@ -19,6 +20,7 @@ const AreaSummaryDetails = ({
   calculatorUrl,
   selectedAreaTimeseriesData,
   dictionary,
+  hideMiningCalculator,
 }: AreaSummaryDetailsProps) => {
   const economicCostText = calculatorIsLoading
     ? `${dictionary?.map_ui?.loading}...`
@@ -67,11 +69,15 @@ const AreaSummaryDetails = ({
         </>
       ) : null}
 
-      <div className={style.label}>{dictionary?.map_ui?.economic_cost}</div>
-      <div className={style.figure}>
-        <div className={style.figureText}>{economicCostText}</div>
-        <FigureTooltip />
-      </div>
+      {!hideMiningCalculator && (
+        <>
+          <div className={style.label}>{dictionary?.map_ui?.economic_cost}</div>
+          <div className={style.figure}>
+            <div className={style.figureText}>{economicCostText}</div>
+            <FigureTooltip />
+          </div>
+        </>
+      )}
     </div>
   );
 };
