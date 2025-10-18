@@ -805,7 +805,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
         />
       )}
 
-      <Footer />
+      <Footer dictionary={dictionary} />
     </div>
   );
 };

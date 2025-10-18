@@ -3,18 +3,19 @@ import { useContext } from "react";
 import "./style.css";
 import { Context } from "@/lib/Store";
 
+interface FooterProps {
+  dictionary: { [key: string]: any };
+}
+
 export type PERMITTED_AREA_UNITS = "hectares" | "squareKm" | "imperial";
 
 export const AREA_UNITS_OPTIONS = [
-  { value: "hectares", name: "Hectares", unitAbbrev: "hectares" },
-  { value: "squareKm", name: "Square km", unitAbbrev: "km²" },
-  { value: "imperial", name: "Imperial", unitAbbrev: "acres" },
+  { value: "hectares" },
+  { value: "squareKm" },
+  { value: "imperial" },
 ];
 
-export const getAreaUnitByKey = (key: PERMITTED_AREA_UNITS) =>
-  AREA_UNITS_OPTIONS.find((d) => d.value === key);
-
-const Footer = () => {
+const Footer = ({ dictionary }: FooterProps) => {
   const [state, dispatch] = useContext(Context)!;
 
   const handleUnitsChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -28,15 +29,15 @@ const Footer = () => {
   return (
     <div className="footer">
       <div>
-        Units{" "}
-        <select 
-          className="footer-units-select" 
+        {dictionary?.map_ui?.units}{" "}
+        <select
+          className="footer-units-select"
           value={state.areaUnits}
           onChange={handleUnitsChange}
         >
-          <option value="hectares">Hectares</option>
-          <option value="squareKm">Square km</option>
-          <option value="imperial">Imperial</option>
+          <option value="hectares">{dictionary?.map_ui?.hectares}</option>
+          <option value="squareKm">{dictionary?.map_ui?.squareKm}</option>
+          <option value="imperial">{dictionary?.map_ui?.imperial}</option>
         </select>
       </div>
       <div>© Mapbox © OpenStreetMap</div>

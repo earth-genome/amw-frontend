@@ -59,7 +59,14 @@
     "see_detailed_analysis": "See the",
     "detailed_analysis_link": "detailed analysis here",
     "hide_more_insights": "Hide more insights",
-    "see_more_insights": "See more insights"
+    "see_more_insights": "See more insights",
+    "units": "Units",
+    "hectares": "Hectares",
+    "squareKm": "Square km",
+    "imperial": "Imperial",
+    "hectaresAbbrev": "hectares",
+    "squareKmAbbrev": "km²",
+    "imperialAbbrev": "acres"
   },
   "map_legend": {
     "old_mining_activity": "Older mining activity",

@@ -10,7 +10,6 @@ import {
 } from "@/utils/content";
 import AreaSummaryDetails from "@/app/[lang]/components/AreaSummary/AreaSummaryDetails";
 import { CloseCircleFilled } from "@ant-design/icons";
-import { getAreaUnitByKey } from "@/app/[lang]/components/Footer";
 import * as turf from "@turf/turf";
 import calculateMiningAreaInBbox from "@/utils/calculateMiningAreaInBbox";
 import useMiningCalculator from "@/hooks/useMiningCalculator";
@@ -131,7 +130,7 @@ const Area: React.FC<AreaProps> = ({ dictionary, year, lang, activeLayer }) => {
                 1
               )
             : 0}{" "}
-          {getAreaUnitByKey(areaUnits)?.unitAbbrev}
+          {dictionary?.map_ui?.[`${areaUnits}Abbrev`]}
         </div>
       </div>
       {showMoreInsights && (
