@@ -7,6 +7,8 @@
   border-bottom-left-radius: 12px;
   border-bottom-right-radius: 12px;
   color: var(--green-dark);
+  max-height: 30vh;
+  overflow-y: auto;
 }
 
 .label {
@@ -31,4 +33,9 @@
   background: transparent;
   padding: none;
   cursor: pointer;
+}
+
+.paragraph {
+  line-height: 130%;
+  font-weight: 400;
 }

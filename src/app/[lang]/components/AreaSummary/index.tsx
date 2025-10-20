@@ -34,8 +34,11 @@ const Area: React.FC<AreaProps> = ({ dictionary, year, lang, activeLayer }) => {
   } = state;
   const areaProperties = selectedAreaData?.properties || {};
   const showMoreInsights = true;
-  // don't use mining calculator for countries because it is not reliable for such large areas
-  const hideMiningCalculator = selectedAreaTypeKey === "countries";
+  // don't use mining calculator for countries because it is not reliable for such large areas,
+  // also don't show for hotspots because we don't calculate economic cost for these on the fly
+  const hideMiningCalculator =
+    !selectedAreaTypeKey ||
+    ["countries", "hotspots"].includes(selectedAreaTypeKey);
 
   const {
     calculatorData,
@@ -78,7 +81,7 @@ const Area: React.FC<AreaProps> = ({ dictionary, year, lang, activeLayer }) => {
     selectedAreaTypeKey,
   ]);
 
-  const { country, id: areaId } = areaProperties;
+  const { country, id: areaId, description } = areaProperties;
   const { showCountry, renderTitle, renderStatus } = selectedAreaType || {};
   const areaTitle = renderTitle && renderTitle(areaProperties);
   const areaStatus = renderStatus && renderStatus(areaProperties);
@@ -145,6 +148,7 @@ const Area: React.FC<AreaProps> = ({ dictionary, year, lang, activeLayer }) => {
             calculatorIsLoading={calculatorIsLoading}
             calculatorUrl={calculatorUrl}
             selectedAreaTimeseriesData={selectedAreaTimeseriesData}
+            description={description}
             dictionary={dictionary}
           />
         </div>
