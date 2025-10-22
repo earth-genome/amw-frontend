@@ -1,16 +1,18 @@
 "use client";
 
 import Store from "@/lib/Store";
+import { PERMITTED_LANGUAGES } from "@/utils/content";
 import { ReactNode, Suspense } from "react";
 
 interface MapWrapperProps {
   children: ReactNode;
+  lang: PERMITTED_LANGUAGES;
 }
 
-const MapWrapper = ({ children }: MapWrapperProps) => {
+const MapWrapper = ({ children, lang }: MapWrapperProps) => {
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <Store>{children}</Store>
+      <Store lang={lang}>{children}</Store>
     </Suspense>
   );
 };

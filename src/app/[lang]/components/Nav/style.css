@@ -74,6 +74,7 @@
 }
 .menu-lang {
   text-decoration: none;
+  text-transform: uppercase;
   margin: 0 10px;
   color: #fff;
   font-size: 12px;
@@ -91,4 +92,5 @@
   line-height: 2;
   font-weight: 400;
   letter-spacing: 4px;
+  text-transform: uppercase;
 }

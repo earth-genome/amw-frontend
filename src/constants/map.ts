@@ -1,6 +1,6 @@
 import { scaleSequential } from "d3-scale";
 import { interpolateRgbBasis } from "d3-interpolate";
-import { HOTSPOTS_GEOJSON_URL } from "@/utils/hotspots";
+import { HOTSPOTS_GEOJSON_URL } from "@/cms/hotspots";
 
 export const MAP_COLOR_SCALE = [
   "#F7E4BC",
@@ -31,6 +31,7 @@ export interface AreaType {
   renderTitle: (properties: Record<string, any>) => string;
   renderStatus: (properties: Record<string, any>) => string;
   showCountry: boolean;
+  useLocale: boolean;
 }
 
 export const MINING_DATA_URL = `https://raw.githubusercontent.com/earthrise-media/mining-detector/8a076bf0d6fdc3dde16b9abed68087fa40ee8c92/data/outputs/48px_v3.2-3.7ensemble/difference/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2024_all_differences.geojson`;
@@ -51,6 +52,7 @@ export const AREA_TYPES = [
     renderTitle: (properties: Record<string, any>) => properties.country,
     renderStatus: () => "",
     showCountry: false,
+    useLocale: false,
   },
   {
     key: "subnational-areas",
@@ -67,6 +69,7 @@ export const AREA_TYPES = [
       properties.name_field || "N/A",
     renderStatus: () => "",
     showCountry: true,
+    useLocale: false,
   },
   {
     key: "indigenous-territory",
@@ -83,6 +86,7 @@ export const AREA_TYPES = [
       properties.name_field || "N/A",
     renderStatus: (properties: Record<string, any>) => properties.status_field,
     showCountry: true,
+    useLocale: false,
   },
   {
     key: "protected-area",
@@ -99,6 +103,7 @@ export const AREA_TYPES = [
       properties.name_field || "N/A",
     renderStatus: (properties: Record<string, any>) => properties.status_field,
     showCountry: true,
+    useLocale: false,
   },
   {
     key: "hotspots",
@@ -112,6 +117,7 @@ export const AREA_TYPES = [
     renderTitle: (properties: Record<string, any>) => properties.title,
     renderStatus: (properties: Record<string, any>) => "",
     showCountry: false,
+    useLocale: true,
   },
 ] as const;
 

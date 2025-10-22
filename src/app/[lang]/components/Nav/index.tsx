@@ -1,14 +1,15 @@
 "use client";
-import React, { ReactNode, useState, useEffect, useRef } from "react";
-import { usePathname } from "next/navigation";
-import Image from "next/image";
-import Logo from "./logo.svg";
-import Link from "next/link";
-import Overlay from "../Overlay";
-import HowToUse from "../HowToUse";
-import { useMenu } from "../../menuContext";
+import HowToUse from "@/app/[lang]/components/HowToUse";
+import Overlay from "@/app/[lang]/components/Overlay";
+import { useMenu } from "@/app/[lang]/menuContext";
 import gsap from "gsap";
+import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import React, { Fragment, ReactNode, useEffect, useRef, useState } from "react";
+import Logo from "./logo.svg";
 import "./style.css";
+import { LOCALES } from "@/utils/content";
 
 interface NavProps {
   children?: ReactNode;
@@ -17,18 +18,32 @@ interface NavProps {
 
 const getLocaleFromPathname = (pathname: string) => {
   const localeMatch = pathname.match(/^\/(en|es|pt)/);
-  return localeMatch ? localeMatch[1] : 'en'; // default to 'en' if no match
+  return localeMatch ? localeMatch[1] : "en"; // default to 'en' if no match
 };
 
 const Nav: React.FC<NavProps> = ({ children, dictionary }) => {
   const pathname = usePathname();
-  const locale =  getLocaleFromPathname(pathname);
+  const locale = getLocaleFromPathname(pathname);
   const [showMenu, setShowMenu] = useState(false);
   const [animate, setAnimate] = useState("");
   const [showHowToUse, setShowHowToUse] = useState(false);
   const { menuOpen, setMenuOpen } = useMenu();
   const menuRef = useRef<HTMLUListElement>(null); // Ref for the menu to animate
   const isRootPath = /^\/(en|es|pt)?\/?$/.test(pathname);
+
+  const menuItems = [
+    { href: `/${locale}`, label: dictionary.menu.map },
+    { href: `/${locale}/about`, label: dictionary.menu.about },
+    { href: `/${locale}/results`, label: dictionary.menu.results },
+    { href: `/${locale}/case-studies`, label: dictionary.menu.case_studies },
+    { href: `/${locale}/methodology`, label: dictionary.menu.methodology },
+    {
+      href: `/${locale}/policy-scoreboard`,
+      label: dictionary.menu.policy_scoreboard,
+    },
+    { href: `/${locale}/faq`, label: dictionary.menu.faq },
+    { href: `/${locale}/contact`, label: dictionary.menu.contact },
+  ];
 
   useEffect(() => {
     if (menuRef.current) {
@@ -41,7 +56,7 @@ const Nav: React.FC<NavProps> = ({ children, dictionary }) => {
             duration: 0.8,
             stagger: 0.07,
             ease: "back.out(1.4)",
-          },
+          }
         );
       } else {
         gsap.fromTo(
@@ -52,7 +67,7 @@ const Nav: React.FC<NavProps> = ({ children, dictionary }) => {
             duration: 0.7,
             stagger: 0.06,
             ease: "back.in(1.4)",
-          },
+          }
         );
       }
     }
@@ -90,29 +105,20 @@ const Nav: React.FC<NavProps> = ({ children, dictionary }) => {
 
       {!showMenu && (
         <>
-          <Link
-            className="menu-lang"
-            onClick={() => sessionStorage.setItem("introViewed", "false")}
-            href="/en"
-          >
-            EN
-          </Link>
-          <span className="divider">|</span>
-          <Link
-            className="menu-lang"
-            onClick={() => sessionStorage.setItem("introViewed", "false")}
-            href="/es"
-          >
-            ES
-          </Link>
-          <span className="divider">|</span>
-          <Link
-            className="menu-lang"
-            onClick={() => sessionStorage.setItem("introViewed", "false")}
-            href="/pt"
-          >
-            PT
-          </Link>
+          {LOCALES.map((d, i) => (
+            <Fragment key={d.code}>
+              <Link
+                className="menu-lang"
+                onClick={() => sessionStorage.setItem("introViewed", "false")}
+                href={`/${d.code}`}
+              >
+                {d.code}
+              </Link>
+              {i < LOCALES.length - 1 ? (
+                <span className="divider">|</span>
+              ) : null}
+            </Fragment>
+          ))}
         </>
       )}
 
@@ -165,37 +171,18 @@ const Nav: React.FC<NavProps> = ({ children, dictionary }) => {
                   margin: "20px 0",
                 }}
               >
-                <li>
-                  <Link href={`/${locale}`}>{dictionary.menu.map}</Link>
-                </li>
-                <li>
-                  <Link href={`/${locale}/about`}>{dictionary.menu.about}</Link>
-                </li>
-                <li>
-                  <Link href={`/${locale}/case-studies`}>
-                    {dictionary.menu.case_studies}
-                  </Link>
-                </li>
-                <li>
-                  <Link href={`/${locale}/methodology`}>{dictionary.menu.methodology}</Link>
-                </li>
-                <li>
-                  <Link href={`/${locale}/code`}>{dictionary.menu.data_and_code}</Link>
-                </li>
-                <li>
-                  <Link href={`/${locale}/contact`}>{dictionary.menu.contact}</Link>
-                </li>
+                {menuItems.map((item) => (
+                  <li key={item.href}>
+                    <Link href={item.href}>{item.label}</Link>
+                  </li>
+                ))}
               </ul>
               <ul className="lang-menu">
-                <li>
-                  <a href="/en">ENGLISH</a>
-                </li>
-                <li>
-                  <a href="/es">ESPAÑOLA</a>
-                </li>
-                <li>
-                  <a href="/pt">PORTUGUÊS</a>
-                </li>
+                {LOCALES.map((d) => (
+                  <li key={d.code}>
+                    <a href={`/${d.code}`}>{d.localizedName}</a>
+                  </li>
+                ))}
               </ul>
             </div>
           </div>

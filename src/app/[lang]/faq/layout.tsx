@@ -1,5 +1,5 @@
-import type { Metadata, ResolvingMetadata } from "next";
 import { i18n, type Locale } from "../../../../i18n-config";
+import type { Metadata, ResolvingMetadata } from "next";
 import { getDictionary } from "../../../get-dictionary";
 import { PERMITTED_LANGUAGES } from "@/utils/content";
 
@@ -16,11 +16,11 @@ export async function generateMetadata(
   const dictionary = await getDictionary(lang);
 
   return {
-    title: dictionary.code.title,
+    title: dictionary.about.title,
   };
 }
 
-export default async function PageLayout({
+export default async function AboutLayout({
   children, // will be a page or nested layout
   params,
 }: {

@@ -1,4 +1,5 @@
-import { useHotspots } from "@/utils/hotspots";
+import { useHotspots } from "@/cms/hotspots";
+import { PERMITTED_LANGUAGES } from "@/utils/content";
 import { centroid, polygon } from "@turf/turf";
 import { SymbolLayer } from "mapbox-gl";
 import { FillLayer } from "mapbox-gl";
@@ -7,8 +8,12 @@ import { LineLayer } from "mapbox-gl";
 import { Fragment, useMemo } from "react";
 import { Layer, Source } from "react-map-gl";
 
-const Hotspots = () => {
-  const { hotspots: hotspotsData, isLoading, error } = useHotspots();
+interface HotspotsProps {
+  lang: PERMITTED_LANGUAGES;
+}
+
+const Hotspots = ({ lang }: HotspotsProps) => {
+  const { hotspots: hotspotsData, isLoading, error } = useHotspots(lang);
 
   const hotspotsCentroidsData = useMemo(() => {
     /* @ts-ignore */

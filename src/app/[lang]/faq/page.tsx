@@ -1,8 +1,8 @@
-import Overlay from "@/app/[lang]/components/Overlay";
-import { apiFetcher } from "@/cms/client";
-import { CONTACT_URL, ContactResponse } from "@/cms/contact";
-import { getMarkdownText, PERMITTED_LANGUAGES } from "@/utils/content";
 import { NextPage } from "next";
+import { getMarkdownText, PERMITTED_LANGUAGES } from "@/utils/content";
+import { apiFetcher } from "@/cms/client";
+import Overlay from "@/app/[lang]/components/Overlay";
+import { FAQ_URL, FaqResponse } from "@/cms/faq";
 
 interface PageProps {
   params: {
@@ -11,7 +11,7 @@ interface PageProps {
 }
 
 const Page: NextPage<PageProps> = async ({ params: { lang } }) => {
-  const response = await apiFetcher<ContactResponse>(CONTACT_URL, {
+  const response = await apiFetcher<FaqResponse>(FAQ_URL, {
     locale: lang,
   });
 

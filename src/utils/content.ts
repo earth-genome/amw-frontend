@@ -1,7 +1,14 @@
 import { PERMITTED_AREA_UNITS } from "@/app/[lang]/components/Footer";
 import { formatLocale } from "d3";
+import { marked } from "marked";
 
 export type PERMITTED_LANGUAGES = "en" | "es" | "pt";
+
+export const LOCALES = [
+  { code: "en", localizedName: "English" },
+  { code: "es", localizedName: "Español" },
+  { code: "pt", localizedName: "Português" },
+];
 
 const localeDefinitions = {
   en: {
@@ -63,4 +70,12 @@ export const displayAreaInUnits = (
   if (units === "squareKm") return haToSquareKm(areaHa);
   if (units === "imperial") return haToAcre(areaHa);
   return 0; // Add default return value
+};
+
+export const getMarkdownText = (content: string) => {
+  const rawMarkup = marked.parse(content);
+  {
+    /* @ts-ignore */
+  }
+  return { __html: rawMarkup };
 };

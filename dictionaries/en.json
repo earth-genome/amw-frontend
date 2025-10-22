@@ -21,10 +21,12 @@
   "menu": {
     "about_amw": "About AMW",
     "about": "About",
+    "results": "Results",
     "map": "Map",
     "case_studies": "Case Studies",
     "methodology": "Methodology",
-    "data_and_code": "Data and code",
+    "policy_scoreboard": "Policy Scoreboard",
+    "faq": "FAQ",
     "contact": "Contact"
   },
   "intro": {

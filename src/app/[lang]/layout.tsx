@@ -50,7 +50,7 @@ export default async function RootLayout({
         <MenuProvider>
           <body>
             <Nav dictionary={dictionary} />
-            <MapWrapper>
+            <MapWrapper lang={params.lang}>
               <MainMap dictionary={dictionary} lang={params.lang} />
             </MapWrapper>
             {children}

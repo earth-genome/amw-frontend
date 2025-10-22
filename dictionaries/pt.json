@@ -27,9 +27,11 @@
     "about_amw": "Sobre AMW",
     "map": "Mapa",
     "about": "Sobre",
+    "results": "Resultados",
     "case_studies": "Estudos de Caso",
     "methodology": "Metodologia",
-    "data_and_code": "Dados e Código",
+    "policy_scoreboard": "Painel de Políticas",
+    "faq": "FAQ",
     "contact": "Contato"
   },
   "intro": {

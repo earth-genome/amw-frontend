@@ -21,6 +21,7 @@ import {
   PERMITTED_AREA_UNITS,
 } from "@/app/[lang]/components/Footer";
 import useMiningData from "@/hooks/useMiningData";
+import { PERMITTED_LANGUAGES } from "@/utils/content";
 
 export interface IState {
   map: MapRef | null;
@@ -82,7 +83,10 @@ export const Context = createContext<
   [IState, Dispatch<ActionType>] | undefined
 >(undefined);
 
-const Store = ({ children }: Readonly<{ children: React.ReactNode }>) => {
+const Store = ({
+  children,
+  lang,
+}: Readonly<{ children: React.ReactNode; lang: PERMITTED_LANGUAGES }>) => {
   const initialState: IState = {
     map: null,
     isQueryChecked: false,
@@ -107,7 +111,7 @@ const Store = ({ children }: Readonly<{ children: React.ReactNode }>) => {
 
   useQueryParams({ state, dispatch });
   useMiningData({ state, dispatch });
-  useAreasData({ state, dispatch });
+  useAreasData({ state, dispatch, lang });
 
   return (
     <Context.Provider value={[state, dispatch]}>{children}</Context.Provider>

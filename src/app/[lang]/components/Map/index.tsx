@@ -675,7 +675,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
         />
 
         {/* wait for mines to load so that hotspots are layered on top of mines */}
-        {miningData && <Hotspots />}
+        {miningData && <Hotspots lang={lang} />}
 
         {/* ================== POPUP =================== */}
         {tooltip && <MapPopup tooltip={tooltip} />}

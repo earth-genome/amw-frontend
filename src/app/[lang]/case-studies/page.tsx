@@ -1,10 +1,8 @@
 import { NextPage } from "next";
-import { i18n, type Locale } from "../../../../i18n-config";
-import Overlay from "../components/Overlay";
-import { getDictionary } from "../../../get-dictionary";
-import { getMarkdown } from "../../../get-markdown";
-import { marked } from "marked";
-import { PERMITTED_LANGUAGES } from "@/utils/content";
+import Overlay from "@/app/[lang]/components/Overlay";
+import { getMarkdownText, PERMITTED_LANGUAGES } from "@/utils/content";
+import { apiFetcher } from "@/cms/client";
+import { CASE_STUDIES_URL, CaseStudiesResponse } from "@/cms/case-studies";
 
 interface PageProps {
   params: {
@@ -13,31 +11,30 @@ interface PageProps {
 }
 
 const Page: NextPage<PageProps> = async ({ params: { lang } }) => {
-  const dictionary = await getDictionary(lang);
-  const content = await getMarkdown(lang, `${lang}/case-studies.md`);
+  const response = await apiFetcher<CaseStudiesResponse>(CASE_STUDIES_URL, {
+    locale: lang,
+  });
 
-  const getMarkdownText = (content: string) => {
-    const rawMarkup = marked.parse(content);
-    {
-      /* @ts-ignore */
-    }
-    return { __html: rawMarkup };
-  };
+  const {
+    data: { title, body, images },
+  } = response;
 
   return (
     <Overlay>
       <div className="case-study-images">
-        {content.data.images.map((image: string, index: number) => (
+        {images?.map((image, index: number) => (
+          // eslint-disable-next-line @next/next/no-img-element
           <img
-            key={index + 1}
+            key={image.id}
             className={`image-${index + 1}`}
-            src={`/images/${image}`}
+            src={image.url}
+            alt={image.alternativeText || `Case study image ${index + 1}`}
           />
         ))}
       </div>
 
-      {/* @ts-ignore */}
-      <div dangerouslySetInnerHTML={getMarkdownText(content?.content)} />
+      {title && <h1>{title}</h1>}
+      {body && <div dangerouslySetInnerHTML={getMarkdownText(body)} />}
     </Overlay>
   );
 };

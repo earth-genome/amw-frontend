@@ -1,10 +1,8 @@
 import { NextPage } from "next";
-import { i18n, type Locale } from "../../../../i18n-config";
-import Overlay from "../components/Overlay";
-import { getDictionary } from "../../../get-dictionary";
-import { getMarkdown } from "../../../get-markdown";
-import { marked } from "marked";
-import { PERMITTED_LANGUAGES } from "@/utils/content";
+import { getMarkdownText, PERMITTED_LANGUAGES } from "@/utils/content";
+import { ABOUT_URL, AboutResponse } from "@/cms/about";
+import { apiFetcher } from "@/cms/client";
+import Overlay from "@/app/[lang]/components/Overlay";
 
 interface PageProps {
   params: {
@@ -13,21 +11,18 @@ interface PageProps {
 }
 
 const Page: NextPage<PageProps> = async ({ params: { lang } }) => {
-  const dictionary = await getDictionary(lang);
-  const content = await getMarkdown(lang, `${lang}/about.md`);
+  const response = await apiFetcher<AboutResponse>(ABOUT_URL, {
+    locale: lang,
+  });
 
-  const getMarkdownText = (content: string) => {
-    const rawMarkup = marked.parse(content);
-    {
-      /* @ts-ignore */
-    }
-    return { __html: rawMarkup };
-  };
+  const {
+    data: { title, body },
+  } = response;
 
   return (
     <Overlay>
-      {/* @ts-ignore */}
-      <div dangerouslySetInnerHTML={getMarkdownText(content.content)} />
+      {title && <h1>{title}</h1>}
+      {body && <div dangerouslySetInnerHTML={getMarkdownText(body)} />}
     </Overlay>
   );
 };
