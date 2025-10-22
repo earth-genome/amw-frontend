@@ -11,6 +11,13 @@
   overflow-y: auto;
 }
 
+@media (max-width: 600px) {
+  .wrapper {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+}
+
 .label {
   font-weight: 700;
   font-size: 14px;
@@ -26,6 +33,12 @@
 
 .figureText {
   text-transform: capitalize;
+}
+
+@media (max-width: 600px) {
+  .figureText {
+    font-size: 28px;
+  }
 }
 
 .tooltipButton {

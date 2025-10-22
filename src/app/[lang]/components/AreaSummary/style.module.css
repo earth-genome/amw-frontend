@@ -9,6 +9,20 @@
   flex-direction: column;
 }
 
+@media (max-width: 600px) {
+  .areaCard {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding-bottom: 0;
+    width: auto;
+    max-height: 40vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+      0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+}
+
 .areaTitle {
   background: var(--green-light);
   padding: 12px 24px;
@@ -17,6 +31,13 @@
   display: flex;
   justify-content: space-between;
   column-gap: 12px;
+}
+
+@media (max-width: 600px) {
+  .areaTitle {
+    position: sticky;
+    top: 0;
+  }
 }
 
 .areaTitleText {
@@ -68,6 +89,17 @@
   font-size: 24px;
 }
 
+@media (max-width: 600px) {
+  .areaKm {
+    font-size: 32px;
+    font-weight: 800;
+  }
+
+  .areaKm sup {
+    font-size: 18px;
+  }
+}
+
 .areaFooter {
   background: #efefef;
   padding: 12px 24px;
@@ -75,6 +107,13 @@
   border-bottom-right-radius: 12px;
   display: flex;
   justify-content: center;
+}
+
+@media (max-width: 600px) {
+  .areaFooter {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
 }
 
 .showMoreButton {

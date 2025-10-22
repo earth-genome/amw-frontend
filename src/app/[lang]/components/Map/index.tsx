@@ -8,7 +8,6 @@ import React, {
   useEffect,
 } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { Radio, Select, ConfigProvider } from "antd";
 import Map, {
   Layer,
   Source,
@@ -20,7 +19,6 @@ import AreaSummary from "../AreaSummary";
 import Footer from "../Footer";
 import { convertBoundsToGeoJSON, GeoJSONType } from "./helpers";
 import LegendWrapper from "./LegendWrapper";
-const { Option } = Select;
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import * as turf from "@turf/turf";
@@ -37,6 +35,7 @@ import { PERMITTED_LANGUAGES } from "@/utils/content";
 import MapPopup, { TooltipInfo } from "@/app/[lang]/components/Map/MapPopup";
 import Hotspots from "@/app/[lang]/components/Map/Hotspots";
 import calculateMiningAreaInBbox from "@/utils/calculateMiningAreaInBbox";
+import useWindowSize from "@/hooks/useWindowSize";
 
 interface MainMapProps {
   dictionary: { [key: string]: any };
@@ -239,6 +238,9 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
     [dispatch]
   );
 
+  const windowSize = useWindowSize();
+  const isMobile = windowSize?.width && windowSize.width <= 600;
+
   useEffect(() => {
     // zoom to selected area on change
     if (!selectedAreaData || !mapRef.current) return;
@@ -251,11 +253,11 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
     ];
 
     mapRef.current.fitBounds(bbox, {
-      padding: { top: 70, bottom: 70, left: 20, right: 20 },
+      padding: { top: 70, bottom: isMobile ? 300 : 70, left: 20, right: 20 },
       duration: 2000,
       essential: true,
     });
-  }, [selectedAreaData]);
+  }, [isMobile, selectedAreaData]);
 
   const getBeforeId = (targetLayerId: string) =>
     // make sure the layer exists to avoid errors
@@ -678,94 +680,14 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
         {miningData && <Hotspots lang={lang} />}
 
         {/* ================== POPUP =================== */}
-        {tooltip && <MapPopup tooltip={tooltip} />}
+        {tooltip && !isMobile && <MapPopup tooltip={tooltip} />}
 
-        <ScaleControl unit={areaUnits === "imperial" ? "imperial" : "metric"} />
+        {!isMobile && (
+          <ScaleControl
+            unit={areaUnits === "imperial" ? "imperial" : "metric"}
+          />
+        )}
       </Map>
-
-      <div className="year-pills">
-        <Radio.Group
-          options={LAYER_YEARS.sort((a, b) => a - b).map((d) => ({
-            value: String(d),
-            label: String(d),
-          }))}
-          value={activeLayer}
-          onChange={({ target: { value } }) => {
-            setActiveLayer(value);
-          }}
-          optionType="button"
-          buttonStyle="solid"
-        />
-      </div>
-
-      <div className="year-dropdown">
-        <ConfigProvider
-          theme={{
-            components: {
-              Select: {
-                selectorBg: "rgb(11, 95, 58)",
-                optionSelectedColor: "rgba(242, 236, 236, 0.88)",
-                colorIconHover: "rgba(250, 246, 246, 0.88)",
-                colorBgContainer: "rgb(11, 95, 58)",
-                colorBgElevated: "rgb(11, 95, 58)",
-                colorPrimary: "rgb(242, 237, 237)",
-                colorIcon: "rgb(255,255,255)",
-                colorBorder: "rgb(6, 89, 36)",
-                optionSelectedBg: "rgb(76, 97, 77)",
-                colorText: "rgba(250, 249, 249, 0.88)",
-                colorFillTertiary: "rgba(242, 234, 234, 0.04)",
-                colorFillSecondary: "rgba(241, 228, 228, 0.06)",
-                colorTextQuaternary: "rgba(249, 249, 249, 0.25)",
-                colorTextTertiary: "rgba(244, 236, 236, 0.9)",
-                colorTextDescription: "rgba(255, 253, 253, 0.45)",
-                colorTextDisabled: "rgba(239, 233, 233, 0.25)",
-                colorTextPlaceholder: "rgba(255, 255, 255, 0.9)",
-              },
-            },
-          }}
-        >
-          <Select
-            style={{ width: "100px" }}
-            value={activeLayer}
-            onChange={(value) => {
-              setActiveLayer(value);
-            }}
-          >
-            {LAYER_YEARS.map((d) => (
-              <Option key={d} value={d}>
-                {d}
-              </Option>
-            ))}
-          </Select>
-        </ConfigProvider>
-      </div>
-
-      {/* <div className="imagery-pills">
-        <Radio.Group
-          size="small"
-          options={[
-            {
-              label: dictionary?.map_ui.latest,
-              value: true,
-            },
-            {
-              label: dictionary?.map_ui.hi_res,
-              value: false,
-            },
-          ]}
-          value={yearly}
-          onChange={({ target: { value } }) => {
-            setYearly(value);
-            if (value === false) {
-              setMapStyle(SATELLITE_LAYERS["hiRes"]);
-            } else {
-              setMapStyle(SATELLITE_LAYERS["yearly"]);
-            }
-          }}
-          optionType="button"
-          buttonStyle="solid"
-        />
-      </div> */}
 
       <AreaSelect dictionary={dictionary} />
 

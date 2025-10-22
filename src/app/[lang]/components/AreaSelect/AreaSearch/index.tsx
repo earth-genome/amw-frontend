@@ -112,9 +112,7 @@ const AreaSearch = ({
 
   return (
     <div
-      style={{
-        width: "250px",
-      }}
+      className="area-search-select-box"
     >
       <Select
         options={areasOptions}

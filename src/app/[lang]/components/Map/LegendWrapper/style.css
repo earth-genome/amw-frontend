@@ -14,3 +14,16 @@
   backdrop-filter: blur(30.75px);
   padding: 6px;
 }
+
+@media (max-width: 600px) {
+  .mini-map-wrapper {
+    display: none;
+  }
+  .legend-wrapper {
+    bottom: 20px;
+    right: 32px;
+  }
+  .legend-card {
+    width: 100%;
+  }
+}

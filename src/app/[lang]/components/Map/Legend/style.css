@@ -12,6 +12,7 @@
   align-items: end;
   gap: 8px;
   position: relative;
+  margin-top: 10px;
 }
 
 .scroll-button {
@@ -107,4 +108,13 @@
 
 .ant-radio-button-wrapper:not(:first-child)::before {
   width: 0px !important;
+}
+
+@media (max-width: 600px) {
+  .map-legend {
+    width: auto;
+  }
+  .scroll-button {
+    height: 32px;
+  }
 }

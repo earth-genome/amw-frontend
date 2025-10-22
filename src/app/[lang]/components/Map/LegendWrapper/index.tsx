@@ -29,7 +29,7 @@ const LegendWrapper = ({
         }}
       >
         <div
-          className="legend-card"
+          className="legend-card mini-map-wrapper"
           style={{
             opacity: showMinimap ? 1 : 0,
             transition: "opacity 0.3s ease-in-out",

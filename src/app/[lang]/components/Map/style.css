@@ -59,24 +59,6 @@
   pointer-events: auto; /* re-enable clicks on child elements */
 }
 
-@media (max-width: 600px) {
-  .year-pills {
-    display: none;
-  }
-}
-.year-dropdown {
-  position: fixed;
-  right: 10px;
-  top: 50px;
-  z-index: 1000;
-  display: none;
-}
-@media (max-width: 600px) {
-  .year-dropdown {
-    display: block;
-  }
-}
-
 .mapboxgl-canvas {
   background-color: transparent !important;
 }
@@ -112,4 +94,10 @@
 
 .geocoder-toggle:hover {
   opacity: 0.9;
+}
+
+@media (max-width: 600px) {
+  .scale-control-wrapper {
+    visibility: hidden;
+  }
 }

@@ -80,7 +80,7 @@ const AreaSelect = ({ dictionary }: AreaSelectProps) => {
               }}
             >
               <Select
-                style={{ width: "250px" }}
+                className="area-types-select-box"
                 value={selectedAreaType?.key}
                 onChange={(d) => setSelectedAreaType(d as PERMITTED_AREA_TYPES_KEYS)}
               >
