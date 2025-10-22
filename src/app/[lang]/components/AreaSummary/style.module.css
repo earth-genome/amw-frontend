@@ -11,13 +11,12 @@
 
 @media (max-width: 600px) {
   .areaCard {
+    position: absolute;
     left: 0;
     right: 0;
-    bottom: 0;
+    top: 60vh;
     padding-bottom: 0;
     width: auto;
-    max-height: 40vh;
-    overflow-y: auto;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
       0 2px 4px -1px rgba(0, 0, 0, 0.06);
   }
@@ -31,13 +30,6 @@
   display: flex;
   justify-content: space-between;
   column-gap: 12px;
-}
-
-@media (max-width: 600px) {
-  .areaTitle {
-    position: sticky;
-    top: 0;
-  }
 }
 
 .areaTitleText {

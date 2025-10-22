@@ -357,7 +357,8 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
         onMouseLeave={handleMouseLeave}
         interactiveLayerIds={["areas-layer-fill", "hotspots-fill"]}
       >
-        <NavigationControl position={"top-right"} />
+        {!isMobile && <NavigationControl position={"top-right"} />}
+
         {/* ================== SENTINEL2 SOURCES =================== */}
         <Source
           id="sentinel-2018"
@@ -691,7 +692,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
 
       <AreaSelect dictionary={dictionary} />
 
-      {isGeocoderHidden && (
+      {isGeocoderHidden && !isMobile && (
         <div className="geocoder-toggle">
           <button
             onClick={() => {

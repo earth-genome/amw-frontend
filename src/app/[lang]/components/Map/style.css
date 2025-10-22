@@ -31,6 +31,12 @@
   width: 100%;
   height: 100%;
 }
+@media (max-width: 600px) {
+  .main-map {
+    /* we need this on mobile to allow the card to scroll down */
+    overflow-y: scroll;
+  }
+}
 .copy-url {
   color: #fff;
   text-decoration: none;
