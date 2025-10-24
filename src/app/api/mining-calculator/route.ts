@@ -5,10 +5,9 @@ export async function POST(request: NextRequest) {
     const miningLocations = await request.json();
 
     const BASE_URL = process.env.MINING_CALCULATOR_BASE_URL;
-    const VERCEL_SHARE_ID = process.env.MINING_CALCULATOR_VERCEL_SHARE_ID;
     const API_KEY = process.env.MINING_CALCULATOR_API_KEY;
 
-    if (!BASE_URL || !VERCEL_SHARE_ID || !API_KEY) {
+    if (!BASE_URL || !API_KEY) {
       return NextResponse.json(
         { error: "Missing required environment variables" },
         { status: 500 }
@@ -21,53 +20,8 @@ export async function POST(request: NextRequest) {
       "x-api-key": API_KEY,
     };
 
-    // first request: post mining locations
-    const response = await fetch(`${apiUrl}/map-locations?${VERCEL_SHARE_ID}`, {
-      method: "POST",
-      headers: defaultHeaders,
-      body: JSON.stringify(miningLocations),
-      redirect: "manual",
-    });
-
-    if (response.status !== 307) {
-      return NextResponse.json(
-        { error: "Failed to fetch from mining calculator API" },
-        { status: response.status }
-      );
-    }
-
-    const setCookie = response.headers.get("set-cookie");
-
-    if (!setCookie) {
-      return NextResponse.json(
-        { error: "No set-cookie found in redirect" },
-        { status: response.status }
-      );
-    }
-
-    // second request: follow redirect
-    const redirectRes = await fetch(`${apiUrl}/map-locations?${VERCEL_SHARE_ID}`, {
-      method: "POST",
-      headers: {
-        ...defaultHeaders,
-        Cookie: setCookie,
-      },
-      body: JSON.stringify(miningLocations),
-    });
-    const redirectResResult = await redirectRes.json();
-    if (!redirectRes.ok) {
-      return NextResponse.json(
-        { error: "Failed following redirect" },
-        { status: redirectRes.status }
-      );
-    }
-    // construct calculator url
-    const calculatorUrl = `${BASE_URL}/map?dataId=${redirectResResult.dataId}&${VERCEL_SHARE_ID}`;
-
-    // third request: calculate impact
-    const dataResponse = await fetch(
-      // FIXME: this is using a different URL for now
-      `https://miningcalculator.conservation-strategy.org/api/calculate`,
+    const response = await fetch(
+      `${apiUrl}/calculate`,
       {
         method: "POST",
         headers: defaultHeaders,
@@ -75,14 +29,17 @@ export async function POST(request: NextRequest) {
       }
     );
 
-    if (!dataResponse.ok) {
+    if (!response.ok) {
       return NextResponse.json(
         { error: "Failed to fetch calculator data" },
-        { status: dataResponse.status }
+        { status: response.status }
       );
     }
 
-    const data = await dataResponse.json();
+    const data = await response.json();
+
+    // construct calculator url
+    const calculatorUrl = `${BASE_URL}/map?dataId=${data.dataId}`;
 
     // return only the data and calculatorurl
     return NextResponse.json({
