@@ -13,6 +13,13 @@ interface Props {
   lang: PERMITTED_LANGUAGES;
 }
 
+const swrConfig = {
+  revalidateOnFocus: false, // don’t refetch when window regains focus
+  revalidateOnReconnect: false, // don’t refetch when reconnecting
+  refreshInterval: 0, // don’t poll automatically
+  dedupingInterval: 60 * 60 * 1000, // 1 hour: cache same key requests
+};
+
 const useAreasData = ({ state, dispatch, lang }: Props) => {
   const { selectedAreaType, pendingSelectedAreaId, isQueryChecked } = state;
   // wait for query to be checked before loading data
@@ -29,7 +36,8 @@ const useAreasData = ({ state, dispatch, lang }: Props) => {
     selectedAreaType?.useLocale
       ? `${areasDataUrl}?locale=${lang}`
       : areasDataUrl,
-    fetcher
+    fetcher,
+    swrConfig
   );
 
   useEffect(() => {
@@ -70,7 +78,7 @@ const useAreasData = ({ state, dispatch, lang }: Props) => {
     data: areasTimeseriesData,
     error: areasTimeseriesDataError,
     isLoading: areasTimeseriesDataIsLoading,
-  } = useSWR<AreasData>(areasTimeseriesDataUrl, fetcher);
+  } = useSWR<AreasData>(areasTimeseriesDataUrl, fetcher, swrConfig);
 
   useEffect(() => {
     if (areasTimeseriesDataIsLoading || areasTimeseriesDataError) {
