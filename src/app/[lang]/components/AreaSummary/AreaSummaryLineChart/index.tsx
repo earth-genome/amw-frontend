@@ -2,6 +2,7 @@ import { AreasTimeseriesData, AreasTimeseriesDataItem } from "@/types/types";
 import { useRef } from "react";
 import * as d3 from "d3";
 import useChartDimensions from "@/hooks/useChartDimensions";
+import { MAP_COLOR_SCALE_WITH_LATEST_YEAR } from "@/constants/map";
 
 interface AreaSummaryLineChartProps {
   data: AreasTimeseriesData;
@@ -60,12 +61,15 @@ const AreaSummaryLineChart = ({
             x2={width + margin.left}
             y2={margin.top}
           >
-            <stop offset="0%" stopColor="#fbe7bf" />
-            <stop offset="34.13%" stopColor="#f6cf80" />
-            <stop offset="57.21%" stopColor="#f1b640" />
-            <stop offset="73.56%" stopColor="#ed9e00" />
-            <stop offset="84.13%" stopColor="#f37d00" />
-            <stop offset="92.79%" stopColor="#ff3c00" />
+            {MAP_COLOR_SCALE_WITH_LATEST_YEAR.map((d, i) => (
+              <stop
+                offset={`${
+                  (i / MAP_COLOR_SCALE_WITH_LATEST_YEAR.length) * 100
+                }%`}
+                key={d}
+                stopColor={d}
+              />
+            ))}
           </linearGradient>
         </defs>
 

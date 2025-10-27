@@ -1,4 +1,7 @@
-import { MAP_COLOR_SCALE } from "@/constants/map";
+import {
+  MAP_COLOR_SCALE,
+  MAP_COLOR_SCALE_WITH_LATEST_YEAR,
+} from "@/constants/map";
 
 interface ColorScaleProps {
   dictionary: { [key: string]: any };
@@ -33,7 +36,7 @@ const ColorScale = ({ dictionary }: ColorScaleProps) => {
           justifyItems: "center",
         }}
       >
-        {MAP_COLOR_SCALE.map((color) => (
+        {MAP_COLOR_SCALE_WITH_LATEST_YEAR.map((color) => (
           <div
             key={color}
             style={{

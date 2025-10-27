@@ -24,6 +24,7 @@ import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import * as turf from "@turf/turf";
 import {
   createYearsColorScale,
+  MAP_LATEST_YEAR_COLOR,
   MAP_MISSING_DATA_COLOR,
   PERMITTED_AREA_TYPES_KEYS,
 } from "@/constants/map";
@@ -131,7 +132,9 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
   const getMineLayerColor = () => {
     const getColorsForYears = (years: number[]) => {
       const colorScale = createYearsColorScale(years);
-      return years.map((_, index) => colorScale(index));
+      return years.map((_, index) =>
+        index === years.length - 1 ? MAP_LATEST_YEAR_COLOR : colorScale(index)
+      );
     };
     const colors = getColorsForYears(LAYER_YEARS);
 

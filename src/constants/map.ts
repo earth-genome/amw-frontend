@@ -8,8 +8,15 @@ export const MAP_COLOR_SCALE = [
   "#F1B53F",
   "#ED9E00",
   "#F37D00",
-  "#F95D00",
-  "#FF3C00",
+  // "#F95D00",
+  // "#FF3C00",
+];
+
+// we use a different, more contrasting color for the latest year
+export const MAP_LATEST_YEAR_COLOR = "#f50505";
+export const MAP_COLOR_SCALE_WITH_LATEST_YEAR = [
+  ...MAP_COLOR_SCALE,
+  MAP_LATEST_YEAR_COLOR,
 ];
 
 export const MAP_MISSING_DATA_COLOR = "#ccc";

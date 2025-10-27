@@ -25,3 +25,7 @@
 .mapboxgl-popup-close-button {
   color: #fff;
 }
+
+.map-tooltip {
+  pointer-events: none;
+}
