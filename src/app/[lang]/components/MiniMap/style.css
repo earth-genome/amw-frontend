@@ -1,12 +1,9 @@
 .mini-map {
-  position: fixed;
-  right: 80px;
-  bottom: 100px;
-  width: 200px;
-  height: 150px;
+  position: relative;
+  width: fit-content;
 }
 @media (max-width: 600px) {
   .mini-map {
-  right: 0px;
+    right: 0px;
   }
 }

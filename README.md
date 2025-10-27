@@ -15,7 +15,7 @@ Interface translations are stored in `./dictionaries`.
 
 To create a production build:
 
-- Ensure you have created an `.env` file and populated it with the required env vars.
+- Ensure you have created an `.env.local` file and populated it with the required env vars.
 - Run `yarn build` to create a production build.
 
 ## Developers

@@ -1,24 +1,46 @@
 "use client";
-import ScaleBar from "../ScaleBar";
+import { useContext } from "react";
 import "./style.css";
-import coverageData from '../../../../../configs/coverage.json';
+import { Context } from "@/lib/Store";
 
 interface FooterProps {
-  zoom: number;
-  year?: string;
-  dictionary?: { [key: string]: any };
+  dictionary: { [key: string]: any };
 }
 
-const Footer: React.FC<FooterProps> = ({ zoom, year, dictionary }) => {
+export type PERMITTED_AREA_UNITS = "hectares" | "squareKm" | "imperial";
+
+export const AREA_UNITS_OPTIONS = [
+  { value: "hectares" },
+  { value: "squareKm" },
+  { value: "imperial" },
+];
+
+const Footer = ({ dictionary }: FooterProps) => {
+  const [state, dispatch] = useContext(Context)!;
+
+  const handleUnitsChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = event.target.value;
+    dispatch({
+      type: "SET_AREA_UNITS",
+      areaUnits: value as PERMITTED_AREA_UNITS,
+    });
+  };
+
   return (
     <div className="footer">
-      {/* @ts-ignore */}
-      <div className="mode">{ coverageData[year].acres} million acres / { coverageData[year].km} km<sup>2</sup></div>
-      <div className="mining-legend">
-        <div className="mine-swatch"></div>{" "}
-        {dictionary?.map_ui.mining_areas_detected}
+      <div>
+        {dictionary?.map_ui?.units}{" "}
+        <select
+          className="footer-units-select"
+          value={state.areaUnits}
+          onChange={handleUnitsChange}
+        >
+          <option value="hectares">{dictionary?.map_ui?.hectares}</option>
+          <option value="squareKm">{dictionary?.map_ui?.squareKm}</option>
+          <option value="imperial">{dictionary?.map_ui?.imperial}</option>
+        </select>
       </div>
-      <ScaleBar zoom={zoom} />
+      <div>© Mapbox © OpenStreetMap</div>
     </div>
   );
 };

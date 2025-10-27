@@ -37,4 +37,6 @@ yarn-error.log*
 next-env.d.ts
 
 # vscode
-.vscode/
+.vscode
+
+/public/test-data

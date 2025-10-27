@@ -1,11 +1,11 @@
 .nav {
   position: fixed;
-  background: rgba(34, 181, 115, 0.7);
+  background: var(--green-dark);
   left: 0;
   top: 0;
   width: 100%;
   z-index: 1000;
-  height: 28px;
+  height: var(--top-navbar-height);
   text-align: right;
 }
 .nav .menu-link {
@@ -74,6 +74,7 @@
 }
 .menu-lang {
   text-decoration: none;
+  text-transform: uppercase;
   margin: 0 10px;
   color: #fff;
   font-size: 12px;
@@ -91,4 +92,5 @@
   line-height: 2;
   font-weight: 400;
   letter-spacing: 4px;
+  text-transform: uppercase;
 }

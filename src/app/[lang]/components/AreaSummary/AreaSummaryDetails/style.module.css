@@ -1,0 +1,56 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: #fff;
+  padding: 12px 24px;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+  color: var(--green-dark);
+  max-height: 40vh;
+  overflow-y: auto;
+}
+
+@media (max-width: 600px) {
+  .wrapper {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    min-height: 100px;
+    max-height: none;
+  }
+}
+
+.label {
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.figure {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 700;
+  font-size: 32px;
+}
+
+.figureText {
+  text-transform: capitalize;
+}
+
+@media (max-width: 600px) {
+  .figureText {
+    font-size: 28px;
+  }
+}
+
+.tooltipButton {
+  border: none;
+  background: transparent;
+  padding: none;
+  cursor: pointer;
+}
+
+.paragraph {
+  line-height: 130%;
+  font-weight: 400;
+}

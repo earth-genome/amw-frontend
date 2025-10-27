@@ -1,88 +1,126 @@
 "use client";
 import "./style.css";
-import React, { ReactNode, useState, useEffect, useRef } from "react";
+import React, {
+  useState,
+  useRef,
+  useCallback,
+  useContext,
+  useEffect,
+} from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { message, Button, Radio, Slider, Select, ConfigProvider } from "antd";
-import Map, { Layer, Source, Popup, ScaleControl } from "react-map-gl";
-import { useMenu } from "../../menuContext";
-import Overlay from "../Overlay";
-import Area from "../Area";
+import Map, {
+  Layer,
+  Source,
+  NavigationControl,
+  ScaleControl,
+} from "react-map-gl";
+import type { MapMouseEvent, MapRef } from "react-map-gl";
+import AreaSummary from "../AreaSummary";
 import Footer from "../Footer";
-import MiniMap from "../MiniMap";
-import { convertBoundsToGeoJSON } from "./helpers";
-import { CopyOutlined } from "@ant-design/icons";
-const { Option } = Select;
+import { convertBoundsToGeoJSON, GeoJSONType } from "./helpers";
+import LegendWrapper from "./LegendWrapper";
+import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
+import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
+import * as turf from "@turf/turf";
+import {
+  createYearsColorScale,
+  MAP_LATEST_YEAR_COLOR,
+  MAP_MISSING_DATA_COLOR,
+  PERMITTED_AREA_TYPES_KEYS,
+} from "@/constants/map";
+import { Expression } from "mapbox-gl";
+import AreaSelect from "@/app/[lang]/components/AreaSelect";
+import { Context } from "@/lib/Store";
+import GeocoderIcon from "@/app/[lang]/components/Icons/GeocoderIcon";
+import { PERMITTED_LANGUAGES } from "@/utils/content";
+import MapPopup, { TooltipInfo } from "@/app/[lang]/components/Map/MapPopup";
+import Hotspots from "@/app/[lang]/components/Map/Hotspots";
+import calculateMiningAreaInBbox from "@/utils/calculateMiningAreaInBbox";
+import useWindowSize from "@/hooks/useWindowSize";
 
 interface MainMapProps {
   dictionary: { [key: string]: any };
+  lang: PERMITTED_LANGUAGES;
 }
 
-const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
-  const [popupInfo, setPopupInfo] = useState<{
-    latitude: number;
-    longitude: number;
-    zoom: number;
-  } | null>(null);
-  const [popupVisible, setPopupVisible] = useState(false);
+const LAYER_YEARS = [2024, 2023, 2022, 2021, 2020, 2019, 2018];
+const INITIAL_VIEW = {
+  longitude: -67.78320182377449,
+  latitude: -5.871455584726869,
+  zoom: 3.7,
+};
+const SATELLITE_LAYERS = {
+  yearly: "mapbox://styles/earthrise/clvwchqxi06gh01pe1huv70id",
+  hiRes: "mapbox://styles/earthrise/cmdxgrceq014x01s22jfm5muv", // Mapbox satellite
+};
+
+const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
+  const [state, dispatch] = useContext(Context)!;
   const pathname = usePathname();
-  const { menuOpen, setMenuOpen } = useMenu();
   const router = useRouter();
-  const [blurMap, setBlurMap] = useState(false);
-  const [areaVisible, setAreaVisible] = useState(true);
-  const [map, setMap] = useState();
-  const [bounds, setBounds] = useState();
+  const mapRef = useRef<MapRef>(null);
+  const [bounds, setBounds] = useState<GeoJSONType | undefined>(undefined);
   const [yearly, setYearly] = useState(true);
   const [activeLayer, setActiveLayer] = useState("2024");
-  /*  
-  mapbox://styles/earthrise/ckxht1jfm2h9k15m7wrv5wz5w
-  */
-  const [mapStyle, setMapStyle] = useState('mapbox://styles/earthrise/clvwchqxi06gh01pe1huv70id')
+  const [mapStyle, setMapStyle] = useState(SATELLITE_LAYERS["yearly"]);
+  const [isGeocoderHidden, setIsGeocoderHidden] = useState(true);
+  const [tooltip, setTooltip] = useState<TooltipInfo | null>(null);
+  const hoveredFeatureRef = useRef<string | number | undefined>(undefined);
 
-  useEffect(() => {
-    if (window.location.hash) {
-      const split = window.location.hash.split("/");
-      const lng = split[1];
-      const lat = split[2];
-      const zoomRaw = split[0];
-      const zoom = zoomRaw.split("#")[1];
-      if (map) {
-        /* @ts-ignore */
-        map?.jumpTo({
-          center: [lng, lat],
-          zoom: zoom,
-        });
-      }
+  const {
+    miningData,
+    areasData,
+    selectedAreaData,
+    selectedArea,
+    selectedAreaTypeKey,
+    areaUnits,
+  } = state;
+
+  const setMapPositionFromURL = useCallback(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const zoom = searchParams.get("zoom");
+    const lng = searchParams.get("lng");
+    const lat = searchParams.get("lat");
+
+    if (mapRef.current && zoom && lng && lat) {
+      mapRef.current.jumpTo({
+        center: lng && lat ? [Number(lng), Number(lat)] : undefined,
+        zoom: zoom ? Number(zoom) : undefined,
+      });
     }
-  }, [map]);
+  }, []);
 
+  const updateURLParamsMapPosition = useCallback(() => {
+    if (!mapRef.current) return;
 
-  const updateURLHash = () => {
-    /* @ts-ignore */
-    const zoom = map?.getZoom();
-    /* @ts-ignore */
-    const center = map?.getCenter();
+    const zoom = mapRef.current.getZoom();
+    const center = mapRef.current.getCenter();
     const lng = center?.lng;
     const lat = center?.lat;
-    router.replace(
-      `${pathname}/#${zoom.toFixed(2)}/${lng.toFixed(2)}/${lat.toFixed(2)}`,
-      undefined,
-    );
-  };
 
-  const copyToClipboard = async (text: string): Promise<void> => {
-    try {
-      await navigator.clipboard.writeText(text);
-    } catch (err) {
-      console.error("Failed to copy: ", err);
-    }
-  };
+    if (!zoom || !lng || !lat) return;
 
-  const getOpacity = (layerId: string) => {
-    if (layerId === `mines-layer-${activeLayer}`) {
-      return 1;
-    }
-    return 0;
-  };
+    const params = new URLSearchParams(window.location.search);
+    params.set("zoom", zoom.toFixed(2));
+    params.set("lng", lng.toFixed(2));
+    params.set("lat", lat.toFixed(2));
+
+    router.replace(`${pathname}?${params.toString()}`);
+  }, [pathname, router]);
+
+  const getCurrentBounds = useCallback(() => {
+    if (!mapRef.current) return;
+    const currentBounds = mapRef.current.getBounds();
+    if (!currentBounds) return;
+
+    const bbox = [
+      currentBounds.getWest(),
+      currentBounds.getSouth(),
+      currentBounds.getEast(),
+      currentBounds.getNorth(),
+    ] as [number, number, number, number];
+    return bbox;
+  }, []);
 
   const getSatelliteOpacity = (layerId: string) => {
     if (yearly && layerId === `sentinel-layer-${activeLayer}`) {
@@ -91,21 +129,149 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
     return 0;
   };
 
+  const getMineLayerColor = () => {
+    const getColorsForYears = (years: number[]) => {
+      const colorScale = createYearsColorScale(years);
+      return years.map((_, index) =>
+        index === years.length - 1 ? MAP_LATEST_YEAR_COLOR : colorScale(index)
+      );
+    };
+    const colors = getColorsForYears(LAYER_YEARS);
+
+    return [
+      "case",
+      ...LAYER_YEARS.flatMap((year, i) => [
+        ["==", ["get", "year"], year],
+        colors[i],
+      ]),
+      MAP_MISSING_DATA_COLOR,
+    ] as Expression;
+  };
+
+  const handleMouseMove = useCallback(
+    (event: MapMouseEvent) => {
+      const { features } = event;
+      const map = event.target;
+      const feature = features && features[0];
+
+      if (!feature?.properties) return;
+
+      event.target.getCanvas().style.cursor = feature ? "pointer" : "";
+      setTooltip({
+        longitude: event.lngLat.lng,
+        latitude: event.lngLat.lat,
+        properties: feature.properties as [key: string],
+      });
+
+      // don't use hover effect for countries, it is too distracting
+      if (selectedAreaTypeKey === "countries") return;
+
+      // remove hover state from previous feature
+      if (hoveredFeatureRef.current) {
+        map.setFeatureState(
+          {
+            source: "areas",
+            id: hoveredFeatureRef.current,
+          },
+          { hover: false }
+        );
+      }
+
+      // set hover state on current feature
+      if (feature.id) {
+        hoveredFeatureRef.current = feature.id;
+        map.setFeatureState(
+          {
+            source: "areas",
+            id: feature.id,
+          },
+          { hover: true }
+        );
+      }
+    },
+    [selectedAreaTypeKey]
+  );
+
+  const handleMouseLeave = useCallback((event: MapMouseEvent) => {
+    setTooltip(null);
+    if (!hoveredFeatureRef.current) return;
+
+    const map = event.target;
+    map.setFeatureState(
+      {
+        source: "areas",
+        id: hoveredFeatureRef.current,
+      },
+      { hover: false }
+    );
+  }, []);
+
+  const handleClick = useCallback(
+    (event: MapMouseEvent) => {
+      const map = event.target;
+      const features = map.queryRenderedFeatures(event.point);
+
+      const clickedOnExcludedLayer = features.some(
+        (feature) => feature?.layer?.id === "hole-layer"
+      );
+      if (clickedOnExcludedLayer) return;
+
+      const feature = features[0];
+      const id = feature?.properties?.id;
+      const type = feature?.properties?.type as PERMITTED_AREA_TYPES_KEYS;
+
+      if (!id) return;
+
+      if (type === "hotspots") {
+        dispatch({
+          type: "SET_SELECTED_AREA_TYPE_BY_KEY",
+          selectedAreaTypeKey: "hotspots",
+        });
+        // because this will trigger a change in area type, we need to wait
+        // for the data to load, so we set it as pending
+        dispatch({
+          type: "SET_PENDING_SELECTED_AREA_ID",
+          pendingSelectedAreaId: id,
+        });
+        return;
+      }
+
+      dispatch({ type: "SET_SELECTED_AREA_BY_ID", selectedAreaId: id });
+    },
+    [dispatch]
+  );
+
+  const windowSize = useWindowSize();
+  const isMobile = windowSize?.width && windowSize.width <= 600;
+
+  useEffect(() => {
+    // zoom to selected area on change
+    if (!selectedAreaData || !mapRef.current) return;
+
+    const bbox = turf.bbox(selectedAreaData) as [
+      number,
+      number,
+      number,
+      number
+    ];
+
+    mapRef.current.fitBounds(bbox, {
+      padding: { top: 70, bottom: isMobile ? 300 : 70, left: 20, right: 20 },
+      duration: 2000,
+      essential: true,
+    });
+  }, [isMobile, selectedAreaData]);
+
+  const getBeforeId = (targetLayerId: string) =>
+    // make sure the layer exists to avoid errors
+    mapRef.current?.getLayer(targetLayerId) ? targetLayerId : undefined;
 
   return (
-    <div
-      className="main-map"
-      style={{
-        filter: blurMap ? "blur(80px)" : "none",
-      }}
-    >
+    <div className="main-map">
       <Map
         mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
-        initialViewState={{
-          longitude: -67.78320182377449,
-          latitude: -5.871455584726869,
-          zoom: 3.7,
-        }}
+        ref={mapRef}
+        initialViewState={INITIAL_VIEW}
         minZoom={3.5}
         projection={{
           name: "naturalEarth",
@@ -113,60 +279,90 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           parallels: [30, 30],
         }}
         style={{
+          top: "var(--top-navbar-height)",
+          bottom: 0,
           width: "100hw",
-          height: "100vh",
         }}
         mapStyle={mapStyle}
-        onMove={(e) => {
-          if (map) {
-            
-            /* @ts-ignore */
-            if (map?.getZoom() > 4) {
-              setAreaVisible(false);
-            } else {
-              setAreaVisible(true);
-            }
-            
-            /* @ts-ignore */
-            const currentBounds = convertBoundsToGeoJSON(map?.getBounds());
-            /* @ts-ignore */
-            setBounds(currentBounds);
-          }
-          
-          
-          
+        onIdle={() => {
+          if (!mapRef.current) return;
+          if (mapRef.current.getZoom() <= 11) return; // don't run if too zoomed out
+
+          let bbox = getCurrentBounds();
+          if (!bbox) return;
+          // FIXME: we're not using the mining areas yet
+          const miningArea = calculateMiningAreaInBbox(
+            bbox,
+            activeLayer,
+            miningData
+          );
+          console.log("using viewport, mining area in ha", miningArea);
         }}
         onMoveEnd={() => {
-          updateURLHash();
+          updateURLParamsMapPosition();
+
+          if (!mapRef.current) return;
+
+          const bounds = mapRef.current.getBounds();
+          if (!bounds) return;
+          const currentBounds = convertBoundsToGeoJSON(bounds);
+          setBounds(currentBounds);
+
+          // FIXME: allow to use this for CMS
+          console.log(currentBounds?.geometry?.coordinates);
         }}
         onZoomEnd={() => {
-          updateURLHash();
+          updateURLParamsMapPosition();
         }}
-        onLoad={(e) => {
-          /* @ts-ignore */
-          setMap(e.target);
-        }}
-        onClick={(e) => {
-          const { lngLat } = e;
-          const map = e.target;
-          const features = map.queryRenderedFeatures(e.point);
-          const clickedOnExcludedLayer = features.some(
-            (feature) => feature.layer.id === 'hole-layer'
-          );
-          if (!clickedOnExcludedLayer) {
-          popupVisible ? setPopupVisible(false) : setPopupVisible(true);
-          setPopupInfo({
-            /* @ts-ignore */
-            latitude: lngLat.lat,
-            /* @ts-ignore */
-            longitude: lngLat.lng,
-            zoom: map?.getZoom(),
-          });
-         }
-        }}
-      >
+        onLoad={() => {
+          setMapPositionFromURL();
 
-        { /* ================== SENTINEL2 SOURCES =================== */}
+          // geocoder
+          if (!mapRef.current) return;
+          const geocoder = new MapboxGeocoder({
+            accessToken: process.env.NEXT_PUBLIC_MAPBOX_TOKEN as string,
+            /* @ts-ignore */
+            mapboxgl: mapRef.current.getMap(),
+            marker: false,
+            placeholder: dictionary.map_ui.search_for_a_place,
+            proximity: INITIAL_VIEW,
+          });
+
+          // Add the geocoder to a container
+          const geocoderContainer = document.createElement("div");
+          geocoderContainer.className = "geocoder-hidden";
+          geocoderContainer.style.position = "absolute";
+          geocoderContainer.style.top = "calc(var(--top-navbar-height) + 10px)";
+          geocoderContainer.style.right = "10px";
+          geocoderContainer.style.zIndex = "1000";
+
+          const mapContainer = document.querySelector(".main-map");
+          if (mapContainer) {
+            mapContainer.appendChild(geocoderContainer);
+            geocoderContainer.appendChild(
+              geocoder.onAdd(mapRef.current.getMap())
+            );
+          }
+
+          // Event listeners
+          geocoder.on("result", (e) => {
+            if (!mapRef.current) return;
+            const bbox = e.result.bbox;
+            const map = mapRef.current.getMap();
+            map.fitBounds(bbox, {
+              padding: { top: 20, bottom: 20, left: 20, right: 20 },
+              duration: 2000,
+            });
+          });
+        }}
+        onClick={handleClick}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        interactiveLayerIds={["areas-layer-fill", "hotspots-fill"]}
+      >
+        {!isMobile && <NavigationControl position={"top-right"} />}
+
+        {/* ================== SENTINEL2 SOURCES =================== */}
         <Source
           id="sentinel-2018"
           type="raster"
@@ -238,7 +434,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           ]}
           tileSize={256}
         />
-	<Source
+        <Source
           id="sentinel-2024"
           type="raster"
           tiles={[
@@ -250,8 +446,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           tileSize={256}
           bounds={[-80.0, -20.0, -50.0, 20.0]}
         />
-
-        { /* ================== SENTINEL2 LAYERS =================== */}
+        {/* ================== SENTINEL2 LAYERS =================== */}
         <Layer
           id="sentinel-layer-2018"
           type="raster"
@@ -308,24 +503,23 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
             "raster-opacity": getSatelliteOpacity(`sentinel-layer-2024`),
           }}
         />
-        { /* ================== MASK =================== */}
+        {/* ================== MASK =================== */}
         <Source
           id={"hole-source"}
           type="vector"
-          url="mapbox://dmccarey.3pur462h"
+          url="mapbox://earthrise.cw29jm21"
         />
         <Layer
           id={"hole-layer"}
           source={"hole-source"}
-          source-layer={"amazon-hole-0asofs"}
+          source-layer={"amazon_aca_mask-6i3usc"}
           type="fill"
           paint={{
             "fill-color": yearly ? "#dddddd" : "#ffffff",
             "fill-opacity": yearly ? 1 : 0.6,
           }}
         />
-
-        { /* ================== BORDERS =================== */}
+        {/* ================== BORDERS =================== */}
         <Source
           id="boundaries"
           type="vector"
@@ -342,130 +536,128 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           }}
         />
 
-        { /* ================== MINE SOURCES =================== */}
-	<Source
-          id={"mines-2024"}
-          type="geojson"
-          tolerance={0.05}
-          // @ts-ignore
-          data={`${process.env.NEXT_PUBLIC_MINES_URL}/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2024cumulative.geojson`}
-        />
-        <Source
-          id={"mines-2023"}
-          type="geojson"
-          tolerance={0.05}
-          // @ts-ignore
-          data={`${process.env.NEXT_PUBLIC_MINES_URL}/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2023cumulative.geojson`}
-        />
-        <Source
-          id={"mines-2022"}
-          type="geojson"
-          tolerance={0.05}
-          // @ts-ignore
-          data={`${process.env.NEXT_PUBLIC_MINES_URL}/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2022cumulative.geojson`}
-        />
-        <Source
-          id={"mines-2021"}
-          type="geojson"
-          tolerance={0.05}
-          // @ts-ignore
-          data={`${process.env.NEXT_PUBLIC_MINES_URL}/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2021cumulative.geojson`}
-        />
-        <Source
-          id={"mines-2020"}
-          type="geojson"
-          tolerance={0.05}
-          // @ts-ignore
-          data={`${process.env.NEXT_PUBLIC_MINES_URL}/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2020cumulative.geojson`}
-        />
-        <Source
-          id={"mines-2019"}
-          type="geojson"
-          tolerance={0.05}
-          // @ts-ignore
-          data={`${process.env.NEXT_PUBLIC_MINES_URL}/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2019cumulative.geojson`}
-        />
-        <Source
-          id={"mines-2018"}
-          type="geojson"
-          tolerance={0.05}
-          // @ts-ignore
-          data={`${process.env.NEXT_PUBLIC_MINES_URL}/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2018cumulative.geojson`}
-        />
-        
-        { /* ================== MINE LAYERS =================== */}
-	<Layer
-          id={"mines-layer-2024"}
-          source={"mines-2024"}
-          type="line"
-          paint={{
-            "line-color": "#ffb301",
-            "line-opacity": getOpacity(`mines-layer-2024`),
-            "line-width": 1,
-          }}
-        />
-        <Layer
-          id={"mines-layer-2023"}
-          source={"mines-2023"}
-          type="line"
-          paint={{
-            "line-color": "#ffb301",
-            "line-opacity": getOpacity(`mines-layer-2023`),
-            "line-width": 1,
-          }}
-        />
-        <Layer
-          id={"mines-layer-2022"}
-          source={"mines-2022"}
-          type="line"
-          paint={{
-            "line-color": "#ffb301",
-            "line-opacity": getOpacity(`mines-layer-2022`),
-            "line-width": 1,
-          }}
-        />
-        <Layer
-          id={"mines-layer-2021"}
-          source={"mines-2021"}
-          type="line"
-          paint={{
-            "line-color": "#ffb301",
-            "line-opacity": getOpacity(`mines-layer-2021`),
-            "line-width": 1,
-          }}
-        />
-        <Layer
-          id={"mines-layer-2020"}
-          source={"mines-2020"}
-          type="line"
-          paint={{
-            "line-color": "#ffb301",
-            "line-opacity": getOpacity(`mines-layer-2020`),
-            "line-width": 1,
-          }}
-        />
-        <Layer
-          id={"mines-layer-2019"}
-          source={"mines-2019"}
-          type="line"
-          paint={{
-            "line-color": "#ffb301",
-            "line-opacity": getOpacity(`mines-layer-2019`),
-            "line-width": 1,
-          }}
-        />
-        <Layer
-          id={"mines-layer-2018"}
-          source={"mines-2018"}
-          type="line"
-          paint={{
-            "line-color": "#ffb301",
-            "line-opacity": getOpacity(`mines-layer-2018`),
-            "line-width": 1,
-          }}
-        />
+        {/* ================== AREA SOURCES =================== */}
+        {areasData && (
+          <Source
+            id={"areas"}
+            type="geojson"
+            tolerance={0.05}
+            data={areasData}
+          />
+        )}
+        {selectedAreaData && (
+          <Source
+            id={"selected-area"}
+            type="geojson"
+            tolerance={0.05}
+            data={selectedAreaData}
+          />
+        )}
 
-        { /* ================== LABELS =================== */}
+        {/* ================== AREA LAYER =================== */}
+        {areasData && (
+          <>
+            <Layer
+              id={"areas-layer"}
+              beforeId={getBeforeId("mines-layer")}
+              source={"areas"}
+              type="line"
+              paint={{
+                "line-color": "#ccc",
+                "line-opacity": 1,
+                "line-width": [
+                  "interpolate",
+                  ["exponential", 2],
+                  ["zoom"],
+                  0,
+                  1,
+                  10,
+                  1,
+                  14,
+                  2.5,
+                ],
+              }}
+            />
+            <Layer
+              id={"areas-layer-fill"}
+              beforeId={getBeforeId("areas-layer")}
+              source={"areas"}
+              type="fill"
+              paint={{
+                "fill-color": "#22B573",
+                "fill-opacity": [
+                  "case",
+                  ["boolean", ["feature-state", "hover"], false],
+                  0.2, // hovered
+                  0, // not hovered
+                ],
+                "fill-outline-color": "#fff",
+              }}
+            />
+          </>
+        )}
+        {selectedAreaData && selectedArea && (
+          <>
+            <Layer
+              id={"selected-area-layer-fill"}
+              beforeId={getBeforeId("areas-layer")}
+              source={"selected-area"}
+              type="fill"
+              paint={{
+                "fill-color": "#22B573",
+                "fill-opacity": 0.1,
+                "fill-outline-color": "#22B573",
+              }}
+            />
+            <Layer
+              id={"selected-area-layer"}
+              beforeId={getBeforeId("selected-area-layer-fill")}
+              source={"selected-area"}
+              type="line"
+              paint={{
+                "line-color": "#22B573",
+                "line-opacity": 1,
+                "line-width": 3,
+              }}
+            />
+          </>
+        )}
+
+        {/* ================== MINE SOURCES =================== */}
+        {miningData && (
+          <Source
+            id={"mines"}
+            type="geojson"
+            tolerance={0.05}
+            data={miningData}
+          />
+        )}
+        {/* ================== MINE LAYER =================== */}
+        {miningData && (
+          <Layer
+            id={"mines-layer"}
+            beforeId={getBeforeId("hotspots-fill")}
+            source={"mines"}
+            type="line"
+            filter={["<=", ["get", "year"], Number(activeLayer)]}
+            paint={{
+              "line-color": getMineLayerColor(),
+              "line-opacity": 1,
+              "line-width": [
+                "interpolate",
+                ["exponential", 2],
+                ["zoom"],
+                0,
+                1,
+                10,
+                1,
+                14,
+                2.5,
+              ],
+            }}
+          />
+        )}
+        {/* ================== LABELS =================== */}
         <Layer
           id="country-labels"
           type="symbol"
@@ -488,190 +680,58 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           }}
         />
 
-        { /* ================== POPUP =================== */}
-        {popupVisible && popupInfo && (
-          <Popup
-            longitude={popupInfo?.longitude}
-            latitude={popupInfo?.latitude}
-            closeButton={false}
-            closeOnClick={false}
-            onClose={() => setPopupInfo(null)}
-          >
-            <table>
-              <tr>
-                <td className="number-value">
-                  {popupInfo.longitude.toFixed(3)}
-                </td>
-                <td className="number-value">
-                  {popupInfo?.latitude.toFixed(3)}
-                </td>
-              </tr>
-              <tr>
-                <td>Longitude</td>
-                <td>Latitude</td>
-              </tr>
-            </table>
+        {/* wait for mines to load so that hotspots are layered on top of mines */}
+        {miningData && <Hotspots lang={lang} />}
 
-            <a
-              className="copy-url"
-              onClick={async (e) => {
-                e.preventDefault();
-                copyToClipboard(
-                  `${process.env.NEXT_PUBLIC_DOMAIN}/#${popupInfo.zoom.toFixed(2)}/${popupInfo.longitude.toFixed(3)}/${popupInfo?.latitude.toFixed(3)}`,
-                ).then(() => {
-                  message.success("URL copied");
-                });
-              }}
-              href="#copy"
-            >
-              <CopyOutlined style={{ fontSize: "16px" }} /> Copy URL
-            </a>
-          </Popup>
+        {/* ================== POPUP =================== */}
+        {tooltip && !isMobile && <MapPopup tooltip={tooltip} />}
 
+        {!isMobile && (
+          <ScaleControl
+            unit={areaUnits === "imperial" ? "imperial" : "metric"}
+          />
         )}
-
-        <div className="map-scale-control"></div>
       </Map>
 
-  
-      <div className="year-pills">
-        <Radio.Group
-          options={[
-            {
-              label: "2018",
-              value: "2018",
-            },
-            {
-              label: "2019",
-              value: "2019",
-            },
-            {
-              label: "2020",
-              value: "2020",
-            },
-            {
-              label: "2021",
-              value: "2021",
-            },
-            {
-              label: "2022",
-              value: "2022",
-            },
-            {
-              label: "2023",
-              value: "2023",
-            },
-	    {
-              label: "2024",
-              value: "2024",
-            },
-          ]}
-          value={activeLayer}
-          onChange={({ target: { value } }) => {
-            setActiveLayer(value);
-          }}
-          optionType="button"
-          buttonStyle="solid"
-        />
-      </div>
-      
-      <div className="year-dropdown">
-        <ConfigProvider
-        theme={{
-          "components": {
-          "Select": {
-            "selectorBg": "rgb(11, 95, 58)",
-            "optionSelectedColor": "rgba(242, 236, 236, 0.88)",
-            "colorIconHover": "rgba(250, 246, 246, 0.88)",
-            "colorBgContainer": "rgb(11, 95, 58)",
-            "colorBgElevated": "rgb(11, 95, 58)",
-            "colorPrimary": "rgb(242, 237, 237)",
-            "colorIcon": "rgb(255,255,255)",
-            "colorBorder": "rgb(6, 89, 36)",
-            "optionSelectedBg": "rgb(76, 97, 77)",
-            "colorText": "rgba(250, 249, 249, 0.88)",
-            "colorFillTertiary": "rgba(242, 234, 234, 0.04)",
-            "colorFillSecondary": "rgba(241, 228, 228, 0.06)",
-            "colorTextQuaternary": "rgba(249, 249, 249, 0.25)",
-            "colorTextTertiary": "rgba(244, 236, 236, 0.9)",
-            "colorTextDescription": "rgba(255, 253, 253, 0.45)",
-            "colorTextDisabled": "rgba(239, 233, 233, 0.25)",
-            "colorTextPlaceholder": "rgba(255, 255, 255, 0.9)",
-          }
-         }
-        }}
-        >
-        <Select
-         style={{ width: '100px'}}
-         value={activeLayer}
-         onChange={(value) => {
-          setActiveLayer(value);
-        }}
-        >
-	  <Option value={2024}>2024</Option>
-          <Option value={2023}>2023</Option>
-          <Option value={2022}>2022</Option>
-          <Option value={2021}>2021</Option>
-          <Option value={2020}>2020</Option>
-          <Option value={2019}>2019</Option>
-          <Option value={2018}>2018</Option>
-        </Select>
-        </ConfigProvider>
-      </div>
+      <AreaSelect dictionary={dictionary} />
 
-      <div className="imagery-pills">
-        <Radio.Group
-          size="small"
-          options={[
-            {
-              label: dictionary?.map_ui.latest,
-              value: true,
-            },
-            {
-              label: dictionary?.map_ui.hi_res,
-              value: false,
-            },
-          ]}
-          value={yearly}
-          onChange={({ target: { value } }) => {
-            setYearly(value);
-            if (value === false) {
-              setMapStyle(`mapbox://styles/earthrise/ckxht1jfm2h9k15m7wrv5wz5w`);
-            } else {
-              setMapStyle('mapbox://styles/earthrise/clvwchqxi06gh01pe1huv70id');
-            }
-          }}
-          optionType="button"
-          buttonStyle="solid"
-        />
-      </div>
-
-      <div className="partners">
-        <a className="pc-logo" href="https://pulitzercenter.org">
-          Pulitzer Center
-        </a>
-        <a
-          className="rin-logo"
-          href="https://pulitzercenter.org/journalism/initiatives/rainforest-investigations-network-initiative"
-        >
-          RIN
-        </a>
-        <a className="ac-logo" href="https://www.amazonconservation.org/">
-          Amazon Conservation
-        </a>
-        <a className="eg-logo" href="https://earthgenome.org/">
-          Earth Genome
-        </a>
-      </div>
-
-      {areaVisible && <Area dictionary={dictionary} year={activeLayer} /> }
-      {/* @ts-ignore */}
-      {map && map?.getZoom() > 5 && (
-        /* @ts-ignore */
-        <MiniMap bounds={bounds} />
+      {isGeocoderHidden && !isMobile && (
+        <div className="geocoder-toggle">
+          <button
+            onClick={() => {
+              const element = document.querySelector(".geocoder-hidden");
+              if (!element) return;
+              element.classList.remove("geocoder-hidden");
+              setIsGeocoderHidden(false);
+            }}
+          >
+            <GeocoderIcon />
+          </button>
+        </div>
       )}
-      {/* @ts-ignore */}
-      <Footer year={activeLayer} zoom={map?.getZoom() || 4} dictionary={dictionary} />
+
+      <LegendWrapper
+        showMinimap={true}
+        showMinimapBounds={
+          (mapRef.current && mapRef.current.getZoom() > 5) ?? false
+        }
+        bounds={bounds}
+        years={LAYER_YEARS}
+        activeLayer={activeLayer}
+        setActiveLayer={setActiveLayer}
+        dictionary={dictionary}
+      />
+
+      {selectedArea && (
+        <AreaSummary
+          dictionary={dictionary}
+          year={activeLayer}
+          lang={lang}
+          activeLayer={activeLayer}
+        />
+      )}
+
+      <Footer dictionary={dictionary} />
     </div>
   );
 };
