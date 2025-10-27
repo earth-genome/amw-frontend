@@ -38,6 +38,12 @@ const DATA_BASE_URL =
   // "/test-data";
   process.env.NEXT_PUBLIC_DATA_URL;
 
+if (!DATA_BASE_URL) {
+  throw new Error(
+    "NEXT_PUBLIC_DATA_URL environment variable is not set. Please add it to your .env file."
+  );
+}
+
 export const MINING_DATA_URL = `${DATA_BASE_URL}/outputs/48px_v3.2-3.7ensemble/difference/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2024_all_differences.geojson`;
 
 export const AREA_TYPES = [
