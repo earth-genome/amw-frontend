@@ -543,6 +543,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
             type="geojson"
             tolerance={0.05}
             data={areasData}
+            promoteId={"id"} // we need this for the hover effect to work
           />
         )}
         {selectedAreaData && (
