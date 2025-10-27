@@ -348,49 +348,49 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           type="geojson"
           tolerance={0.05}
           // @ts-ignore
-          data={`${process.env.NEXT_PUBLIC_MINES_URL}/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2024cumulative.geojson`}
+          data={`${process.env.NEXT_PUBLIC_DATA_URL}/outputs/48px_v3.2-3.7ensemble/cumulative/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2024cumulative.geojson`}
         />
         <Source
           id={"mines-2023"}
           type="geojson"
           tolerance={0.05}
           // @ts-ignore
-          data={`${process.env.NEXT_PUBLIC_MINES_URL}/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2023cumulative.geojson`}
+          data={`${process.env.NEXT_PUBLIC_DATA_URL}/outputs/48px_v3.2-3.7ensemble/cumulative/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2023cumulative.geojson`}
         />
         <Source
           id={"mines-2022"}
           type="geojson"
           tolerance={0.05}
           // @ts-ignore
-          data={`${process.env.NEXT_PUBLIC_MINES_URL}/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2022cumulative.geojson`}
+          data={`${process.env.NEXT_PUBLIC_DATA_URL}/outputs/48px_v3.2-3.7ensemble/cumulative/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2022cumulative.geojson`}
         />
         <Source
           id={"mines-2021"}
           type="geojson"
           tolerance={0.05}
           // @ts-ignore
-          data={`${process.env.NEXT_PUBLIC_MINES_URL}/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2021cumulative.geojson`}
+          data={`${process.env.NEXT_PUBLIC_DATA_URL}/outputs/48px_v3.2-3.7ensemble/cumulative/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2021cumulative.geojson`}
         />
         <Source
           id={"mines-2020"}
           type="geojson"
           tolerance={0.05}
           // @ts-ignore
-          data={`${process.env.NEXT_PUBLIC_MINES_URL}/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2020cumulative.geojson`}
+          data={`${process.env.NEXT_PUBLIC_DATA_URL}/outputs/48px_v3.2-3.7ensemble/cumulative/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2020cumulative.geojson`}
         />
         <Source
           id={"mines-2019"}
           type="geojson"
           tolerance={0.05}
           // @ts-ignore
-          data={`${process.env.NEXT_PUBLIC_MINES_URL}/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2019cumulative.geojson`}
+          data={`${process.env.NEXT_PUBLIC_DATA_URL}/outputs/48px_v3.2-3.7ensemble/cumulative/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2019cumulative.geojson`}
         />
         <Source
           id={"mines-2018"}
           type="geojson"
           tolerance={0.05}
           // @ts-ignore
-          data={`${process.env.NEXT_PUBLIC_MINES_URL}/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2018cumulative.geojson`}
+          data={`${process.env.NEXT_PUBLIC_DATA_URL}/outputs/48px_v3.2-3.7ensemble/cumulative/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2018cumulative.geojson`}
         />
         
         { /* ================== MINE LAYERS =================== */}
