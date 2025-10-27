@@ -34,19 +34,25 @@ export interface AreaType {
   useLocale: boolean;
 }
 
-export const MINING_DATA_URL = `https://raw.githubusercontent.com/earthrise-media/mining-detector/8a076bf0d6fdc3dde16b9abed68087fa40ee8c92/data/outputs/48px_v3.2-3.7ensemble/difference/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2024_all_differences.geojson`;
-
-const AREA_TYPES_BASE_URL =
+const DATA_BASE_URL =
   // "/test-data";
-  "https://raw.githubusercontent.com/earthrise-media/mining-detector/standardize-it-and-pa-areas/data/boundaries";
+  process.env.NEXT_PUBLIC_DATA_URL;
+
+if (!DATA_BASE_URL) {
+  throw new Error(
+    "NEXT_PUBLIC_DATA_URL environment variable is not set. Please add it to your .env file."
+  );
+}
+
+export const MINING_DATA_URL = `${DATA_BASE_URL}/outputs/48px_v3.2-3.7ensemble/difference/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2024_all_differences.geojson`;
 
 export const AREA_TYPES = [
   {
     key: "countries",
     dictionaryKey: "countries",
     dictionaryKeySingular: "country",
-    url: `${AREA_TYPES_BASE_URL}/national_admin/out/national_admin_impacts.geojson`,
-    timeseriesUrl: `${AREA_TYPES_BASE_URL}/national_admin/out/national_admin_yearly.json`,
+    url: `${DATA_BASE_URL}/boundaries/national_admin/out/national_admin_impacts.geojson`,
+    timeseriesUrl: `${DATA_BASE_URL}/boundaries/national_admin/out/national_admin_yearly.json`,
     isDefault: true,
     renderLabel: (properties: Record<string, any>) => properties.country,
     renderTitle: (properties: Record<string, any>) => properties.country,
@@ -58,8 +64,8 @@ export const AREA_TYPES = [
     key: "subnational-areas",
     dictionaryKey: "subnational_jurisdictions",
     dictionaryKeySingular: "subnational_jurisdiction",
-    url: `${AREA_TYPES_BASE_URL}/subnational_admin/out/admin_areas_display_impacts_unfiltered.geojson`,
-    timeseriesUrl: `${AREA_TYPES_BASE_URL}/subnational_admin/out/admin_areas_display_yearly.json`,
+    url: `${DATA_BASE_URL}/boundaries/subnational_admin/out/admin_areas_display_impacts_unfiltered.geojson`,
+    timeseriesUrl: `${DATA_BASE_URL}/boundaries/subnational_admin/out/admin_areas_display_yearly.json`,
     isDefault: true,
     renderLabel: (properties: Record<string, any>) =>
       `${properties.name_field || "N/A"} ${
@@ -75,8 +81,8 @@ export const AREA_TYPES = [
     key: "indigenous-territory",
     dictionaryKey: "indigenous_territories",
     dictionaryKeySingular: "indigenous_territory",
-    url: `${AREA_TYPES_BASE_URL}/protected_areas_and_indigenous_territories/out/indigenous_territories_impacts.geojson`,
-    timeseriesUrl: `${AREA_TYPES_BASE_URL}/protected_areas_and_indigenous_territories/out/indigenous_territories_yearly.json`,
+    url: `${DATA_BASE_URL}/boundaries/protected_areas_and_indigenous_territories/out/indigenous_territories_impacts.geojson`,
+    timeseriesUrl: `${DATA_BASE_URL}/boundaries/protected_areas_and_indigenous_territories/out/indigenous_territories_yearly.json`,
     isDefault: false,
     renderLabel: (properties: Record<string, any>) =>
       `${properties.name_field || "N/A"} ${
@@ -92,8 +98,8 @@ export const AREA_TYPES = [
     key: "protected-area",
     dictionaryKey: "protected_areas",
     dictionaryKeySingular: "protected_area",
-    url: `${AREA_TYPES_BASE_URL}/protected_areas_and_indigenous_territories/out/protected_areas_impacts.geojson`,
-    timeseriesUrl: `${AREA_TYPES_BASE_URL}/protected_areas_and_indigenous_territories/out/protected_areas_yearly.json`,
+    url: `${DATA_BASE_URL}/boundaries/protected_areas_and_indigenous_territories/out/protected_areas_impacts.geojson`,
+    timeseriesUrl: `${DATA_BASE_URL}/boundaries/protected_areas_and_indigenous_territories/out/protected_areas_yearly.json`,
     isDefault: false,
     renderLabel: (properties: Record<string, any>) =>
       `${properties.name_field || "N/A"} ${
