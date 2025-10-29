@@ -68,6 +68,8 @@
     "hide_more_insights": "Ocultar mais informações",
     "see_more_insights": "Ver mais informações",
     "description": "Descrição",
+    "presumption_of_illegality": "Presunção de ilegalidade",
+    "presumption_of_illegality_tooltip": "\"Presunção de ilegalidade\" para atividades de mineração com base nas designações de terra. Muito Alto: A mineração é muito provavelmente ilegal. Baixo: A mineração é provavelmente legal.",
     "units": "Unidades",
     "hectares": "Hectares",
     "squareKm": "Quilômetros quadrados",
@@ -75,6 +77,12 @@
     "hectaresAbbrev": "hectares",
     "squareKmAbbrev": "km²",
     "imperialAbbrev": "acres"
+  },
+  "illegality_legend": {
+    "low": "Baixo",
+    "medium": "Médio",
+    "high": "Alto",
+    "very_high": "Muito alto"
   },
   "map_legend": {
     "old_mining_activity": "Mineração mais antiga",
