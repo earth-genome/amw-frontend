@@ -262,6 +262,36 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
     });
   }, [isMobile, selectedAreaData]);
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // check if Shift is pressed and the key is 'C' or 'c'
+      if (e.shiftKey && (e.key === "C" || e.key === "c")) {
+        e.preventDefault();
+
+        if (!mapRef.current) return;
+
+        const bounds = mapRef.current.getBounds();
+        if (!bounds) return;
+
+        const currentBounds = convertBoundsToGeoJSON(bounds);
+        const coordinates = currentBounds?.geometry?.coordinates;
+        // copy to clipboard
+        if (coordinates) {
+          navigator.clipboard
+            .writeText(JSON.stringify(coordinates, null, 2))
+            .then(() => {
+              alert("Coordinates copied to clipboard!");
+            });
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
   const getBeforeId = (targetLayerId: string) =>
     // make sure the layer exists to avoid errors
     mapRef.current?.getLayer(targetLayerId) ? targetLayerId : undefined;
