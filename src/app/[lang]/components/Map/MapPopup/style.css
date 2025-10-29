@@ -26,6 +26,8 @@
   color: #fff;
 }
 
-.map-tooltip {
-  pointer-events: none;
+.map-tooltip,
+.map-tooltip .mapboxgl-popup-content,
+.map-tooltip .mapboxgl-popup-tip {
+  pointer-events: none !important;
 }
