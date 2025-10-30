@@ -74,6 +74,7 @@
     "imperialAbbrev": "acres"
   },
   "illegality_legend": {
+    "na": "N/A",
     "low": "Low",
     "medium": "Medium",
     "high": "High",

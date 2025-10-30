@@ -159,8 +159,8 @@ const Area: React.FC<AreaProps> = ({ dictionary, year, lang, activeLayer }) => {
             dictionary={dictionary}
             illegalityAreas={illegalityAreas?.filter(
               (d: IllegalityAreaData) =>
-                // removing areas which are zero pct and which have no illegality category (=== -1)
-                d.admin_illegality_max !== -1 && d.mining_affected_area_pct > 0
+                // removing areas which are zero pct
+                d.mining_affected_area_pct > 0
             )}
           />
         </div>

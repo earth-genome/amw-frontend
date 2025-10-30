@@ -2,8 +2,7 @@ import { useState } from "react";
 import { ConfigProvider, Tooltip } from "antd";
 import { format } from "d3";
 import AreaSummaryTooltip from "@/app/[lang]/components/AreaSummary/AreaSummaryTooltip";
-
-const COLORS = ["#dfbbe4ff", "#AB47BC", "#8E24AA", "#6A1B9A"];
+import { ILLEGALITY_COLORS, PERMITTED_ILLEGALITY_KEYS } from "@/constants/map";
 
 const styles = {
   container: {
@@ -78,6 +77,8 @@ const IllegalityBarChart = ({
 
   const sortedPercentages = [...percentages].sort((a, b) => b.key - a.key);
 
+  console.log(ILLEGALITY_COLORS[4])
+
   return (
     <div style={styles.container}>
       {/* legend */}
@@ -87,13 +88,13 @@ const IllegalityBarChart = ({
             <div
               style={{
                 ...styles.legendColor,
-                background: COLORS[d.key - 1],
+                background:
+                  ILLEGALITY_COLORS[d.key as PERMITTED_ILLEGALITY_KEYS],
               }}
             ></div>
             {d.label}
           </div>
         ))}
-        {/* FIXME: fill and localize */}
         <AreaSummaryTooltip
           content={
             <div>{dictionary?.map_ui?.presumption_of_illegality_tooltip}</div>
@@ -125,7 +126,8 @@ const IllegalityBarChart = ({
                     ? styles.barSegmentLight
                     : styles.barSegmentDark),
                   width: `${d.value * 100}%`,
-                  background: COLORS[d.key - 1],
+                  background:
+                    ILLEGALITY_COLORS[d.key as PERMITTED_ILLEGALITY_KEYS],
                   ...(hoveredKey !== null && hoveredKey !== d.key
                     ? styles.faded
                     : {}),
