@@ -7,6 +7,9 @@ import {
   PolicyScoreboardResponse,
 } from "@/cms/policy-scoreboard";
 
+// Force dynamic rendering
+export const dynamic = "force-dynamic";
+
 interface PageProps {
   params: {
     lang: PERMITTED_LANGUAGES;

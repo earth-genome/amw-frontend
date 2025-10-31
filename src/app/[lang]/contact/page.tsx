@@ -4,6 +4,9 @@ import { CONTACT_URL, ContactResponse } from "@/cms/contact";
 import { getMarkdownText, PERMITTED_LANGUAGES } from "@/utils/content";
 import { NextPage } from "next";
 
+// Force dynamic rendering
+export const dynamic = "force-dynamic";
+
 interface PageProps {
   params: {
     lang: PERMITTED_LANGUAGES;

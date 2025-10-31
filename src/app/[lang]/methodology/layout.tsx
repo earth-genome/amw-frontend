@@ -3,6 +3,9 @@ import { i18n, type Locale } from "../../../../i18n-config";
 import { getDictionary } from "../../../get-dictionary";
 import { PERMITTED_LANGUAGES } from "@/utils/content";
 
+// Force dynamic rendering
+export const dynamic = "force-dynamic";
+
 type Props = {
   params: { lang: PERMITTED_LANGUAGES };
 };
