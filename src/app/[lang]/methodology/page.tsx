@@ -4,6 +4,9 @@ import { NextPage } from "next";
 import Overlay from "@/app/[lang]/components/Overlay";
 import { METHODOLOGY_URL, MethodologyResponse } from "@/cms/methodology";
 
+// Force dynamic rendering
+export const dynamic = "force-dynamic";
+
 interface PageProps {
   params: {
     lang: PERMITTED_LANGUAGES;
