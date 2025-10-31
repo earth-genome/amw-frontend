@@ -6,15 +6,17 @@ import { slugify } from "@/utils/slugify";
 interface Props {
   state: IState;
   dispatch: React.Dispatch<any>;
+  ignore: boolean;
 }
 
-export const useQueryParams = ({ state, dispatch }: Props) => {
+export const useQueryParams = ({ state, dispatch, ignore }: Props) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
   // sync state changes to URL (outbound)
   useEffect(() => {
+    if (ignore) return;
     if (!state?.isQueryChecked) return; // wait for query to be checked
 
     const params = new URLSearchParams(window.location.search);
@@ -61,6 +63,7 @@ export const useQueryParams = ({ state, dispatch }: Props) => {
       router.replace(`${pathname}?${params.toString()}`);
     }
   }, [
+    ignore,
     pathname,
     router,
     state?.isQueryChecked,
@@ -72,6 +75,8 @@ export const useQueryParams = ({ state, dispatch }: Props) => {
 
   // load initial state from URL (inbound) - only runs once on mount
   useEffect(() => {
+    if (ignore) return;
+
     const areaTypeKey = searchParams.get("areaType");
     const pendingAreaId = searchParams.get("areaId");
 
