@@ -21,7 +21,7 @@ const MapPopup = ({ tooltip }: MapPopupProps) => {
 
   const { properties, longitude, latitude } = tooltip;
 
-  // HACK: because hotspots need to show title independent 
+  // HACK: because hotspots need to show title independent
   // of what kind of area is displaying
   const title =
     (properties?.type as PERMITTED_AREA_TYPES_KEYS) === "hotspots"
