@@ -3,28 +3,13 @@
     "title": "Amazon Mining Watch",
     "description": "A New Platform to Monitor Mining in Amazon Using Artificial Intelligence."
   },
-  "about": {
-    "title": "About - Amazon Mining Watch"
-  },
-  "case_studies": {
-    "title": "Case studies - Amazon Mining Watch"
-  },
-  "method": {
-    "title": "Methodology - Amazon Mining Watch"
-  },
-  "code": {
-    "title": "Code - Amazon Mining Watch"
-  },
-  "contact": {
-    "title": "Contact - Amazon Mining Watch"
-  },
   "menu": {
     "about_amw": "About AMW",
     "about": "About",
     "results": "Results",
     "map": "Map",
     "case_studies": "Case Studies",
-    "methodology": "Methodology",
+    "methods_and_code": "Methods and Code",
     "policy_scoreboard": "Policy Scoreboard",
     "faq": "FAQ",
     "contact": "Contact"

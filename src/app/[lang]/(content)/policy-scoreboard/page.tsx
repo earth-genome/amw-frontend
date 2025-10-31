@@ -6,6 +6,7 @@ import {
   POLICY_SCOREBOARD_URL,
   PolicyScoreboardResponse,
 } from "@/cms/policy-scoreboard";
+import { getDictionary } from "@/get-dictionary";
 
 // Force dynamic rendering
 export const dynamic = "force-dynamic";
@@ -13,6 +14,19 @@ export const dynamic = "force-dynamic";
 interface PageProps {
   params: {
     lang: PERMITTED_LANGUAGES;
+  };
+}
+
+export async function generateMetadata({ params: { lang } }: PageProps) {
+  const response = await apiFetcher<PolicyScoreboardResponse>(
+    POLICY_SCOREBOARD_URL,
+    {
+      locale: lang,
+    }
+  );
+  const dictionary = await getDictionary(lang);
+  return {
+    title: `${response?.data?.title} - ${dictionary?.home?.title}`,
   };
 }
 
