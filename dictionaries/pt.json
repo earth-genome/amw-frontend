@@ -54,7 +54,12 @@
     "imperial": "Imperial",
     "hectaresAbbrev": "hectares",
     "squareKmAbbrev": "km²",
-    "imperialAbbrev": "acres"
+    "imperialAbbrev": "acres",
+    "type_of_mining": "Tipo de mineração"
+  },
+  "types_of_mining": {
+    "hotspot": "Ponto crítico",
+    "river_mining": "Mineração fluvial"
   },
   "map_legend": {
     "old_mining_activity": "Mineração mais antiga",

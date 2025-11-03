@@ -81,7 +81,7 @@ const Area: React.FC<AreaProps> = ({ dictionary, year, lang, activeLayer }) => {
     selectedAreaTypeKey,
   ]);
 
-  const { country, id: areaId, description } = areaProperties;
+  const { country, id: areaId, description, hotspotType } = areaProperties;
   const { showCountry, renderTitle, renderStatus } = selectedAreaType || {};
   const areaTitle = renderTitle && renderTitle(areaProperties);
   const areaStatus = renderStatus && renderStatus(areaProperties);
@@ -150,6 +150,7 @@ const Area: React.FC<AreaProps> = ({ dictionary, year, lang, activeLayer }) => {
             selectedAreaTimeseriesData={selectedAreaTimeseriesData}
             description={description}
             dictionary={dictionary}
+            hotspotType={hotspotType}
           />
         </div>
       )}

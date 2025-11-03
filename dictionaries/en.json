@@ -54,7 +54,12 @@
     "imperial": "Imperial",
     "hectaresAbbrev": "hectares",
     "squareKmAbbrev": "km²",
-    "imperialAbbrev": "acres"
+    "imperialAbbrev": "acres",
+    "type_of_mining": "Type of mining"
+  },
+  "types_of_mining": {
+    "hotspot": "Hotspot",
+    "river_mining": "River mining"
   },
   "map_legend": {
     "old_mining_activity": "Older mining activity",
