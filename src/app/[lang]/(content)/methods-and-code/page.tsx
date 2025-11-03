@@ -3,10 +3,24 @@ import { getMarkdownText, PERMITTED_LANGUAGES } from "@/utils/content";
 import { NextPage } from "next";
 import Overlay from "@/app/[lang]/components/Overlay";
 import { METHODOLOGY_URL, MethodologyResponse } from "@/cms/methodology";
+import { getDictionary } from "@/get-dictionary";
+
+// Force dynamic rendering
+export const dynamic = "force-dynamic";
 
 interface PageProps {
   params: {
     lang: PERMITTED_LANGUAGES;
+  };
+}
+
+export async function generateMetadata({ params: { lang } }: PageProps) {
+  const response = await apiFetcher<MethodologyResponse>(METHODOLOGY_URL, {
+    locale: lang,
+  });
+  const dictionary = await getDictionary(lang);
+  return {
+    title: `${response?.data?.title} - ${dictionary?.home?.title}`,
   };
 }
 

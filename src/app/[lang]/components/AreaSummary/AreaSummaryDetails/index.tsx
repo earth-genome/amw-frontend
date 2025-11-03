@@ -21,6 +21,7 @@ interface AreaSummaryDetailsProps {
   selectedAreaTimeseriesData: AreasTimeseriesData | undefined;
   hideMiningCalculator: boolean;
   description?: string;
+  hotspotType?: string;
 }
 
 const AreaSummaryDetails = ({
@@ -32,6 +33,7 @@ const AreaSummaryDetails = ({
   hideMiningCalculator,
   description,
   illegalityAreas,
+  hotspotType,
 }: AreaSummaryDetailsProps) => {
   const economicCostText = calculatorIsLoading
     ? `${dictionary?.map_ui?.loading}...`
@@ -102,6 +104,17 @@ const AreaSummaryDetails = ({
                 ],
             }))}
           />
+        </>
+      ) : null}
+
+      {hotspotType ? (
+        <>
+          <div className={style.label}>
+            {dictionary?.map_ui?.type_of_mining}
+          </div>
+          <div className={style.paragraph}>
+            {dictionary?.types_of_mining?.[hotspotType]}
+          </div>
         </>
       ) : null}
 

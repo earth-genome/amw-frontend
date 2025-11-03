@@ -88,6 +88,7 @@ const Area: React.FC<AreaProps> = ({ dictionary, year, lang, activeLayer }) => {
     id: areaId,
     description,
     illegality_areas: illegalityAreas,
+    hotspotType,
   } = areaProperties;
   const { showCountry, renderTitle, renderStatus } = selectedAreaType || {};
   const areaTitle = renderTitle && renderTitle(areaProperties);
@@ -162,6 +163,7 @@ const Area: React.FC<AreaProps> = ({ dictionary, year, lang, activeLayer }) => {
                 // removing areas which are zero pct
                 d.mining_affected_area_pct > 0
             )}
+            hotspotType={hotspotType}
           />
         </div>
       )}

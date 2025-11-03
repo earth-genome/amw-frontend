@@ -12,6 +12,11 @@ interface HotspotsProps {
   lang: PERMITTED_LANGUAGES;
 }
 
+const darkRed = "#FF3C00";
+const lightRed = "#FF6347";
+const darkBlue = "#0047AB";
+const lightBlue = "#4169E1";
+
 const Hotspots = ({ lang }: HotspotsProps) => {
   const { hotspots: hotspotsData, isLoading, error } = useHotspots(lang);
 
@@ -70,8 +75,18 @@ const Hotspots = ({ lang }: HotspotsProps) => {
       "circle-color": [
         "case",
         ["boolean", ["feature-state", "hover"], false],
-        "#FF3C00",
-        "#FF6347",
+        [
+          "case",
+          ["==", ["get", "hotspotType"], "river_mining"],
+          darkBlue,
+          darkRed,
+        ],
+        [
+          "case",
+          ["==", ["get", "hotspotType"], "river_mining"],
+          lightBlue,
+          lightRed,
+        ],
       ],
       "circle-opacity": [
         "interpolate",
@@ -124,7 +139,12 @@ const Hotspots = ({ lang }: HotspotsProps) => {
     id: "hotspots-outline",
     type: "line",
     paint: {
-      "line-color": "#FF3C00",
+      "line-color": [
+        "case",
+        ["==", ["get", "hotspotType"], "river_mining"],
+        darkBlue,
+        darkRed,
+      ],
       "line-width": 4,
       "line-opacity": ["interpolate", ["linear"], ["zoom"], 4, 0, 7, 0, 9, 1],
     },
@@ -135,7 +155,12 @@ const Hotspots = ({ lang }: HotspotsProps) => {
     id: "hotspots-fill",
     type: "fill",
     paint: {
-      "fill-color": "#FF3C00",
+      "fill-color": [
+        "case",
+        ["==", ["get", "hotspotType"], "river_mining"],
+        darkBlue,
+        darkRed,
+      ],
       "fill-opacity": [
         "interpolate",
         ["linear"],
@@ -164,7 +189,12 @@ const Hotspots = ({ lang }: HotspotsProps) => {
     },
     paint: {
       "text-color": "#ffffff",
-      "text-halo-color": "#FF3C00",
+      "text-halo-color": [
+        "case",
+        ["==", ["get", "hotspotType"], "river_mining"],
+        darkBlue,
+        darkRed,
+      ],
       "text-halo-width": 2,
       "text-halo-blur": 0,
       "text-opacity": ["interpolate", ["linear"], ["zoom"], 4, 0, 8, 0, 9, 1],

@@ -3,33 +3,13 @@
     "title": "Amazon Mining Watch",
     "description": "A New Platform to Monitor Mining in Amazon Using Artificial Intelligence."
   },
-  "about": {
-    "title": "Sobre el Proyecto - Amazon Mining Watch",
-    "description": "Description"
-  },
-  "case_studies": {
-    "title": "Estudios de caso - Amazon Mining Watch",
-    "description": "Description"
-  },
-  "method": {
-    "title": "Metodología - Amazon Mining Watch",
-    "description": "Description"
-  },
-  "code": {
-    "title": "Datos + código - Amazon Mining Watch",
-    "description": "Description"
-  },
-  "contact": {
-    "title": "Contacto - Amazon Mining Watch",
-    "description": "Description"
-  },
   "menu": {
     "about_amw": "Acerca",
     "map": "Mapa",
     "about": "Sobre el Proyecto",
     "results": "Resultados",
     "case_studies": "Estudios de caso",
-    "methodology": "Metodología",
+    "methods_and_code": "Métodos y Código",
     "policy_scoreboard": "Tablero de Políticas",
     "faq": "FAQ",
     "contact": "Contacto"
@@ -76,7 +56,12 @@
     "imperial": "Imperial",
     "hectaresAbbrev": "hectáreas",
     "squareKmAbbrev": "km²",
-    "imperialAbbrev": "acres"
+    "imperialAbbrev": "acres",
+    "type_of_mining": "Tipo de minería"
+  },
+  "types_of_mining": {
+    "hotspot": "Punto crítico",
+    "river_mining": "Minería fluvial"
   },
   "illegality_legend": {
     "na": "N/A",

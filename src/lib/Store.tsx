@@ -86,7 +86,12 @@ export const Context = createContext<
 const Store = ({
   children,
   lang,
-}: Readonly<{ children: React.ReactNode; lang: PERMITTED_LANGUAGES }>) => {
+  isBaseRoute,
+}: Readonly<{
+  children: React.ReactNode;
+  lang: PERMITTED_LANGUAGES;
+  isBaseRoute: boolean;
+}>) => {
   const initialState: IState = {
     map: null,
     isQueryChecked: false,
@@ -109,7 +114,11 @@ const Store = ({
 
   const [state, dispatch] = useReducer(Reducer, initialState);
 
-  useQueryParams({ state, dispatch });
+  useQueryParams({
+    state,
+    dispatch,
+    ignore: !isBaseRoute, // don't use query params in the content pages
+  });
   useMiningData({ state, dispatch });
   useAreasData({ state, dispatch, lang });
 

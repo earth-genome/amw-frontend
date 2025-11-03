@@ -3,10 +3,24 @@ import Overlay from "@/app/[lang]/components/Overlay";
 import { getMarkdownText, PERMITTED_LANGUAGES } from "@/utils/content";
 import { apiFetcher } from "@/cms/client";
 import { CASE_STUDIES_URL, CaseStudiesResponse } from "@/cms/case-studies";
+import { getDictionary } from "@/get-dictionary";
+
+// Force dynamic rendering
+export const dynamic = "force-dynamic";
 
 interface PageProps {
   params: {
     lang: PERMITTED_LANGUAGES;
+  };
+}
+
+export async function generateMetadata({ params: { lang } }: PageProps) {
+  const response = await apiFetcher<CaseStudiesResponse>(CASE_STUDIES_URL, {
+    locale: lang,
+  });
+  const dictionary = await getDictionary(lang);
+  return {
+    title: `${response?.data?.title} - ${dictionary?.home?.title}`,
   };
 }
 
