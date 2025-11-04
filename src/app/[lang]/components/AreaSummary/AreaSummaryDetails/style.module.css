@@ -23,6 +23,10 @@
 .label {
   font-weight: 700;
   font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
 }
 
 .figure {
@@ -41,13 +45,6 @@
   .figureText {
     font-size: 28px;
   }
-}
-
-.tooltipButton {
-  border: none;
-  background: transparent;
-  padding: none;
-  cursor: pointer;
 }
 
 .paragraph {

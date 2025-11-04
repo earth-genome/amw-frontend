@@ -48,6 +48,8 @@
     "hide_more_insights": "Ocultar más información",
     "see_more_insights": "Ver más información",
     "description": "Descripción",
+    "presumption_of_illegality": "Presunción de ilegalidad",
+    "presumption_of_illegality_tooltip_": "\"Presunción de ilegalidad\" para actividades mineras basada en las designaciones de tierra. Muy Alto: La minería es muy probablemente ilegal. Bajo: La minería es probablemente legal.",
     "units": "Unidades",
     "hectares": "Hectáreas",
     "squareKm": "Kilómetros cuadrados",
@@ -60,6 +62,13 @@
   "types_of_mining": {
     "hotspot": "Punto crítico",
     "river_mining": "Minería fluvial"
+  },
+  "illegality_legend": {
+    "na": "N/A",
+    "low": "Bajo",
+    "medium": "Medio",
+    "high": "Alto",
+    "very_high": "Muy alto"
   },
   "map_legend": {
     "old_mining_activity": "Minería más antigua",

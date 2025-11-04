@@ -7,7 +7,7 @@ export const MAP_COLOR_SCALE = [
   "#F5CD7E",
   "#F1B53F",
   "#ED9E00",
-  "#F37D00",
+  // "#F37D00",
   // "#F95D00",
   // "#FF3C00",
 ];
@@ -135,3 +135,21 @@ export const AREA_TYPES = [
 ] as const;
 
 export type PERMITTED_AREA_TYPES_KEYS = (typeof AREA_TYPES)[number]["key"];
+
+export const ILLEGALITY_KEYS = {
+  0: "na",
+  1: "low",
+  2: "medium",
+  3: "high",
+  4: "very_high",
+} as const;
+
+export const ILLEGALITY_COLORS = {
+  0: "#abababff",
+  1: "#dfbbe4ff",
+  2: "#AB47BC",
+  3: "#8E24AA",
+  4: "#6A1B9A",
+} as const;
+
+export type PERMITTED_ILLEGALITY_KEYS = keyof typeof ILLEGALITY_KEYS;

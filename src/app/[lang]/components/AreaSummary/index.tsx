@@ -8,7 +8,9 @@ import {
   formatNumber,
   PERMITTED_LANGUAGES,
 } from "@/utils/content";
-import AreaSummaryDetails from "@/app/[lang]/components/AreaSummary/AreaSummaryDetails";
+import AreaSummaryDetails, {
+  IllegalityAreaData,
+} from "@/app/[lang]/components/AreaSummary/AreaSummaryDetails";
 import { CloseCircleFilled } from "@ant-design/icons";
 import * as turf from "@turf/turf";
 import calculateMiningAreaInBbox from "@/utils/calculateMiningAreaInBbox";
@@ -81,7 +83,13 @@ const Area: React.FC<AreaProps> = ({ dictionary, year, lang, activeLayer }) => {
     selectedAreaTypeKey,
   ]);
 
-  const { country, id: areaId, description, hotspotType } = areaProperties;
+  const {
+    country,
+    id: areaId,
+    description,
+    illegality_areas: illegalityAreas,
+    hotspotType,
+  } = areaProperties;
   const { showCountry, renderTitle, renderStatus } = selectedAreaType || {};
   const areaTitle = renderTitle && renderTitle(areaProperties);
   const areaStatus = renderStatus && renderStatus(areaProperties);
@@ -150,6 +158,11 @@ const Area: React.FC<AreaProps> = ({ dictionary, year, lang, activeLayer }) => {
             selectedAreaTimeseriesData={selectedAreaTimeseriesData}
             description={description}
             dictionary={dictionary}
+            illegalityAreas={illegalityAreas?.filter(
+              (d: IllegalityAreaData) =>
+                // removing areas which are zero pct
+                d.mining_affected_area_pct > 0
+            )}
             hotspotType={hotspotType}
           />
         </div>

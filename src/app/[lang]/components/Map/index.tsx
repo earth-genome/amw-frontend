@@ -326,7 +326,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
             activeLayer,
             miningData
           );
-          console.log("using viewport, mining area in ha", miningArea);
+          // console.log("using viewport, mining area in ha", miningArea);
         }}
         onMoveEnd={() => {
           updateURLParamsMapPosition();
@@ -337,9 +337,6 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
           if (!bounds) return;
           const currentBounds = convertBoundsToGeoJSON(bounds);
           setBounds(currentBounds);
-
-          // FIXME: allow to use this for CMS
-          console.log(currentBounds?.geometry?.coordinates);
         }}
         onZoomEnd={() => {
           updateURLParamsMapPosition();
