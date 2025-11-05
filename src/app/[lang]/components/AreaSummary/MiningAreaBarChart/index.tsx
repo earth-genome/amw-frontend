@@ -40,65 +40,66 @@ const MiningAreaBarChart = ({
   const width = chartWidth - margin.left - margin.right;
   const height = chartHeight - margin.bottom - margin.top;
 
-  // fill missing data
-  const dataFilled = useMemo(() => {
-    if (!data?.length) return [];
+  // // fill missing data
+  // const dataFilled = useMemo(() => {
+  //   if (!data?.length) return [];
 
-    const dataMap = new Map(data.map((d) => [String(d.admin_year), d]));
+  //   const dataMap = new Map(data.map((d) => [String(d.admin_year), d]));
 
-    // extract all years present in data
-    const allYears = Array.from(
-      new Set(data.map((d) => Number(String(d.admin_year).slice(0, 4))))
-    ).sort((a, b) => a - b);
+  //   // extract all years present in data
+  //   const allYears = Array.from(
+  //     new Set(data.map((d) => Number(String(d.admin_year).slice(0, 4))))
+  //   ).sort((a, b) => a - b);
 
-    // if there are gaps in years, fill them in too
-    const fullYearRange = d3.range(
-      d3.min(allYears) ?? allYears[0],
-      (d3.max(allYears) ?? allYears[allYears.length - 1]) + 1
-    );
+  //   // if there are gaps in years, fill them in too
+  //   const fullYearRange = d3.range(
+  //     d3.min(allYears) ?? allYears[0],
+  //     (d3.max(allYears) ?? allYears[allYears.length - 1]) + 1
+  //   );
 
-    const filled: AreasTimeseriesData = [];
+  //   const filled: AreasTimeseriesData = [];
 
-    fullYearRange.forEach((year) => {
-      const yearStr = String(year);
-      const yearEntries = data.filter((d) =>
-        String(d.admin_year).startsWith(yearStr)
-      );
-      const hasFull = yearEntries.some(
-        (d) => String(d.admin_year).slice(4) === "00"
-      );
-      const hasQuarters = yearEntries.some(
-        (d) => String(d.admin_year).slice(4) !== "00"
-      );
+  //   fullYearRange.forEach((year) => {
+  //     const yearStr = String(year);
+  //     const yearEntries = data.filter((d) =>
+  //       String(d.admin_year).startsWith(yearStr)
+  //     );
+  //     const hasFull = yearEntries.some(
+  //       (d) => String(d.admin_year).slice(4) === "00"
+  //     );
+  //     const hasQuarters = yearEntries.some(
+  //       (d) => String(d.admin_year).slice(4) !== "00"
+  //     );
 
-      // ensure full year exists
-      if (!hasFull) {
-        filled.push({
-          admin_year: Number(`${yearStr}00`),
-          intersected_area_ha_cumulative: 0,
-        } as any);
-      }
+  //     // ensure full year exists
+  //     if (!hasFull) {
+  //       filled.push({
+  //         admin_year: Number(`${yearStr}00`),
+  //         intersected_area_ha_cumulative: 0,
+  //       } as any);
+  //     }
 
-      // if quarters exist, ensure all 4 quarters exist
-      if (hasQuarters) {
-        for (let q = 1; q <= 4; q++) {
-          const code = `${yearStr}0${q}`;
-          if (!dataMap.has(code)) {
-            filled.push({
-              admin_year: Number(code),
-              intersected_area_ha_cumulative: 0,
-            } as any);
-          }
-        }
-      }
+  //     // if quarters exist, ensure all 4 quarters exist
+  //     if (hasQuarters) {
+  //       for (let q = 1; q <= 4; q++) {
+  //         const code = `${yearStr}0${q}`;
+  //         if (!dataMap.has(code)) {
+  //           filled.push({
+  //             admin_year: Number(code),
+  //             intersected_area_ha_cumulative: 0,
+  //           } as any);
+  //         }
+  //       }
+  //     }
 
-      // add all original data from that year
-      filled.push(...yearEntries);
-    });
+  //     // add all original data from that year
+  //     filled.push(...yearEntries);
+  //   });
 
-    return filled;
-  }, [data]);
+  //   return filled;
+  // }, [data]);
 
+  const dataFilled = data;
   if (!dataFilled?.length) return null;
 
   // group by year
