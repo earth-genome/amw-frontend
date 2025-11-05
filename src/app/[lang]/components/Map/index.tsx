@@ -502,9 +502,10 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
             id={`sentinel-layer-${d}`}
             type="raster"
             source={`sentinel-${d}`}
-            paint={{
-              "raster-opacity": getSatelliteOpacity(`sentinel-layer-${d}`),
+            layout={{
+              visibility: activeYear === String(d) ? "visible" : "none",
             }}
+            beforeId={getBeforeId("hole-layer")}
           />
         ))}
         {/* ================== MASK =================== */}
