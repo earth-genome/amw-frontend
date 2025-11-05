@@ -23,8 +23,7 @@ import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import * as turf from "@turf/turf";
 import {
-  createYearsColorScale,
-  MAP_LATEST_YEAR_COLOR,
+  getColorsForYears,
   MAP_MISSING_DATA_COLOR,
   PERMITTED_AREA_TYPES_KEYS,
 } from "@/constants/map";
@@ -61,7 +60,8 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
   const mapRef = useRef<MapRef>(null);
   const [bounds, setBounds] = useState<GeoJSONType | undefined>(undefined);
   const [yearly, setYearly] = useState(true);
-  const [activeLayer, setActiveLayer] = useState("2024");
+  const [activeYear, setActiveYear] = useState("2024");
+  const maxYear = Math.max(...LAYER_YEARS);
   const [mapStyle, setMapStyle] = useState(SATELLITE_LAYERS["yearly"]);
   const [isGeocoderHidden, setIsGeocoderHidden] = useState(true);
   const [tooltip, setTooltip] = useState<TooltipInfo | null>(null);
@@ -123,26 +123,20 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
   }, []);
 
   const getSatelliteOpacity = (layerId: string) => {
-    if (yearly && layerId === `sentinel-layer-${activeLayer}`) {
+    if (yearly && layerId === `sentinel-layer-${activeYear}`) {
       return 1;
     }
     return 0;
   };
 
-  const getMineLayerColor = () => {
-    const getColorsForYears = (years: number[]) => {
-      const colorScale = createYearsColorScale(years);
-      return years.map((_, index) =>
-        index === years.length - 1 ? MAP_LATEST_YEAR_COLOR : colorScale(index)
-      );
-    };
-    const colors = getColorsForYears(LAYER_YEARS);
+  const yearsColors = getColorsForYears(LAYER_YEARS);
 
+  const getMineLayerColor = () => {
     return [
       "case",
       ...LAYER_YEARS.flatMap((year, i) => [
         ["==", ["get", "year"], year],
-        colors[i],
+        yearsColors[i],
       ]),
       MAP_MISSING_DATA_COLOR,
     ] as Expression;
@@ -323,7 +317,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
           // FIXME: we're not using the mining areas yet
           const miningArea = calculateMiningAreaInBbox(
             bbox,
-            activeLayer,
+            activeYear,
             miningData
           );
           // console.log("using viewport, mining area in ha", miningArea);
@@ -667,7 +661,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
             beforeId={getBeforeId("hotspots-fill")}
             source={"mines"}
             type="line"
-            filter={["<=", ["get", "year"], Number(activeLayer)]}
+            filter={["<=", ["get", "year"], Number(activeYear)]}
             paint={{
               "line-color": getMineLayerColor(),
               "line-opacity": 1,
@@ -709,7 +703,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
         />
 
         {/* wait for mines to load so that hotspots are layered on top of mines */}
-        {miningData && <Hotspots lang={lang} />}
+        {miningData && <Hotspots />}
 
         {/* ================== POPUP =================== */}
         {tooltip && !isMobile && <MapPopup tooltip={tooltip} />}
@@ -745,17 +739,18 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
         }
         bounds={bounds}
         years={LAYER_YEARS}
-        activeLayer={activeLayer}
-        setActiveLayer={setActiveLayer}
+        activeYear={activeYear}
+        setActiveYear={setActiveYear}
         dictionary={dictionary}
       />
 
       {selectedArea && (
         <AreaSummary
           dictionary={dictionary}
-          year={activeLayer}
-          lang={lang}
-          activeLayer={activeLayer}
+          year={activeYear}
+          maxYear={maxYear}
+          activeYear={activeYear}
+          yearsColors={yearsColors}
         />
       )}
 

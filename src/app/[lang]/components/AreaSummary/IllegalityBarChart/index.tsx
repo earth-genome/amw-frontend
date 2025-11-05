@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { ConfigProvider, Tooltip } from "antd";
 import { format } from "d3";
-import AreaSummaryTooltip from "@/app/[lang]/components/AreaSummary/AreaSummaryTooltip";
 import { ILLEGALITY_COLORS, PERMITTED_ILLEGALITY_KEYS } from "@/constants/map";
 
 const styles = {
@@ -77,8 +76,6 @@ const IllegalityBarChart = ({
 
   const sortedPercentages = [...percentages].sort((a, b) => b.key - a.key);
 
-  console.log(ILLEGALITY_COLORS[4])
-
   return (
     <div style={styles.container}>
       {/* legend */}
@@ -95,11 +92,6 @@ const IllegalityBarChart = ({
             {d.label}
           </div>
         ))}
-        <AreaSummaryTooltip
-          content={
-            <div>{dictionary?.map_ui?.presumption_of_illegality_tooltip}</div>
-          }
-        />
       </div>
       <div style={styles.barContainer}>
         <ConfigProvider

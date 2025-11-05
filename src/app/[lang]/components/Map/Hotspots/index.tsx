@@ -1,23 +1,23 @@
 import { useHotspots } from "@/cms/hotspots";
+import { Context } from "@/lib/Store";
 import { PERMITTED_LANGUAGES } from "@/utils/content";
 import { centroid, polygon } from "@turf/turf";
 import { SymbolLayer } from "mapbox-gl";
 import { FillLayer } from "mapbox-gl";
 import { CircleLayer } from "mapbox-gl";
 import { LineLayer } from "mapbox-gl";
-import { Fragment, useMemo } from "react";
+import { Fragment, useContext, useMemo } from "react";
 import { Layer, Source } from "react-map-gl";
-
-interface HotspotsProps {
-  lang: PERMITTED_LANGUAGES;
-}
 
 const darkRed = "#FF3C00";
 const lightRed = "#FF6347";
 const darkBlue = "#0047AB";
 const lightBlue = "#4169E1";
 
-const Hotspots = ({ lang }: HotspotsProps) => {
+const Hotspots = () => {
+  const [state, dispatch] = useContext(Context)!;
+  const { lang } = state;
+
   const { hotspots: hotspotsData, isLoading, error } = useHotspots(lang);
 
   const hotspotsCentroidsData = useMemo(() => {

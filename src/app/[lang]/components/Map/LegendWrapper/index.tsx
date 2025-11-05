@@ -15,19 +15,14 @@ const LegendWrapper = ({
   showMinimapBounds,
   bounds,
   years,
-  activeLayer,
-  setActiveLayer,
+  activeYear,
+  setActiveYear,
   dictionary,
 }: LegendWrapperProps) => {
   return (
     <div className="legend-wrapper">
       <Logos />
-      <div
-        style={{
-          display: "flex",
-          gap: 24,
-        }}
-      >
+      <div className="legend-container">
         <div
           className="legend-card mini-map-wrapper"
           style={{
@@ -41,8 +36,8 @@ const LegendWrapper = ({
         <div className="legend-card">
           <Legend
             years={years}
-            activeLayer={activeLayer}
-            setActiveLayer={setActiveLayer}
+            activeYear={activeYear}
+            setActiveYear={setActiveYear}
             dictionary={dictionary}
           />
         </div>

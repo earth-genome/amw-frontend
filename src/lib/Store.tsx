@@ -25,6 +25,7 @@ import { PERMITTED_LANGUAGES } from "@/utils/content";
 
 export interface IState {
   map: MapRef | null;
+  lang: PERMITTED_LANGUAGES;
   isQueryChecked: boolean;
   miningData: MiningData | undefined;
   miningDataIsLoading: boolean;
@@ -94,6 +95,7 @@ const Store = ({
 }>) => {
   const initialState: IState = {
     map: null,
+    lang: lang,
     isQueryChecked: false,
     miningData: undefined,
     miningDataIsLoading: false,

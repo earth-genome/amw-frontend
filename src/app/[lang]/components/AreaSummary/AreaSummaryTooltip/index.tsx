@@ -4,14 +4,16 @@ import style from "./style.module.css";
 
 interface AreaSummaryTooltipProps {
   content: React.ReactNode;
+  icon?: React.ReactNode;
 }
 
-const AreaSummaryTooltip = ({ content }: AreaSummaryTooltipProps) => {
+const AreaSummaryTooltip = ({
+  content,
+  icon = <QuestionMark />,
+}: AreaSummaryTooltipProps) => {
   return (
     <CustomTooltip content={content} placement="left">
-      <button className={style.tooltipButton}>
-        <QuestionMark />
-      </button>
+      <button className={style.tooltipButton}>{icon}</button>
     </CustomTooltip>
   );
 };

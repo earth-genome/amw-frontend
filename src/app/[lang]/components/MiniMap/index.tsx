@@ -26,9 +26,9 @@ const MiniMap: React.FC<MiniMapProps> = ({ bounds, showMinimapBounds }) => {
         }}
         dragPan={false}
         scrollZoom={false}
-        zoom={1.3}
+        zoom={1}
         touchZoomRotate={false}
-        style={{ width: 165, height: 145 }}
+        style={{ width: 165, height: 100 }}
         onLoad={(e) => {
           const map = e.target;
           map.doubleClickZoom.disable();

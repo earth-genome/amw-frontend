@@ -5,9 +5,9 @@ interface QuestionMarkProps {
 const QuestionMark = ({ fill = "var(--green-dark)" }: QuestionMarkProps) => {
   return (
     <svg
-      width="20"
-      height="21"
-      viewBox="0 0 20 21"
+      width="16"
+      height="16"
+      viewBox="0 0 20 20"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >

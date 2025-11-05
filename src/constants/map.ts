@@ -27,6 +27,13 @@ export const createYearsColorScale = (years: number[]) => {
     .interpolator(interpolateRgbBasis(MAP_COLOR_SCALE));
 };
 
+export const getColorsForYears = (years: number[]) => {
+  const colorScale = createYearsColorScale(years);
+  return years.map((_, index) =>
+    index === years.length - 1 ? MAP_LATEST_YEAR_COLOR : colorScale(index)
+  );
+};
+
 export interface AreaType {
   key: string;
   dictionaryKey: string;
@@ -146,10 +153,13 @@ export const ILLEGALITY_KEYS = {
 
 export const ILLEGALITY_COLORS = {
   0: "#abababff",
-  1: "#dfbbe4ff",
-  2: "#AB47BC",
-  3: "#8E24AA",
-  4: "#6A1B9A",
+  1: "#feebe2",
+  2: "#fbb4b9",
+  3: "#f768a1",
+  4: "#ae017e",
 } as const;
 
 export type PERMITTED_ILLEGALITY_KEYS = keyof typeof ILLEGALITY_KEYS;
+
+export const AREA_SIGNIFICANT_DIGITS = 2;
+export const ECONOMIC_COST_SIGNIFICANT_DIGITS = 2;

@@ -6,7 +6,6 @@ import { Context } from "@/lib/Store";
 import {
   displayAreaInUnits,
   formatNumber,
-  PERMITTED_LANGUAGES,
 } from "@/utils/content";
 import AreaSummaryDetails, {
   IllegalityAreaData,
@@ -15,15 +14,26 @@ import { CloseCircleFilled } from "@ant-design/icons";
 import * as turf from "@turf/turf";
 import calculateMiningAreaInBbox from "@/utils/calculateMiningAreaInBbox";
 import useMiningCalculator from "@/hooks/useMiningCalculator";
+import {
+  AREA_SIGNIFICANT_DIGITS,
+  ECONOMIC_COST_SIGNIFICANT_DIGITS,
+} from "@/constants/map";
 
 interface AreaProps {
   dictionary: { [key: string]: any };
   year: string;
-  lang: PERMITTED_LANGUAGES;
-  activeLayer: string;
+  maxYear: number;
+  activeYear: string;
+  yearsColors: string[];
 }
 
-const Area: React.FC<AreaProps> = ({ dictionary, year, lang, activeLayer }) => {
+const Area: React.FC<AreaProps> = ({
+  dictionary,
+  year,
+  maxYear,
+  activeYear,
+  yearsColors,
+}) => {
   const [state, dispatch] = useContext(Context)!;
   const {
     selectedAreaType,
@@ -33,6 +43,7 @@ const Area: React.FC<AreaProps> = ({ dictionary, year, lang, activeLayer }) => {
     selectedAreaTimeseriesData,
     selectedAreaTypeKey,
     miningData,
+    lang,
   } = state;
   const areaProperties = selectedAreaData?.properties || {};
   const showMoreInsights = true;
@@ -62,7 +73,7 @@ const Area: React.FC<AreaProps> = ({ dictionary, year, lang, activeLayer }) => {
       ];
       const affectedAreaHa = calculateMiningAreaInBbox(
         bbox,
-        activeLayer,
+        activeYear,
         miningData
       );
       return [affectedAreaHa, null];
@@ -70,13 +81,18 @@ const Area: React.FC<AreaProps> = ({ dictionary, year, lang, activeLayer }) => {
       // else use the data that is pre-calculated and baked into the geojson,
       // and mining calculator data that is fetched on the fly
       return [
+        // selectedAreaTimeseriesData?.find(
+        //   (d) => d.admin_year === Number(activeYear)
+        // )?.intersected_area_ha_cumulative,
         areaProperties?.mining_affected_area_ha,
         calculatorData?.totalImpact,
       ];
     }
   }, [
-    activeLayer,
+    activeYear,
     areaProperties?.mining_affected_area_ha,
+    ,
+    // selectedAreaTimeseriesData,
     calculatorData?.totalImpact,
     miningData,
     selectedAreaData,
@@ -109,7 +125,8 @@ const Area: React.FC<AreaProps> = ({ dictionary, year, lang, activeLayer }) => {
     <div className={style.areaCard}>
       <div className={style.areaTitle}>
         <div>
-          <div className={style.areaYear}>{year}</div>
+          {/* <div className={style.areaYear}>{year}</div> */}
+          <div className={style.areaYear}>{maxYear}</div>
           {areaTitle && <div className={style.areaTitleText}>{areaTitle}</div>}
           {selectedAreaType && areaId !== "AMAZ" ? (
             <div className={style.areaType}>
@@ -131,14 +148,16 @@ const Area: React.FC<AreaProps> = ({ dictionary, year, lang, activeLayer }) => {
         </div>
       </div>
       <div className={style.areaBody}>
-        <div>{dictionary.coverage.total_area_affected}</div>
+        <div>
+          {/* {dictionary.coverage.total_area_affected} ({activeYear}) */}
+          {dictionary.coverage.total_area_affected}
+        </div>
         <div className={style.areaKm}>
-          {affectedAreaHa !== undefined
+          {affectedAreaHa !== undefined && affectedAreaHa !== null
             ? formatNumber(
                 displayAreaInUnits(affectedAreaHa, areaUnits),
                 lang,
-                ",.1~s",
-                1
+                AREA_SIGNIFICANT_DIGITS
               )
             : 0}{" "}
           {dictionary?.map_ui?.[`${areaUnits}Abbrev`]}
@@ -150,9 +169,14 @@ const Area: React.FC<AreaProps> = ({ dictionary, year, lang, activeLayer }) => {
             hideMiningCalculator={hideMiningCalculator}
             economicCost={
               economicCost
-                ? formatNumber(economicCost, lang, ",.2~s", 2) || undefined
+                ? formatNumber(
+                    economicCost,
+                    lang,
+                    ECONOMIC_COST_SIGNIFICANT_DIGITS
+                  ) || undefined
                 : undefined
             }
+            maxYear={maxYear}
             calculatorIsLoading={calculatorIsLoading}
             calculatorUrl={calculatorUrl}
             selectedAreaTimeseriesData={selectedAreaTimeseriesData}
@@ -164,6 +188,7 @@ const Area: React.FC<AreaProps> = ({ dictionary, year, lang, activeLayer }) => {
                 d.mining_affected_area_pct > 0
             )}
             hotspotType={hotspotType}
+            yearsColors={yearsColors}
           />
         </div>
       )}

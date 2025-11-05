@@ -37,8 +37,7 @@ const localeDefinitions = {
 export const formatNumber = (
   number: number,
   language: string,
-  formatString = ",",
-  significantDigits = 1
+  significantDigits: number
 ): string => {
   const locale = formatLocale(
     localeDefinitions[language as PERMITTED_LANGUAGES]
@@ -54,6 +53,7 @@ export const formatNumber = (
     return formatter(numberSignificantDigits) + "M";
   }
 
+  const formatString = `,.${significantDigits}~s`;
   const formatter = locale.format(formatString);
   return formatter(number || 0);
 };

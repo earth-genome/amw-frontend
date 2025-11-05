@@ -58,7 +58,7 @@
   font-weight: 900;
   line-height: 1.1;
 }
-@media (max-width: 800px) {
+@media (max-width: 900px) {
   .main-menu {
     font-size: 40px;
   }

@@ -1,10 +1,13 @@
-import AreaSummaryLineChart from "@/app/[lang]/components/AreaSummary/AreaSummaryLineChart";
+import MiningAreaBarChart from "@/app/[lang]/components/AreaSummary/MiningAreaBarChart";
 import style from "./style.module.css";
 import { AreasTimeseriesData } from "@/types/types";
 import Link from "next/link";
 import IllegalityBarChart from "@/app/[lang]/components/AreaSummary/IllegalityBarChart";
 import { ILLEGALITY_KEYS, PERMITTED_ILLEGALITY_KEYS } from "@/constants/map";
 import AreaSummaryTooltip from "@/app/[lang]/components/AreaSummary/AreaSummaryTooltip";
+import ExternalLink from "@/app/[lang]/components/Icons/ExternalLink";
+import { useContext } from "react";
+import { Context } from "@/lib/Store";
 
 export type IllegalityAreaData = {
   admin_illegality_max: number;
@@ -22,6 +25,8 @@ interface AreaSummaryDetailsProps {
   hideMiningCalculator: boolean;
   description?: string;
   hotspotType?: string;
+  maxYear: number;
+  yearsColors: string[];
 }
 
 const AreaSummaryDetails = ({
@@ -34,30 +39,49 @@ const AreaSummaryDetails = ({
   description,
   illegalityAreas,
   hotspotType,
+  maxYear,
+  yearsColors,
 }: AreaSummaryDetailsProps) => {
+  const [state, dispatch] = useContext(Context)!;
+
+  const { areaUnits } = state;
+
   const economicCostText = calculatorIsLoading
     ? `${dictionary?.map_ui?.loading}...`
     : economicCost
     ? `${economicCost} ${dictionary?.map_ui?.economic_cost_currency}`
     : "N/A";
 
-  const FigureTooltip = () =>
+  const EconomicCostTooltip = () =>
     !calculatorUrl ? null : (
       <AreaSummaryTooltip
         content={
           <div>
             <p>{dictionary?.map_ui?.economic_cost_calculator_intro}</p>
+          </div>
+        }
+      />
+    );
+
+  const EconomicCostLink = () =>
+    !calculatorUrl ? null : (
+      <AreaSummaryTooltip
+        icon={
+          <Link
+            href={calculatorUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ marginLeft: -6 }}
+            title={dictionary?.map_ui?.detailed_analysis_link}
+          >
+            <ExternalLink />
+          </Link>
+        }
+        content={
+          <div>
             <p>
               {dictionary?.map_ui?.see_detailed_analysis}{" "}
-              <Link
-                href={calculatorUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ color: "#ecaf00" }}
-              >
-                {dictionary?.map_ui?.detailed_analysis_link}
-              </Link>
-              .
+              {dictionary?.map_ui?.detailed_analysis_link}.
             </p>
           </div>
         }
@@ -69,18 +93,30 @@ const AreaSummaryDetails = ({
       {selectedAreaTimeseriesData?.length ? (
         <>
           <div className={style.label}>
-            {dictionary?.map_ui?.area_over_time}
+            {dictionary?.map_ui?.area_over_time} (
+            {dictionary?.map_ui?.[`${areaUnits}Abbrev`]})
           </div>
-          <AreaSummaryLineChart data={selectedAreaTimeseriesData} />
+          <MiningAreaBarChart
+            dictionary={dictionary}
+            data={selectedAreaTimeseriesData}
+            yearsColors={yearsColors}
+            chartHeight={90}
+          />
         </>
       ) : null}
 
       {!hideMiningCalculator && (
         <>
-          <div className={style.label}>{dictionary?.map_ui?.economic_cost}</div>
+          <div className={style.label}>
+            <div>
+              {/* {dictionary?.map_ui?.economic_cost} ({maxYear}) */}
+              {dictionary?.map_ui?.economic_cost}
+            </div>
+            <div>{economicCost && <EconomicCostTooltip />}</div>
+          </div>
           <div className={style.figure}>
             <div className={style.figureText}>
-              {economicCostText} {economicCost && <FigureTooltip />}
+              {economicCostText} {calculatorUrl && <EconomicCostLink />}
             </div>
           </div>
         </>
@@ -89,7 +125,16 @@ const AreaSummaryDetails = ({
       {illegalityAreas?.length ? (
         <>
           <div className={style.label}>
-            {dictionary?.map_ui?.presumption_of_illegality}
+            <div>{dictionary?.map_ui?.presumption_of_illegality}</div>
+            <div>
+              <AreaSummaryTooltip
+                content={
+                  <div>
+                    {dictionary?.map_ui?.presumption_of_illegality_tooltip}
+                  </div>
+                }
+              />
+            </div>
           </div>
           <IllegalityBarChart
             dictionary={dictionary}

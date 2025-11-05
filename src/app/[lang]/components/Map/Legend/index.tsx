@@ -6,8 +6,8 @@ import ColorScale from "@/app/[lang]/components/Map/Legend/ColorScale";
 
 export interface LegendProps {
   years: number[];
-  activeLayer: string;
-  setActiveLayer: (value: string) => void;
+  activeYear: string;
+  setActiveYear: (value: string) => void;
   dictionary: { [key: string]: any };
 }
 
@@ -15,8 +15,8 @@ const SCROLL_DISTANCE = 250;
 
 const Legend = ({
   years,
-  activeLayer,
-  setActiveLayer,
+  activeYear,
+  setActiveYear,
   dictionary,
 }: LegendProps) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -35,9 +35,9 @@ const Legend = ({
   };
 
   const scrollToActiveButton = useCallback(() => {
-    if (scrollContainerRef.current && activeLayer) {
+    if (scrollContainerRef.current && activeYear) {
       const activeButton = scrollContainerRef.current.querySelector(
-        `[data-year="${activeLayer}"]`
+        `[data-year="${activeYear}"]`
       ) as HTMLElement;
 
       if (activeButton) {
@@ -62,7 +62,7 @@ const Legend = ({
         }
       }
     }
-  }, [activeLayer]);
+  }, [activeYear]);
 
   const scrollLeft = () => {
     if (scrollContainerRef.current) {
@@ -85,7 +85,7 @@ const Legend = ({
   useEffect(() => {
     updateScrollButtons();
     scrollToActiveButton();
-  }, [activeLayer, scrollToActiveButton]);
+  }, [activeYear, scrollToActiveButton]);
 
   useEffect(() => {
     const container = scrollContainerRef.current;
@@ -127,9 +127,9 @@ const Legend = ({
                 value: String(d),
                 label: String(d),
               }))}
-              value={activeLayer}
+              value={activeYear}
               onChange={({ target: { value } }) => {
-                setActiveLayer(value);
+                setActiveYear(value);
               }}
               optionType="button"
               buttonStyle="solid"
