@@ -43,9 +43,7 @@ interface MainMapProps {
 }
 
 const LAYER_YEARS = [
-  202503, 202502,
-  // 2024, // FIXME: still waiting for data
-  202300, 202200, 202100, 202000, 201900, 201800,
+  202503, 202502, 202400, 202300, 202200, 202100, 202000, 201900, 201800,
 ];
 const INITIAL_VIEW = {
   longitude: -67.78320182377449,
