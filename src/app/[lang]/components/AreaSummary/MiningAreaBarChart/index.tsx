@@ -1,8 +1,12 @@
 import { AreasTimeseriesData } from "@/types/types";
-import { useContext, useRef, useState } from "react";
+import { useContext, useMemo, useRef, useState } from "react";
 import * as d3 from "d3";
 import useChartDimensions from "@/hooks/useChartDimensions";
-import { displayAreaInUnits, formatNumber } from "@/utils/content";
+import {
+  displayAreaInUnits,
+  formatLayerYear,
+  formatNumber,
+} from "@/utils/content";
 import { Context } from "@/lib/Store";
 import { AREA_SIGNIFICANT_DIGITS } from "@/constants/map";
 
@@ -23,7 +27,7 @@ const MiningAreaBarChart = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const { width: chartWidth } = useChartDimensions(containerRef);
   const [hoveredBar, setHoveredBar] = useState<{
-    year: number;
+    year: string;
     area: string;
     color: string;
     x: number;
@@ -32,23 +36,91 @@ const MiningAreaBarChart = ({
 
   const { areaUnits, lang } = state;
 
-  if (!data?.length) return null;
-
   const margin = { top: 10, right: 0, bottom: 15, left: 40 };
   const width = chartWidth - margin.left - margin.right;
   const height = chartHeight - margin.bottom - margin.top;
 
-  // X scale based on discrete years
-  const xScale = d3
+  // // fill missing data
+  // const dataFilled = useMemo(() => {
+  //   if (!data?.length) return [];
+
+  //   const dataMap = new Map(data.map((d) => [String(d.admin_year), d]));
+
+  //   // extract all years present in data
+  //   const allYears = Array.from(
+  //     new Set(data.map((d) => Number(String(d.admin_year).slice(0, 4))))
+  //   ).sort((a, b) => a - b);
+
+  //   // if there are gaps in years, fill them in too
+  //   const fullYearRange = d3.range(
+  //     d3.min(allYears) ?? allYears[0],
+  //     (d3.max(allYears) ?? allYears[allYears.length - 1]) + 1
+  //   );
+
+  //   const filled: AreasTimeseriesData = [];
+
+  //   fullYearRange.forEach((year) => {
+  //     const yearStr = String(year);
+  //     const yearEntries = data.filter((d) =>
+  //       String(d.admin_year).startsWith(yearStr)
+  //     );
+  //     const hasFull = yearEntries.some(
+  //       (d) => String(d.admin_year).slice(4) === "00"
+  //     );
+  //     const hasQuarters = yearEntries.some(
+  //       (d) => String(d.admin_year).slice(4) !== "00"
+  //     );
+
+  //     // ensure full year exists
+  //     if (!hasFull) {
+  //       filled.push({
+  //         admin_year: Number(`${yearStr}00`),
+  //         intersected_area_ha_cumulative: 0,
+  //       } as any);
+  //     }
+
+  //     // if quarters exist, ensure all 4 quarters exist
+  //     if (hasQuarters) {
+  //       for (let q = 1; q <= 4; q++) {
+  //         const code = `${yearStr}0${q}`;
+  //         if (!dataMap.has(code)) {
+  //           filled.push({
+  //             admin_year: Number(code),
+  //             intersected_area_ha_cumulative: 0,
+  //           } as any);
+  //         }
+  //       }
+  //     }
+
+  //     // add all original data from that year
+  //     filled.push(...yearEntries);
+  //   });
+
+  //   return filled;
+  // }, [data]);
+
+  const dataFilled = data;
+  if (!dataFilled?.length) return null;
+
+  // group by year
+  const groupedData = d3.groups(dataFilled, (d) =>
+    String(d.admin_year).slice(0, 4)
+  );
+
+  // X scale for the years only, not quarters
+  const outerXScale = d3
     .scaleBand()
-    .domain(data.map((d) => d.admin_year.toString()))
+    .domain(groupedData.map(([year]) => year))
     .range([0, width])
     .padding(0.1);
 
   // Y scale based on values
   const yScale = d3
     .scaleLinear()
-    .domain([0, d3.max(data, (d) => d.intersected_area_ha_cumulative) ?? 0])
+    .domain([
+      0,
+      d3.max(dataFilled, (d) => d.intersected_area_ha_cumulative) ?? 0,
+    ])
     .nice()
     .range([height, 0]);
 
@@ -59,6 +131,9 @@ const MiningAreaBarChart = ({
       lang,
       AREA_SIGNIFICANT_DIGITS
     );
+
+  const fullBarWidth = outerXScale.bandwidth();
+  const quarterBarWidth = fullBarWidth / 4;
 
   return (
     <div ref={containerRef}>
@@ -93,55 +168,86 @@ const MiningAreaBarChart = ({
             </g>
           ))}
 
-          {/* Bars */}
-          {data.map((d, i) => {
-            const areaSignificantDigits = Number(
-              d.intersected_area_ha_cumulative.toPrecision(
-                AREA_SIGNIFICANT_DIGITS
-              )
+          {/* bars, grouped by year */}
+          {groupedData.map(([year, entries]) => {
+            const x0 = outerXScale(year)!;
+
+            const sortedEntries = entries.sort(
+              (a, b) =>
+                Number(String(a.admin_year).slice(4)) -
+                Number(String(b.admin_year).slice(4))
             );
+
             return (
-              <rect
-                key={d.admin_year}
-                x={xScale(d.admin_year.toString())}
-                y={yScale(areaSignificantDigits)}
-                width={xScale.bandwidth()}
-                height={height - yScale(areaSignificantDigits)}
-                fill={yearsColors[i]}
-                onMouseEnter={(e) => {
-                  const rect = e.currentTarget.getBoundingClientRect();
-                  const formattedArea = valueFormat(areaSignificantDigits);
-                  setHoveredBar({
-                    year: d.admin_year,
-                    area: formattedArea,
-                    color: yearsColors[i],
-                    x: rect.left + rect.width / 2,
-                    y: rect.top,
-                  });
-                }}
-                onMouseLeave={() => setHoveredBar(null)}
-              />
+              <g key={year}>
+                {sortedEntries.map((d, i) => {
+                  const suffix = String(d.admin_year).slice(4);
+                  const isQuarter = suffix !== "00";
+
+                  const barWidth = isQuarter ? quarterBarWidth : fullBarWidth;
+                  let x = x0;
+
+                  if (isQuarter) {
+                    const quarterIndex = Number(suffix) - 1; // 01 → 0, 02 → 1, etc.
+                    x += quarterIndex * quarterBarWidth;
+                  }
+
+                  const areaVal = Number(
+                    d.intersected_area_ha_cumulative.toPrecision(
+                      AREA_SIGNIFICANT_DIGITS
+                    )
+                  );
+                  const y = yScale(areaVal);
+                  const h = height - y;
+
+                  const originalIndex = data.findIndex(
+                    (dataRow) => dataRow.admin_year === d.admin_year
+                  );
+                  const color =
+                    originalIndex >= 0
+                      ? yearsColors[originalIndex % yearsColors.length]
+                      : "rgba(0,0,0,0.1)"; // light gray for missing data
+
+                  return (
+                    <rect
+                      key={d.admin_year}
+                      x={x}
+                      y={y}
+                      width={barWidth}
+                      height={h}
+                      fill={color}
+                      onMouseEnter={(e) => {
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        const formattedArea = valueFormat(areaVal);
+                        setHoveredBar({
+                          year: formatLayerYear(d.admin_year),
+                          area: formattedArea,
+                          color,
+                          x: rect.left + rect.width / 2,
+                          y: rect.top,
+                        });
+                      }}
+                      onMouseLeave={() => setHoveredBar(null)}
+                    />
+                  );
+                })}
+
+                {/* X-axis labels */}
+                <text
+                  x={x0 + fullBarWidth / 2}
+                  y={height + margin.bottom}
+                  textAnchor="middle"
+                  style={{
+                    fontSize: "12px",
+                    fontWeight: "500",
+                    fill: "#2c5f2d",
+                  }}
+                >
+                  {year}
+                </text>
+              </g>
             );
           })}
-
-          {/* X-axis labels */}
-          {data.map((d, i) => (
-            <text
-              key={d.admin_year}
-              x={
-                (xScale(d.admin_year.toString()) ?? 0) + xScale.bandwidth() / 2
-              }
-              y={height + margin.bottom}
-              textAnchor="middle"
-              style={{
-                fontSize: "12px",
-                fontWeight: "500",
-                fill: "#2c5f2d",
-              }}
-            >
-              {d.admin_year}
-            </text>
-          ))}
         </g>
       </svg>
 

@@ -3,6 +3,7 @@ import { useRef, useEffect, useState, useCallback } from "react";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import "./style.css";
 import ColorScale from "@/app/[lang]/components/Map/Legend/ColorScale";
+import { formatLayerYear } from "@/utils/content";
 
 export interface LegendProps {
   years: number[];
@@ -125,7 +126,7 @@ const Legend = ({
             <Radio.Group
               options={sortedYears.map((d) => ({
                 value: String(d),
-                label: String(d),
+                label: formatLayerYear(d),
               }))}
               value={activeYear}
               onChange={({ target: { value } }) => {

@@ -5,6 +5,7 @@ import style from "./style.module.css";
 import { Context } from "@/lib/Store";
 import {
   displayAreaInUnits,
+  formatLayerYear,
   formatNumber,
 } from "@/utils/content";
 import AreaSummaryDetails, {
@@ -125,8 +126,8 @@ const Area: React.FC<AreaProps> = ({
     <div className={style.areaCard}>
       <div className={style.areaTitle}>
         <div>
-          {/* <div className={style.areaYear}>{year}</div> */}
-          <div className={style.areaYear}>{maxYear}</div>
+          {/* <div className={style.areaYear}>{formatLayerYear(year)}</div> */}
+          <div className={style.areaYear}>{formatLayerYear(maxYear)}</div>
           {areaTitle && <div className={style.areaTitleText}>{areaTitle}</div>}
           {selectedAreaType && areaId !== "AMAZ" ? (
             <div className={style.areaType}>

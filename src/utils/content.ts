@@ -79,3 +79,15 @@ export const getMarkdownText = (content: string) => {
   }
   return { __html: rawMarkup };
 };
+
+export const formatLayerYear = (year: number): string => {
+  // formats year codes: YYYY00 → "YYYY", YYYY01-04 → "YYYY-Q1" through "YYYY-Q4"
+  const yearStr = Math.floor(year / 100).toString();
+  const quarter = year % 100;
+
+  if (quarter === 0) {
+    return yearStr;
+  }
+
+  return `${yearStr} Q${quarter}`;
+};

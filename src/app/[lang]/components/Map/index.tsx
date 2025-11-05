@@ -42,7 +42,9 @@ interface MainMapProps {
   lang: PERMITTED_LANGUAGES;
 }
 
-const LAYER_YEARS = [2024, 2023, 2022, 2021, 2020, 2019, 2018];
+const LAYER_YEARS = [
+  202503, 202502, 202400, 202300, 202200, 202100, 202000, 201900, 201800,
+];
 const INITIAL_VIEW = {
   longitude: -67.78320182377449,
   latitude: -5.871455584726869,
@@ -60,7 +62,9 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
   const mapRef = useRef<MapRef>(null);
   const [bounds, setBounds] = useState<GeoJSONType | undefined>(undefined);
   const [yearly, setYearly] = useState(true);
-  const [activeYear, setActiveYear] = useState("2024");
+  const [activeYear, setActiveYear] = useState(
+    String(Math.max(...LAYER_YEARS))
+  );
   const maxYear = Math.max(...LAYER_YEARS);
   const [mapStyle, setMapStyle] = useState(SATELLITE_LAYERS["yearly"]);
   const [isGeocoderHidden, setIsGeocoderHidden] = useState(true);
@@ -385,7 +389,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
 
         {/* ================== SENTINEL2 SOURCES =================== */}
         <Source
-          id="sentinel-2018"
+          id="sentinel-201800"
           type="raster"
           tiles={[
             `${process.env.NEXT_PUBLIC_SENTINEL2_URL_1}/2018-01-01/2019-01-01/rgb/{z}/{x}/{y}.webp`,
@@ -397,7 +401,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
           bounds={[-80.0, -20.0, -50.0, 20.0]}
         />
         <Source
-          id="sentinel-2019"
+          id="sentinel-201900"
           type="raster"
           tiles={[
             `${process.env.NEXT_PUBLIC_SENTINEL2_URL_1}/2019-01-01/2020-01-01/rgb/{z}/{x}/{y}.webp`,
@@ -409,7 +413,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
           bounds={[-80.0, -20.0, -50.0, 20.0]}
         />
         <Source
-          id="sentinel-2020"
+          id="sentinel-202000"
           type="raster"
           tiles={[
             `${process.env.NEXT_PUBLIC_SENTINEL2_URL_1}/2020-01-01/2021-01-01/rgb/{z}/{x}/{y}.webp`,
@@ -421,7 +425,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
           bounds={[-80.0, -20.0, -50.0, 20.0]}
         />
         <Source
-          id="sentinel-2021"
+          id="sentinel-202100"
           type="raster"
           tiles={[
             `${process.env.NEXT_PUBLIC_SENTINEL2_URL_1}/2021-01-01/2022-01-01/rgb/{z}/{x}/{y}.webp`,
@@ -433,7 +437,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
           bounds={[-80.0, -20.0, -50.0, 20.0]}
         />
         <Source
-          id="sentinel-2022"
+          id="sentinel-202200"
           type="raster"
           tiles={[
             `${process.env.NEXT_PUBLIC_SENTINEL2_URL_1}/2022-01-01/2023-01-01/rgb/{z}/{x}/{y}.webp`,
@@ -445,7 +449,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
           bounds={[-80.0, -20.0, -50.0, 20.0]}
         />
         <Source
-          id="sentinel-2023"
+          id="sentinel-202300"
           type="raster"
           tiles={[
             `${process.env.NEXT_PUBLIC_SENTINEL2_V2_URL_1}/2023-01-01/2024-01-01/rgb/{z}/{x}/{y}.webp`,
@@ -456,7 +460,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
           tileSize={256}
         />
         <Source
-          id="sentinel-2024"
+          id="sentinel-202400"
           type="raster"
           tiles={[
             `${process.env.NEXT_PUBLIC_SENTINEL2_V2_URL_4}/2024-01-01/2025-01-01/rgb/{z}/{x}/{y}.webp`,
@@ -467,63 +471,42 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
           tileSize={256}
           bounds={[-80.0, -20.0, -50.0, 20.0]}
         />
+        <Source
+          id="sentinel-202502"
+          type="raster"
+          tiles={[
+            `${process.env.NEXT_PUBLIC_SENTINEL2_QUARTERLY_MOSAICS}/2025-04-01/2025-07-01/rgb/{z}/{x}/{y}.webp`,
+            `${process.env.NEXT_PUBLIC_SENTINEL2_QUARTERLY_MOSAICS}/2025-04-01/2025-07-01/rgb/{z}/{x}/{y}.webp`,
+            `${process.env.NEXT_PUBLIC_SENTINEL2_QUARTERLY_MOSAICS}/2025-04-01/2025-07-01/rgb/{z}/{x}/{y}.webp`,
+            `${process.env.NEXT_PUBLIC_SENTINEL2_QUARTERLY_MOSAICS}/2025-04-01/2025-07-01/rgb/{z}/{x}/{y}.webp`,
+          ]}
+          tileSize={256}
+          bounds={[-80.0, -20.0, -50.0, 20.0]}
+        />
+        <Source
+          id="sentinel-202503"
+          type="raster"
+          tiles={[
+            `${process.env.NEXT_PUBLIC_SENTINEL2_QUARTERLY_MOSAICS}/2025-07-01/2025-10-01/rgb/{z}/{x}/{y}.webp`,
+            `${process.env.NEXT_PUBLIC_SENTINEL2_QUARTERLY_MOSAICS}/2025-07-01/2025-10-01/rgb/{z}/{x}/{y}.webp`,
+            `${process.env.NEXT_PUBLIC_SENTINEL2_QUARTERLY_MOSAICS}/2025-07-01/2025-10-01/rgb/{z}/{x}/{y}.webp`,
+            `${process.env.NEXT_PUBLIC_SENTINEL2_QUARTERLY_MOSAICS}/2025-07-01/2025-10-01/rgb/{z}/{x}/{y}.webp`,
+          ]}
+          tileSize={256}
+          bounds={[-80.0, -20.0, -50.0, 20.0]}
+        />
         {/* ================== SENTINEL2 LAYERS =================== */}
-        <Layer
-          id="sentinel-layer-2018"
-          type="raster"
-          source={`sentinel-2018`}
-          paint={{
-            "raster-opacity": getSatelliteOpacity(`sentinel-layer-2018`),
-          }}
-        />
-        <Layer
-          id="sentinel-layer-2019"
-          type="raster"
-          source={`sentinel-2019`}
-          paint={{
-            "raster-opacity": getSatelliteOpacity(`sentinel-layer-2019`),
-          }}
-        />
-        <Layer
-          id="sentinel-layer-2020"
-          type="raster"
-          source={`sentinel-2020`}
-          paint={{
-            "raster-opacity": getSatelliteOpacity(`sentinel-layer-2020`),
-          }}
-        />
-        <Layer
-          id="sentinel-layer-2021"
-          type="raster"
-          source={`sentinel-2021`}
-          paint={{
-            "raster-opacity": getSatelliteOpacity(`sentinel-layer-2021`),
-          }}
-        />
-        <Layer
-          id="sentinel-layer-2022"
-          type="raster"
-          source={`sentinel-2022`}
-          paint={{
-            "raster-opacity": getSatelliteOpacity(`sentinel-layer-2022`),
-          }}
-        />
-        <Layer
-          id="sentinel-layer-2023"
-          type="raster"
-          source={`sentinel-2023`}
-          paint={{
-            "raster-opacity": getSatelliteOpacity(`sentinel-layer-2023`),
-          }}
-        />
-        <Layer
-          id="sentinel-layer-2024"
-          type="raster"
-          source={`sentinel-2024`}
-          paint={{
-            "raster-opacity": getSatelliteOpacity(`sentinel-layer-2024`),
-          }}
-        />
+        {LAYER_YEARS.map((d) => (
+          <Layer
+            key={d}
+            id={`sentinel-layer-${d}`}
+            type="raster"
+            source={`sentinel-${d}`}
+            paint={{
+              "raster-opacity": getSatelliteOpacity(`sentinel-layer-${d}`),
+            }}
+          />
+        ))}
         {/* ================== MASK =================== */}
         <Source
           id={"hole-source"}
