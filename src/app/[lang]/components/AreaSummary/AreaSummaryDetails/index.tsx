@@ -88,6 +88,8 @@ const AreaSummaryDetails = ({
       />
     );
 
+    console.log(selectedAreaTimeseriesData)
+
   return (
     <div className={style.wrapper}>
       {selectedAreaTimeseriesData?.length ? (
