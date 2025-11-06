@@ -58,7 +58,7 @@ if (!DATA_BASE_URL) {
   );
 }
 
-export const MINING_DATA_URL = `${DATA_BASE_URL}/outputs/test-data/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2025Q3_all_differences.geojson`;
+export const MINING_DATA_URL = `${DATA_BASE_URL}/outputs/test-data/amazon_basin_48px_v3.2-3.7ensemble_dissolved-0.6_2018-2025Q3_all_differences_simplified.geojson`;
 
 export const AREA_TYPES = [
   {

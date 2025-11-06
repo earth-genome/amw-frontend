@@ -34,7 +34,7 @@ import GeocoderIcon from "@/app/[lang]/components/Icons/GeocoderIcon";
 import { PERMITTED_LANGUAGES } from "@/utils/content";
 import MapPopup, { TooltipInfo } from "@/app/[lang]/components/Map/MapPopup";
 import Hotspots from "@/app/[lang]/components/Map/Hotspots";
-import calculateMiningAreaInBbox from "@/utils/calculateMiningAreaInBbox";
+// import calculateMiningAreaInBbox from "@/utils/calculateMiningAreaInBbox";
 import useWindowSize from "@/hooks/useWindowSize";
 
 interface MainMapProps {
@@ -112,26 +112,20 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
     router.replace(`${pathname}?${params.toString()}`);
   }, [pathname, router]);
 
-  const getCurrentBounds = useCallback(() => {
-    if (!mapRef.current) return;
-    const currentBounds = mapRef.current.getBounds();
-    if (!currentBounds) return;
+  // const getCurrentBounds = useCallback(() => {
+  //   if (!mapRef.current) return;
+  //   const currentBounds = mapRef.current.getBounds();
+  //   if (!currentBounds) return;
 
-    const bbox = [
-      currentBounds.getWest(),
-      currentBounds.getSouth(),
-      currentBounds.getEast(),
-      currentBounds.getNorth(),
-    ] as [number, number, number, number];
-    return bbox;
-  }, []);
+  //   const bbox = [
+  //     currentBounds.getWest(),
+  //     currentBounds.getSouth(),
+  //     currentBounds.getEast(),
+  //     currentBounds.getNorth(),
+  //   ] as [number, number, number, number];
+  //   return bbox;
+  // }, []);
 
-  const getSatelliteOpacity = (layerId: string) => {
-    if (yearly && layerId === `sentinel-layer-${activeYear}`) {
-      return 1;
-    }
-    return 0;
-  };
 
   const yearsColors = getColorsForYears(LAYER_YEARS);
 
@@ -312,20 +306,20 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
           width: "100hw",
         }}
         mapStyle={mapStyle}
-        onIdle={() => {
-          if (!mapRef.current) return;
-          if (mapRef.current.getZoom() <= 11) return; // don't run if too zoomed out
+        // onIdle={() => {
+        //   if (!mapRef.current) return;
+        //   if (mapRef.current.getZoom() <= 11) return; // don't run if too zoomed out
 
-          let bbox = getCurrentBounds();
-          if (!bbox) return;
-          // FIXME: we're not using the mining areas yet
-          const miningArea = calculateMiningAreaInBbox(
-            bbox,
-            activeYear,
-            miningData
-          );
-          // console.log("using viewport, mining area in ha", miningArea);
-        }}
+        //   let bbox = getCurrentBounds();
+        //   if (!bbox) return;
+        //   // FIXME: we're not using the mining areas yet
+        //   const miningArea = calculateMiningAreaInBbox(
+        //     bbox,
+        //     activeYear,
+        //     miningData
+        //   );
+        //   // console.log("using viewport, mining area in ha", miningArea);
+        // }}
         onMoveEnd={() => {
           updateURLParamsMapPosition();
 
