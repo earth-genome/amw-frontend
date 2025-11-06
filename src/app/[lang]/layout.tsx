@@ -12,6 +12,14 @@ import GoogleAnalytics from "./components/Tracking";
 import "mapbox-gl/dist/mapbox-gl.css";
 import MapWrapper from "@/app/[lang]/components/Map/Wrapper";
 import { PERMITTED_LANGUAGES } from "@/utils/content";
+import type { Viewport } from "next";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+};
 
 type Props = {
   params: { lang: PERMITTED_LANGUAGES };
