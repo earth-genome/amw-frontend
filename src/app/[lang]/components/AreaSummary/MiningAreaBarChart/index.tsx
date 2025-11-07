@@ -101,8 +101,14 @@ const MiningAreaBarChart = ({
   const fullBarWidth = outerXScale.bandwidth();
   const quarterBarWidth = fullBarWidth / 4;
 
+  const resetHoveredYear = () =>
+    dispatch({
+      type: "SET_HOVERED_YEAR",
+      hoveredYear: undefined,
+    });
+
   return (
-    <div ref={containerRef}>
+    <div ref={containerRef} onMouseLeave={() => resetHoveredYear()}>
       <svg
         width={chartWidth}
         height={chartHeight}
@@ -112,7 +118,11 @@ const MiningAreaBarChart = ({
         <g transform={`translate(${margin.left},${margin.top})`}>
           {/* Y-axis  */}
           {yTicks.map((tickValue, i) => (
-            <g key={i} transform={`translate(0,${yScale(tickValue)})`}>
+            <g
+              key={i}
+              transform={`translate(0,${yScale(tickValue)})`}
+              onMouseEnter={() => resetHoveredYear()}
+            >
               <line
                 x1={-5}
                 x2={width}
@@ -127,84 +137,102 @@ const MiningAreaBarChart = ({
           ))}
 
           {/* bars, grouped by year */}
-          {groupedData.map(([year, entries]) => {
-            const x0 = outerXScale(year)!;
+          <g>
+            {/* to trigger leave event only outside */}
+            <rect
+              x={0}
+              y={0}
+              width={chartWidth}
+              height={chartHeight}
+              fill="transparent"
+            />
 
-            const sortedEntries = entries.sort(
-              (a, b) =>
-                Number(String(a.admin_year).slice(4)) -
-                Number(String(b.admin_year).slice(4))
-            );
+            {groupedData.map(([year, entries]) => {
+              const x0 = outerXScale(year)!;
 
-            return (
-              <g key={year}>
-                {sortedEntries.map((d, i) => {
-                  const suffix = String(d.admin_year).slice(4);
-                  const isQuarter = suffix !== "00";
-                  let barWidth;
-                  let x = x0;
+              const sortedEntries = entries.sort(
+                (a, b) =>
+                  Number(String(a.admin_year).slice(4)) -
+                  Number(String(b.admin_year).slice(4))
+              );
 
-                  // HACK: make 2025 Q2 bar cover 2025 Q1-Q2
-                  if (d.admin_year === 202502) {
-                    barWidth = fullBarWidth / 2;
-                  } else {
-                    barWidth = isQuarter ? quarterBarWidth : fullBarWidth;
-                    if (isQuarter) {
-                      const quarterIndex = Number(suffix) - 1; // 01 → 0, 02 → 1, etc.
-                      x += quarterIndex * quarterBarWidth;
-                    }
-                  }
+              return (
+                <g key={year}>
+                  {sortedEntries.map((d, i) => {
+                    const suffix = String(d.admin_year).slice(4);
+                    const isQuarter = suffix !== "00";
+                    let barWidth;
+                    let x = x0;
 
-                  const areaVal = d.area_ha_significant;
-                  const y = yScale(areaVal);
-                  const h = height - y;
-
-                  const color = d.color || "rgba(0,0,0,0.1)"; // light gray for missing data
-
-                  return (
-                    <rect
-                      key={d.admin_year}
-                      x={x}
-                      y={y}
-                      width={barWidth}
-                      height={h}
-                      fill={color}
-                      opacity={
-                        !hoveredBar || d.admin_year === hoveredBar.adminYear
-                          ? 1
-                          : 0.3
+                    // HACK: make 2025 Q2 bar cover 2025 Q1-Q2
+                    if (d.admin_year === 202502) {
+                      barWidth = fullBarWidth / 2;
+                    } else {
+                      barWidth = isQuarter ? quarterBarWidth : fullBarWidth;
+                      if (isQuarter) {
+                        const quarterIndex = Number(suffix) - 1; // 01 → 0, 02 → 1, etc.
+                        x += quarterIndex * quarterBarWidth;
                       }
-                      className={styles.bars}
-                      onMouseEnter={(e) => {
-                        const rect = e.currentTarget.getBoundingClientRect();
-                        const formattedArea = valueFormat(areaVal);
-                        setHoveredBar({
-                          year: formatLayerYear(d.admin_year),
-                          adminYear: d.admin_year,
-                          area: formattedArea,
-                          areaChange: d.area_change_ha,
-                          color,
-                          x: rect.left + rect.width / 2,
-                          y: rect.top,
-                        });
-                      }}
-                      onMouseLeave={() => setHoveredBar(null)}
-                    />
-                  );
-                })}
+                    }
 
-                {/* X-axis labels */}
-                <text
-                  x={x0 + fullBarWidth / 2}
-                  y={height + margin.bottom}
-                  textAnchor="middle"
-                  className={styles.xAxisLabels}
-                >
-                  {year}
-                </text>
-              </g>
-            );
-          })}
+                    const areaVal = d.area_ha_significant;
+                    const y = yScale(areaVal);
+                    const h = height - y;
+
+                    const color = d.color || "rgba(0,0,0,0.1)"; // light gray for missing data
+
+                    return (
+                      <rect
+                        key={d.admin_year}
+                        x={x}
+                        y={y}
+                        width={barWidth}
+                        height={h}
+                        fill={color}
+                        opacity={
+                          !hoveredBar || d.admin_year === hoveredBar.adminYear
+                            ? 1
+                            : 0.3
+                        }
+                        className={styles.bars}
+                        onMouseEnter={(e) => {
+                          const rect = e.currentTarget.getBoundingClientRect();
+                          const formattedArea = valueFormat(areaVal);
+                          setHoveredBar({
+                            year: formatLayerYear(d.admin_year),
+                            adminYear: d.admin_year,
+                            area: formattedArea,
+                            areaChange: d.area_change_ha,
+                            color,
+                            x: rect.left + rect.width / 2,
+                            y: rect.top,
+                          });
+                          dispatch({
+                            type: "SET_HOVERED_YEAR",
+                            hoveredYear: d.admin_year,
+                          });
+                        }}
+                        onMouseLeave={() => {
+                          setHoveredBar(null);
+                        }}
+                      />
+                    );
+                  })}
+
+                  {/* X-axis labels */}
+                  <text
+                    x={x0 + fullBarWidth / 2}
+                    y={height + margin.bottom}
+                    textAnchor="middle"
+                    className={styles.xAxisLabels}
+                    onMouseEnter={() => resetHoveredYear()}
+                  >
+                    {year}
+                  </text>
+                </g>
+              );
+            })}
+          </g>
         </g>
       </svg>
 

@@ -106,6 +106,11 @@ const Reducer = (state: IState, action: ActionType): IState => {
         ...state,
         areaUnits: action.areaUnits,
       };
+    case "SET_HOVERED_YEAR":
+      return {
+        ...state,
+        hoveredYear: action.hoveredYear,
+      };
     default:
       return state;
   }

@@ -42,7 +42,7 @@ interface MainMapProps {
 
 const LAYER_YEARS = [
   202503, 202502, 202400, 202300, 202200, 202100, 202000, 201900, 201800,
-];
+].sort((a, b) => a - b);
 const INITIAL_VIEW = {
   longitude: -67.78320182377449,
   latitude: -5.871455584726869,
@@ -76,6 +76,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
     selectedArea,
     selectedAreaTypeKey,
     areaUnits,
+    hoveredYear,
   } = state;
 
   const setMapPositionFromURL = useCallback(() => {
@@ -126,16 +127,14 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
 
   const yearsColors = getColorsForYears(LAYER_YEARS);
 
-  const getMineLayerColor = () => {
-    return [
-      "case",
-      ...LAYER_YEARS.flatMap((year, i) => [
-        ["==", ["get", "year"], year],
-        yearsColors[i],
-      ]),
-      MAP_MISSING_DATA_COLOR,
-    ] as Expression;
-  };
+  const mineLayerColors = [
+    "case",
+    ...LAYER_YEARS.flatMap((year, i) => [
+      ["==", ["get", "year"], year],
+      yearsColors[i],
+    ]),
+    MAP_MISSING_DATA_COLOR,
+  ] as Expression;
 
   const windowSize = useWindowSize();
   const isMobile = windowSize?.width && windowSize.width <= 600;
@@ -153,7 +152,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
       setTooltip({
         longitude: event.lngLat.lng,
         latitude: event.lngLat.lat,
-        properties: feature.properties as [key: string],
+        properties: feature.properties as { [key: string]: any },
       });
 
       // don't use hover effect for countries, it is too distracting
@@ -637,9 +636,13 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
             beforeId={getBeforeId("hotspots-fill")}
             source={"mines"}
             type="line"
-            filter={["<=", ["get", "year"], Number(activeYear)]}
+            filter={[
+              hoveredYear ? "==" : "<=",
+              ["get", "year"],
+              hoveredYear ? hoveredYear : Number(activeYear),
+            ]}
             paint={{
-              "line-color": getMineLayerColor(),
+              "line-color": mineLayerColors,
               "line-opacity": 1,
               "line-width": [
                 "interpolate",

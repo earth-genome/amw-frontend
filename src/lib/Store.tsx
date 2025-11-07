@@ -42,6 +42,7 @@ export interface IState {
   selectedAreaType: AreaType | undefined;
   showAreaSummaryMoreInsights: boolean;
   areaUnits: PERMITTED_AREA_UNITS;
+  hoveredYear: number | undefined;
 }
 
 export type ActionType =
@@ -78,6 +79,10 @@ export type ActionType =
   | {
       type: "SET_AREA_UNITS";
       areaUnits: PERMITTED_AREA_UNITS;
+    }
+  | {
+      type: "SET_HOVERED_YEAR";
+      hoveredYear: number | undefined;
     };
 
 export const Context = createContext<
@@ -112,6 +117,7 @@ const Store = ({
     selectedAreaType: AREA_TYPES[0],
     showAreaSummaryMoreInsights: false,
     areaUnits: AREA_UNITS_OPTIONS[0].value as PERMITTED_AREA_UNITS,
+    hoveredYear: undefined,
   };
 
   const [state, dispatch] = useReducer(Reducer, initialState);

@@ -24,7 +24,7 @@ const Legend = ({
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
 
-  const sortedYears = years.sort((a, b) => a - b);
+  const sortedYears = [...years].sort((a, b) => a - b);
 
   const updateScrollButtons = () => {
     if (scrollContainerRef.current) {

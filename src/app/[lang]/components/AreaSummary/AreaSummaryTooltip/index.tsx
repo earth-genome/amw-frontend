@@ -12,7 +12,7 @@ const AreaSummaryTooltip = ({
   icon = <QuestionMark />,
 }: AreaSummaryTooltipProps) => {
   return (
-    <CustomTooltip content={content} placement="left">
+    <CustomTooltip content={content} placement="top">
       <button className={style.tooltipButton}>{icon}</button>
     </CustomTooltip>
   );

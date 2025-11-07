@@ -11,7 +11,10 @@ const Intro: React.FC<IntroProps> = ({ dictionary }) => {
   const [showIntro, setShowIntro] = useState(true);
 
   useEffect(() => {
-    const introViewed = sessionStorage.getItem("introViewed") === "true";
+    const searchParams = new URLSearchParams(window.location.search);
+    const hasLng = searchParams.get("lng");
+    const introViewed =
+      sessionStorage.getItem("introViewed") === "true" || hasLng;
     if (introViewed) {
       setShowIntro(false);
     }

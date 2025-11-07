@@ -7,6 +7,7 @@
   z-index: 1000;
   height: var(--top-navbar-height);
   text-align: right;
+  font-weight: 500;
 }
 .nav .menu-link {
   color: #fff;

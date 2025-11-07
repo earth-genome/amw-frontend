@@ -28,7 +28,7 @@ export const createYearsColorScale = (years: number[]) => {
 };
 
 export const getColorsForYears = (years: number[]) => {
-  const colorScale = createYearsColorScale(years);
+  const colorScale = createYearsColorScale(years.slice(0, -1));
   return years.map((_, index) =>
     index === years.length - 1 ? MAP_LATEST_YEAR_COLOR : colorScale(index)
   );

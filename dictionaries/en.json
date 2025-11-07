@@ -70,6 +70,12 @@
     "high": "High",
     "very_high": "Very high"
   },
+  "illegality_tooltip": {
+    "low": "Activity is happening within active concession but compliance with all requirements could not be verified.",
+    "medium": "Activity is happening within a concession but active status of the concession could not be verified and/or concession doesn't meet legal requirements.",
+    "high": "Activity is occurring outside of any explicit concession for doing so, in an area without designation for mining.",
+    "very_high": "Activity is occurring within a protected area that doesn't allow for any kind of resource exploitation."
+  },
   "map_legend": {
     "old_mining_activity": "Older mining activity",
     "recent_mining_activity": "More recent mining activity"

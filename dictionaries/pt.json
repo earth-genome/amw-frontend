@@ -70,6 +70,12 @@
     "high": "Alto",
     "very_high": "Muito alto"
   },
+  "illegality_tooltip": {
+    "low": "A atividade está ocorrendo dentro de uma concessão ativa, mas não foi possível verificar a conformidade com todos os requisitos.",
+    "medium": "A atividade está ocorrendo dentro de uma concessão, mas não foi possível verificar o status ativo da concessão e/ou a concessão não atende aos requisitos legais.",
+    "high": "A atividade está ocorrendo fora de qualquer concessão explícita para tal, em uma área sem designação para mineração.",
+    "very_high": "A atividade está ocorrendo dentro de uma área protegida que não permite qualquer tipo de exploração de recursos."
+  },
   "map_legend": {
     "old_mining_activity": "Mineração mais antiga",
     "recent_mining_activity": "Mineração mais recente"

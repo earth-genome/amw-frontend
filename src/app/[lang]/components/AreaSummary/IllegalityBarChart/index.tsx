@@ -1,7 +1,11 @@
 import { useState } from "react";
 import { ConfigProvider, Tooltip } from "antd";
 import { format } from "d3";
-import { ILLEGALITY_COLORS, PERMITTED_ILLEGALITY_KEYS } from "@/constants/map";
+import {
+  ILLEGALITY_COLORS,
+  ILLEGALITY_KEYS,
+  PERMITTED_ILLEGALITY_KEYS,
+} from "@/constants/map";
 
 const styles = {
   container: {
@@ -105,41 +109,52 @@ const IllegalityBarChart = ({
             },
           }}
         >
-          {sortedPercentages.map((d) => (
-            <Tooltip
-              key={d.label}
-              title={`${d.label}: ${format("0.1~%")(d.value)}`}
-              placement="top"
-            >
-              <div
-                style={{
-                  ...styles.barSegment,
-                  ...(d.key - 1 === 0
-                    ? styles.barSegmentLight
-                    : styles.barSegmentDark),
-                  width: `${d.value * 100}%`,
-                  background:
-                    ILLEGALITY_COLORS[d.key as PERMITTED_ILLEGALITY_KEYS],
-                  ...(hoveredKey !== null && hoveredKey !== d.key
-                    ? styles.faded
-                    : {}),
-                }}
-                onMouseEnter={() => setHoveredKey(d.key)}
-                onMouseLeave={() => setHoveredKey(null)}
-              >
-                {d.value > 0.1 && (
-                  <div
-                    style={{
-                      ...styles.barLabel,
-                      ...(hoveredKey !== null ? styles.hidden : {}),
-                    }}
-                  >
-                    {format("0.0~%")(d.value)}
+          {sortedPercentages.map((d) => {
+            const illegalityKey =
+              ILLEGALITY_KEYS?.[d.key as PERMITTED_ILLEGALITY_KEYS];
+            const illegalityTooltip =
+              dictionary.illegality_tooltip?.[illegalityKey];
+            return (
+              <Tooltip
+                key={d.label}
+                title={
+                  <div>
+                    <strong>{d.label} ({format("0.1~%")(d.value)}): </strong>
+                    {illegalityTooltip}
                   </div>
-                )}
-              </div>
-            </Tooltip>
-          ))}
+                }
+                placement="top"
+              >
+                <div
+                  style={{
+                    ...styles.barSegment,
+                    ...(d.key - 1 === 0
+                      ? styles.barSegmentLight
+                      : styles.barSegmentDark),
+                    width: `${d.value * 100}%`,
+                    background:
+                      ILLEGALITY_COLORS[d.key as PERMITTED_ILLEGALITY_KEYS],
+                    ...(hoveredKey !== null && hoveredKey !== d.key
+                      ? styles.faded
+                      : {}),
+                  }}
+                  onMouseEnter={() => setHoveredKey(d.key)}
+                  onMouseLeave={() => setHoveredKey(null)}
+                >
+                  {d.value > 0.1 && (
+                    <div
+                      style={{
+                        ...styles.barLabel,
+                        ...(hoveredKey !== null ? styles.hidden : {}),
+                      }}
+                    >
+                      {format("0.0~%")(d.value)}
+                    </div>
+                  )}
+                </div>
+              </Tooltip>
+            );
+          })}
         </ConfigProvider>
       </div>
     </div>
