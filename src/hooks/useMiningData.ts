@@ -1,38 +1,57 @@
-import { MINING_DATA_URL } from "@/constants/map";
+import { MINING_DATA_URLS } from "@/constants/map";
 import { IState } from "@/lib/Store";
 import { useEffect } from "react";
 import useSWR from "swr";
 
-const fetcher = (...args: Parameters<typeof fetch>) =>
-  fetch(...args).then((res) => res.json());
+const fetcher = (urls: string[]) =>
+  Promise.all(urls.map((url) => fetch(url).then((res) => res.json())));
 
 interface Props {
   state: IState;
   dispatch: React.Dispatch<any>;
 }
 
+const swrConfig = {
+  revalidateOnFocus: false, // don’t refetch when window regains focus
+  revalidateOnReconnect: false, // don’t refetch when reconnecting
+  refreshInterval: 0, // don’t poll automatically
+  dedupingInterval: 60 * 60 * 1000, // 1 hour: cache same key requests
+};
+
 const useMiningData = ({ state, dispatch }: Props) => {
   const {
-    data: miningData,
+    data: miningDataArray,
     error: miningDataError,
     isLoading: miningDataIsLoading,
-  } = useSWR(MINING_DATA_URL, fetcher);
+  } = useSWR(MINING_DATA_URLS, fetcher, swrConfig);
 
   useEffect(() => {
     if (miningDataIsLoading || miningDataError) {
       dispatch({
         type: "SET_MINING_DATA",
         miningData: undefined,
-        miningDataIsLoading: miningDataIsLoading,
+        miningDataIsLoading,
       });
       return;
     }
-    dispatch({
-      type: "SET_MINING_DATA",
-      miningData: miningData,
-      miningDataIsLoading: miningDataIsLoading,
-    });
-  }, [dispatch, miningData, miningDataError, miningDataIsLoading]);
+
+    // combine all geojson features together
+    if (miningDataArray) {
+      const combinedFeatures = miningDataArray.flatMap(
+        (geojson) => geojson.features
+      );
+      const combinedGeoJSON = {
+        type: "FeatureCollection",
+        features: combinedFeatures,
+      };
+
+      dispatch({
+        type: "SET_MINING_DATA",
+        miningData: combinedGeoJSON,
+        miningDataIsLoading,
+      });
+    }
+  }, [dispatch, miningDataArray, miningDataError, miningDataIsLoading]);
 
   return null;
 };
