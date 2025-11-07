@@ -31,7 +31,6 @@ import { Expression } from "mapbox-gl";
 import AreaSelect from "@/app/[lang]/components/AreaSelect";
 import { Context } from "@/lib/Store";
 import GeocoderIcon from "@/app/[lang]/components/Icons/GeocoderIcon";
-import { PERMITTED_LANGUAGES } from "@/utils/content";
 import MapPopup, { TooltipInfo } from "@/app/[lang]/components/Map/MapPopup";
 import Hotspots from "@/app/[lang]/components/Map/Hotspots";
 // import calculateMiningAreaInBbox from "@/utils/calculateMiningAreaInBbox";
@@ -39,7 +38,6 @@ import useWindowSize from "@/hooks/useWindowSize";
 
 interface MainMapProps {
   dictionary: { [key: string]: any };
-  lang: PERMITTED_LANGUAGES;
 }
 
 const LAYER_YEARS = [
@@ -55,7 +53,7 @@ const SATELLITE_LAYERS = {
   hiRes: "mapbox://styles/earthrise/cmdxgrceq014x01s22jfm5muv", // Mapbox satellite
 };
 
-const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
+const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
   const [state, dispatch] = useContext(Context)!;
   const pathname = usePathname();
   const router = useRouter();
@@ -126,7 +124,6 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
   //   return bbox;
   // }, []);
 
-
   const yearsColors = getColorsForYears(LAYER_YEARS);
 
   const getMineLayerColor = () => {
@@ -140,8 +137,12 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
     ] as Expression;
   };
 
+  const windowSize = useWindowSize();
+  const isMobile = windowSize?.width && windowSize.width <= 600;
+
   const handleMouseMove = useCallback(
     (event: MapMouseEvent) => {
+      if (isMobile) return; // ignore hover effect on mobile
       const { features } = event;
       const map = event.target;
       const feature = features && features[0];
@@ -181,7 +182,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
         );
       }
     },
-    [selectedAreaTypeKey]
+    [isMobile, selectedAreaTypeKey]
   );
 
   const handleMouseLeave = useCallback((event: MapMouseEvent) => {
@@ -232,9 +233,6 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary, lang }) => {
     },
     [dispatch]
   );
-
-  const windowSize = useWindowSize();
-  const isMobile = windowSize?.width && windowSize.width <= 600;
 
   useEffect(() => {
     // zoom to selected area on change

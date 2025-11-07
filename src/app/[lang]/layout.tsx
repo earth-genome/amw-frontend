@@ -59,7 +59,7 @@ export default async function RootLayout({
           <body>
             <Nav dictionary={dictionary} />
             <MapWrapper lang={params.lang}>
-              <MainMap dictionary={dictionary} lang={params.lang} />
+              <MainMap dictionary={dictionary} />
             </MapWrapper>
             {children}
             <Loader dictionary={dictionary} />
