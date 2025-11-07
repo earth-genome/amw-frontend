@@ -34,6 +34,11 @@ const localeDefinitions = {
   },
 };
 
+export const numberToSignificantDigits = (
+  number: number,
+  significantDigits: number
+) => parseFloat(number.toPrecision(significantDigits));
+
 export const formatNumber = (
   number: number,
   language: string,
@@ -47,8 +52,9 @@ export const formatNumber = (
   if (Math.abs(number) >= 1_000_000_000) {
     const formatter = locale.format(",.0~f");
     const numberInMillions = number / 1_000_000;
-    const numberSignificantDigits = parseFloat(
-      numberInMillions.toPrecision(significantDigits)
+    const numberSignificantDigits = numberToSignificantDigits(
+      numberInMillions,
+      significantDigits
     );
     return formatter(numberSignificantDigits) + "M";
   }
@@ -87,6 +93,11 @@ export const formatLayerYear = (year: number): string => {
 
   if (quarter === 0) {
     return yearStr;
+  }
+
+  // HACK: 2025Q2 also covers Q1
+  if (year === 202502 || year === 202501) {
+    return `${yearStr} Q1-Q2`;
   }
 
   return `${yearStr} Q${quarter}`;
