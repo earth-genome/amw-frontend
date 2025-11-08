@@ -7,7 +7,7 @@ export const MAP_COLOR_SCALE = [
   "#F5CD7E",
   "#F1B53F",
   "#ED9E00",
-  // "#F37D00",
+  "#F37D00",
   // "#F95D00",
   // "#FF3C00",
 ];
@@ -59,6 +59,8 @@ if (!DATA_BASE_URL) {
 }
 
 export const MINING_DATA_URLS = [
+  `${DATA_BASE_URL}/outputs/test-data/mining_201800_simplified.json`,
+  `${DATA_BASE_URL}/outputs/test-data/mining_201900_simplified.json`,
   `${DATA_BASE_URL}/outputs/test-data/mining_202000_simplified.json`,
   `${DATA_BASE_URL}/outputs/test-data/mining_202100_simplified.json`,
   `${DATA_BASE_URL}/outputs/test-data/mining_202200_simplified.json`,
@@ -66,7 +68,7 @@ export const MINING_DATA_URLS = [
   `${DATA_BASE_URL}/outputs/test-data/mining_202400_simplified.json`,
   `${DATA_BASE_URL}/outputs/test-data/mining_202502_simplified.json`,
   `${DATA_BASE_URL}/outputs/test-data/mining_202503_simplified.json`,
-]
+];
 
 export const AREA_TYPES = [
   {

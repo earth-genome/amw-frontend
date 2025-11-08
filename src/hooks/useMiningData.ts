@@ -4,7 +4,21 @@ import { useEffect } from "react";
 import useSWR from "swr";
 
 const fetcher = (urls: string[]) =>
-  Promise.all(urls.map((url) => fetch(url).then((res) => res.json())));
+  Promise.all(
+    urls.map((url) =>
+      fetch(url)
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error(`Failed to fetch: ${url}`);
+          }
+          return res.json();
+        })
+        .catch((error) => {
+          console.error(`Error fetching ${url}:`, error);
+          return null; // return null on error, so we don’t break the whole Promise.all
+        })
+    )
+  );
 
 interface Props {
   state: IState;
@@ -38,7 +52,7 @@ const useMiningData = ({ state, dispatch }: Props) => {
     // combine all geojson features together
     if (miningDataArray) {
       const combinedFeatures = miningDataArray.flatMap(
-        (geojson) => geojson.features
+        (geojson) => geojson?.features || [] // safe access with fallback to empty array
       );
       const combinedGeoJSON = {
         type: "FeatureCollection",
