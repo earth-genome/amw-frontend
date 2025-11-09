@@ -5,7 +5,7 @@
 }
 
 .bars {
-  transition: "opacity 0.1s ease-in";
+  transition: opacity 0.1s ease-in;
 }
 
 .xAxisLabels {
