@@ -75,7 +75,7 @@ export const AREA_TYPES = [
     key: "countries",
     dictionaryKey: "countries",
     dictionaryKeySingular: "country",
-    url: `${DATA_BASE_URL}/boundaries/national_admin/out/national_admin_impacts.json`,
+    url: `${DATA_BASE_URL}/boundaries/national_admin/out/national_admin_impacts_unfiltered.json`,
     timeseriesUrl: `${DATA_BASE_URL}/boundaries/national_admin/out/national_admin_yearly.json`,
     isDefault: true,
     renderLabel: (properties: Record<string, any>) => properties.country,
@@ -105,7 +105,7 @@ export const AREA_TYPES = [
     key: "indigenous-territory",
     dictionaryKey: "indigenous_territories",
     dictionaryKeySingular: "indigenous_territory",
-    url: `${DATA_BASE_URL}/boundaries/protected_areas_and_indigenous_territories/out/indigenous_territories_impacts.json`,
+    url: `${DATA_BASE_URL}/boundaries/protected_areas_and_indigenous_territories/out/indigenous_territories_impacts_unfiltered.json`,
     timeseriesUrl: `${DATA_BASE_URL}/boundaries/protected_areas_and_indigenous_territories/out/indigenous_territories_yearly.json`,
     isDefault: false,
     renderLabel: (properties: Record<string, any>) =>
@@ -122,7 +122,7 @@ export const AREA_TYPES = [
     key: "protected-area",
     dictionaryKey: "protected_areas",
     dictionaryKeySingular: "protected_area",
-    url: `${DATA_BASE_URL}/boundaries/protected_areas_and_indigenous_territories/out/protected_areas_impacts.json`,
+    url: `${DATA_BASE_URL}/boundaries/protected_areas_and_indigenous_territories/out/protected_areas_impacts_unfiltered.json`,
     timeseriesUrl: `${DATA_BASE_URL}/boundaries/protected_areas_and_indigenous_territories/out/protected_areas_yearly.json`,
     isDefault: false,
     renderLabel: (properties: Record<string, any>) =>
