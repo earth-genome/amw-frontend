@@ -144,7 +144,11 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
       if (isMobile) return; // ignore hover effect on mobile
       const { features } = event;
       const map = event.target;
-      const feature = features && features[0];
+      // always show hotspots first if present
+      const hotspots = features?.filter(
+        (d) => d?.properties?.type === "hotspots-layer"
+      );
+      const feature = hotspots?.[0] ?? features?.[0];
 
       if (!feature?.properties) return;
 
@@ -688,7 +692,9 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         {miningData && <Hotspots />}
 
         {/* ================== POPUP =================== */}
-        {tooltip && !isMobile && <MapPopup tooltip={tooltip} dictionary={dictionary} />}
+        {tooltip && !isMobile && (
+          <MapPopup tooltip={tooltip} dictionary={dictionary} />
+        )}
 
         {!isMobile && (
           <ScaleControl
