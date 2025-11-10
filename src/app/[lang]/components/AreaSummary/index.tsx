@@ -16,8 +16,8 @@ import * as turf from "@turf/turf";
 import calculateMiningAreaInBbox from "@/utils/calculateMiningAreaInBbox";
 import useMiningCalculator from "@/hooks/useMiningCalculator";
 import {
-  AREA_SIGNIFICANT_DIGITS,
   ECONOMIC_COST_SIGNIFICANT_DIGITS,
+  getAreaSignificantDigits,
 } from "@/constants/map";
 
 interface AreaProps {
@@ -158,7 +158,7 @@ const Area: React.FC<AreaProps> = ({
             ? formatNumber(
                 displayAreaInUnits(affectedAreaHa, areaUnits),
                 lang,
-                AREA_SIGNIFICANT_DIGITS
+                getAreaSignificantDigits(affectedAreaHa)
               )
             : 0}{" "}
           {dictionary?.map_ui?.[`${areaUnits}Abbrev`]}

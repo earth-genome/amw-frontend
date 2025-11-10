@@ -152,7 +152,7 @@ const AreaSummaryDetails = ({
         </>
       ) : null}
 
-      {hotspotType ? (
+      {/* {hotspotType ? (
         <>
           <div className={style.label}>
             {dictionary?.map_ui?.type_of_mining}
@@ -161,7 +161,7 @@ const AreaSummaryDetails = ({
             {dictionary?.types_of_mining?.[hotspotType]}
           </div>
         </>
-      ) : null}
+      ) : null} */}
 
       {description ? (
         <>

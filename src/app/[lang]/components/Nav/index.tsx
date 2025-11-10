@@ -10,6 +10,7 @@ import React, { Fragment, ReactNode, useEffect, useRef, useState } from "react";
 import Logo from "./logo.svg";
 import "./style.css";
 import { LOCALES } from "@/utils/content";
+import ExternalLink from "@/app/[lang]/components/Icons/ExternalLink";
 
 interface NavProps {
   children?: ReactNode;
@@ -31,12 +32,17 @@ const Nav: React.FC<NavProps> = ({ children, dictionary }) => {
   const menuRef = useRef<HTMLUListElement>(null); // Ref for the menu to animate
   const isRootPath = /^\/(en|es|pt)?\/?$/.test(pathname);
 
+  const newsletterLink = process.env.NEXT_PUBLIC_NEWSLETTER_LINK;
+
   const menuItems = [
     { href: `/${locale}`, label: dictionary.menu.map },
     { href: `/${locale}/about`, label: dictionary.menu.about },
     { href: `/${locale}/results`, label: dictionary.menu.results },
     { href: `/${locale}/case-studies`, label: dictionary.menu.case_studies },
-    { href: `/${locale}/methods-and-code`, label: dictionary.menu.methods_and_code },
+    {
+      href: `/${locale}/methods-and-code`,
+      label: dictionary.menu.methods_and_code,
+    },
     {
       href: `/${locale}/policy-scoreboard`,
       label: dictionary.menu.policy_scoreboard,
@@ -79,7 +85,7 @@ const Nav: React.FC<NavProps> = ({ children, dictionary }) => {
 
       {!showMenu && isRootPath && (
         <>
-          <a
+          {/* <a
             className="menu-link"
             href="#how-to-use"
             onClick={(e) => {
@@ -88,7 +94,22 @@ const Nav: React.FC<NavProps> = ({ children, dictionary }) => {
             }}
           >
             {dictionary.how_to_use.title}
-          </a>
+          </a> */}
+          {newsletterLink && (
+            <Link
+              className="menu-link newsletter-link"
+              href={newsletterLink}
+              rel="nofollow noopener"
+              target="_blank"
+            >
+              <div
+                style={{ display: "flex", alignItems: "center", columnGap: 4 }}
+              >
+                {dictionary.newsletter.title}{" "}
+                <ExternalLink width={11} height={11} fill="#fff" />
+              </div>
+            </Link>
+          )}
 
           <Link
             className="menu-link"
@@ -177,6 +198,28 @@ const Nav: React.FC<NavProps> = ({ children, dictionary }) => {
                   </li>
                 ))}
               </ul>
+
+              {newsletterLink && (
+                <Link
+                  className="menu-link"
+                  style={{ fontSize: 16 }}
+                  href={newsletterLink}
+                  rel="nofollow noopener"
+                  target="_blank"
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      columnGap: 4,
+                    }}
+                  >
+                    {dictionary.newsletter.title}{" "}
+                    <ExternalLink width={14} height={14} fill="#fff" />
+                  </div>
+                </Link>
+              )}
+
               <ul className="lang-menu">
                 {LOCALES.map((d) => (
                   <li key={d.code}>

@@ -91,5 +91,8 @@
     "slide_3": "Detected mines are delineated by the yellow stroke. Here are some characteristic examples of mines from the map.",
     "slide_landslides": "Occasionally the system picks up landscape features that are NOT MINES. These are landslides, in steep terrain.",
     "slide_aquaculture": "Occasionally the system picks up landscape features that are NOT MINES.  These are aquaculture ponds."
+  },
+  "newsletter": {
+    "title": "Sign up for updates"
   }
 }
