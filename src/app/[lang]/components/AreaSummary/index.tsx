@@ -72,11 +72,7 @@ const Area: React.FC<AreaProps> = ({
         number,
         number
       ];
-      const affectedAreaHa = calculateMiningAreaInBbox(
-        bbox,
-        activeYear,
-        miningData
-      );
+      const affectedAreaHa = calculateMiningAreaInBbox(bbox, miningData);
       return [affectedAreaHa, null];
     } else {
       // else use the data that is pre-calculated and baked into the geojson,
@@ -90,10 +86,7 @@ const Area: React.FC<AreaProps> = ({
       ];
     }
   }, [
-    activeYear,
     areaProperties?.mining_affected_area_ha,
-    ,
-    // selectedAreaTimeseriesData,
     calculatorData?.totalImpact,
     miningData,
     selectedAreaData,
