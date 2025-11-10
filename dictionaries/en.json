@@ -16,7 +16,7 @@
   },
   "intro": {
     "title": "TRACK MINING IN THE RAINFOREST",
-    "text": "Amazon Mining Watch uses machine learning to map the scars of gold mining activities in the Amazonian countries. By analyzing historical satellite images, this tool tracks the fast-paced growth of open-pit mining in the largest rainforest in the world. This database is here to help journalists, activists, and researchers better understand the drivers and impacts of subsistence mining.",
+    "text": "Amazon Mining Watch leverages artificial intelligence to map the impact of gold mining activities across all nine Amazonian countries. By analyzing historical and recent satellite imagery, this tool tracks the rapid expansion of legal and illegal mining in the world's largest rainforest. This platform provides journalists, activists, researchers, and policymakers with the pan-Amazonian data needed to understand the drivers and impacts of gold mining and drive actions to stop it.",
     "explore": "Explore map"
   },
   "map_ui": {

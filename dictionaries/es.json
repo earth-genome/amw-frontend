@@ -15,9 +15,9 @@
     "contact": "Contacto"
   },
   "intro": {
-    "title": "MONITOREA LA INDUSTRIA MINERA EN LA AMAZONÍA",
-    "text": "Amazon Mining Watch utiliza el aprendizaje automático (machine learning) para mapear las cicatrices de las actividades mineras de oro en los países amazónicos. Mediante el análisis de imágenes satelitales históricas, esta herramienta rastrea el rápido crecimiento de la minería a cielo abierto en el mayor bosque tropical del mundo. Esta base de datos está pensada para ayudar a periodistas, activistas e investigadores a comprender mejor las fuerzas impulsoras y el impacto de la industria minera de subsistencia.",
-    "explore": "Explorar mapa"
+    "title": "MAPEANDO LA MINERÍA EN LA AMAZONÍA",
+    "text": "Amazon Mining Watch utiliza la inteligencia artificial para mapear el impacto de las actividades de minería de oro en los nueve países amazónicos. Al analizar imágenes satelitales históricas y recientes, esta herramienta rastrea la rápida expansión de la minería, tanto legal como ilegal, en el bosque tropical más grande del mundo. Esta plataforma brinda a periodistas, activistas, investigadores y responsables de políticas públicas los datos pan-amazónicos necesarios para comprender las causas e impactos de la minería de oro y promover acciones para detenerla.",
+    "explore": "Explore el mapa"
   },
   "map_ui": {
     "loading": "cargando",
