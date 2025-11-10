@@ -24,6 +24,10 @@
   .nav .menu-link {
     padding: 0 5px;
   }
+
+  .newsletter-link {
+    display: none !important;
+  }
 }
 .nav .menu-link:hover {
   background: #22b573;

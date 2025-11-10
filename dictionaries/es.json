@@ -92,5 +92,8 @@
     "slide_3": "Las minas detectadas están delimitadas por el trazo amarillo. Aquí hay algunos ejemplos característicos de minas del mapa.",
     "slide_landslides": "Ocasionalmente, el sistema detecta características del paisaje que NO SON MINAS. Estos son deslizamientos de tierra en terrenos escarpados.",
     "slide_aquaculture": "Ocasionalmente, el sistema detecta características del paisaje que NO SON MINAS. Estos son estanques de acuicultura."
+  },
+  "newsletter": {
+    "title": "Suscríbete para actualizaciones"
   }
 }
