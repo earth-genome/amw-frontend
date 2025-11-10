@@ -144,7 +144,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
       const map = event.target;
       // always show hotspots first if present
       const hotspots = features?.filter(
-        (d) => d?.properties?.type === "hotspots-layer"
+        (d) => d?.properties?.type === "hotspots"
       );
       const feature = hotspots?.[0] ?? features?.[0];
 
@@ -376,7 +376,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         onClick={handleClick}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
-        interactiveLayerIds={["areas-layer-fill", "hotspots-fill"]}
+        interactiveLayerIds={["areas-layer-fill", "hotspots-circle"]}
       >
         {!isMobile && <NavigationControl position={"top-right"} />}
 
