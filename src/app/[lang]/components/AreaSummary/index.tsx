@@ -63,7 +63,7 @@ const Area: React.FC<AreaProps> = ({
     hideMiningCalculator ? [] : selectedAreaData?.properties?.locations
   );
 
-  const [affectedAreaHa, economicCost] = useMemo(() => {
+  const [affectedAreaHa, economicCost, hotspotsTimeseries] = useMemo(() => {
     if (selectedAreaTypeKey === "hotspots" && selectedAreaData) {
       // if hotspots, calculate mining affected area on the fly
       const bbox = turf.bbox(selectedAreaData) as [
@@ -72,8 +72,9 @@ const Area: React.FC<AreaProps> = ({
         number,
         number
       ];
-      const affectedAreaHa = calculateMiningAreaInBbox(bbox, miningData);
-      return [affectedAreaHa, null];
+      const { areaMinesHa, areaMinesHaPerYearArray } =
+        calculateMiningAreaInBbox(bbox, miningData) ?? {};
+      return [areaMinesHa, null, areaMinesHaPerYearArray];
     } else {
       // else use the data that is pre-calculated and baked into the geojson,
       // and mining calculator data that is fetched on the fly
@@ -83,6 +84,7 @@ const Area: React.FC<AreaProps> = ({
         // )?.intersected_area_ha_cumulative,
         areaProperties?.mining_affected_area_ha,
         calculatorData?.totalImpact,
+        null,
       ];
     }
   }, [
@@ -173,7 +175,12 @@ const Area: React.FC<AreaProps> = ({
             maxYear={maxYear}
             calculatorIsLoading={calculatorIsLoading}
             calculatorUrl={calculatorUrl}
-            selectedAreaTimeseriesData={selectedAreaTimeseriesData}
+            // @ts-ignore
+            selectedAreaTimeseriesData={
+              selectedAreaTypeKey === "hotspots"
+                ? hotspotsTimeseries
+                : selectedAreaTimeseriesData
+            }
             description={description}
             dictionary={dictionary}
             illegalityAreas={illegalityAreas?.filter(

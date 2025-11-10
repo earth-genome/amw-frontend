@@ -2,6 +2,10 @@ import { scaleSequential } from "d3-scale";
 import { interpolateRgbBasis } from "d3-interpolate";
 import { HOTSPOTS_GEOJSON_URL } from "@/cms/hotspots";
 
+export const LAYER_YEARS = [
+  202503, 202502, 202400, 202300, 202200, 202100, 202000, 201900, 201800,
+].sort((a, b) => a - b);
+
 export const MAP_COLOR_SCALE = [
   "#F7E4BC",
   "#F5CD7E",
@@ -175,6 +179,6 @@ export const getAreaSignificantDigits = (number: number) => {
   if (number < 10) return 1;
   if (number < 1000) return 2;
   return 3;
-}
+};
 
 export const ECONOMIC_COST_SIGNIFICANT_DIGITS = 2;

@@ -1,4 +1,5 @@
-import { GeoJSONFeature, MiningData } from "@/types/types";
+import { LAYER_YEARS } from "@/constants/map";
+import { MiningData } from "@/types/types";
 import * as turf from "@turf/turf";
 
 const calculateMiningAreaInBbox = (
@@ -23,12 +24,40 @@ const calculateMiningAreaInBbox = (
     return false;
   });
 
-  // sum the mined area for those intersecting polygons
-  const areaMinesHa = intersectingFeatures.reduce((sum, feature) => {
-    return sum + (feature.properties?.["Mined area (ha)"] || 0);
-  }, 0);
+  // total mined area
+  const areaMinesHa = intersectingFeatures.reduce(
+    (sum, feature) => sum + (feature.properties?.["Mined area (ha)"] || 0),
+    0
+  );
 
-  return areaMinesHa;
+  // mined area per year
+  const areaMinesHaPerYear = intersectingFeatures.reduce((acc, feature) => {
+    const year = feature.properties?.["year"];
+    const area = feature.properties?.["Mined area (ha)"] || 0;
+    acc[year] = (acc[year] || 0) + area;
+    return acc;
+  }, {} as Record<string, number>);
+
+  // convert to array and sort by year
+  const sortedYears = Object.entries(areaMinesHaPerYear)
+    .map(([year, area]) => ({
+      admin_year: Number(year),
+      intersected_area_ha: area,
+    }))
+    .sort((a, b) => a.admin_year - b.admin_year);
+
+  // calculate cumulative sum, filling in gaps in years if any
+  let cumulative = 0;
+  const areaMinesHaPerYearArray = LAYER_YEARS.map((year) => {
+    const area = areaMinesHaPerYear[year] || 0;
+    cumulative += area;
+    return {
+      admin_year: year,
+      intersected_area_ha_cumulative: cumulative,
+    };
+  });
+
+  return { areaMinesHa, areaMinesHaPerYearArray };
 };
 
 export default calculateMiningAreaInBbox;

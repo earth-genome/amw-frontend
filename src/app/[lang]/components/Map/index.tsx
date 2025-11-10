@@ -24,6 +24,7 @@ import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import * as turf from "@turf/turf";
 import {
   getColorsForYears,
+  LAYER_YEARS,
   MAP_MISSING_DATA_COLOR,
   PERMITTED_AREA_TYPES_KEYS,
 } from "@/constants/map";
@@ -40,9 +41,6 @@ interface MainMapProps {
   dictionary: { [key: string]: any };
 }
 
-const LAYER_YEARS = [
-  202503, 202502, 202400, 202300, 202200, 202100, 202000, 201900, 201800,
-].sort((a, b) => a - b);
 const INITIAL_VIEW = {
   longitude: -67.78320182377449,
   latitude: -5.871455584726869,
