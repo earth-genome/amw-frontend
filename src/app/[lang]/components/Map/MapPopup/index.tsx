@@ -14,9 +14,10 @@ export interface TooltipInfo {
 
 interface MapPopupProps {
   tooltip: TooltipInfo;
+  dictionary: { [key: string]: any };
 }
 
-const MapPopup = ({ tooltip }: MapPopupProps) => {
+const MapPopup = ({ tooltip, dictionary }: MapPopupProps) => {
   const [state] = useContext(Context)!;
 
   const { properties, longitude, latitude } = tooltip;
@@ -25,7 +26,7 @@ const MapPopup = ({ tooltip }: MapPopupProps) => {
   // of what kind of area is displaying
   const title =
     (properties?.type as PERMITTED_AREA_TYPES_KEYS) === "hotspots"
-      ? properties.title
+      ? `${properties.title} ${dictionary?.map_ui?.hotspot ? `- ${dictionary?.map_ui?.hotspot}` : ""}`
       : state.selectedAreaType?.renderTitle(properties);
   const status = state.selectedAreaType?.renderStatus(properties);
   const country = properties?.country;

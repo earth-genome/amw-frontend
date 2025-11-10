@@ -93,7 +93,7 @@ const Hotspots = () => {
         ["linear"],
         ["zoom"],
         4,
-        1,
+        0.75,
         7,
         0.8,
         9,

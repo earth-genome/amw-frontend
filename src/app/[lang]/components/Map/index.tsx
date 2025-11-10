@@ -562,17 +562,20 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
               paint={{
                 "line-color": "#ccc",
                 "line-opacity": 1,
-                "line-width": [
-                  "interpolate",
-                  ["exponential", 2],
-                  ["zoom"],
-                  0,
-                  1,
-                  10,
-                  1,
-                  14,
-                  2.5,
-                ],
+                "line-width":
+                  selectedAreaTypeKey === "hotspots"
+                    ? 0
+                    : [
+                        "interpolate",
+                        ["exponential", 2],
+                        ["zoom"],
+                        0,
+                        1,
+                        10,
+                        1,
+                        14,
+                        2.5,
+                      ],
               }}
             />
             <Layer
@@ -685,7 +688,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         {miningData && <Hotspots />}
 
         {/* ================== POPUP =================== */}
-        {tooltip && !isMobile && <MapPopup tooltip={tooltip} />}
+        {tooltip && !isMobile && <MapPopup tooltip={tooltip} dictionary={dictionary} />}
 
         {!isMobile && (
           <ScaleControl
