@@ -466,10 +466,10 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           id="sentinel-202502"
           type="raster"
           tiles={[
-            `${process.env.NEXT_PUBLIC_SENTINEL2_QUARTERLY_MOSAICS}/2025-04-01/2025-07-01/rgb/{z}/{x}/{y}.webp`,
-            `${process.env.NEXT_PUBLIC_SENTINEL2_QUARTERLY_MOSAICS}/2025-04-01/2025-07-01/rgb/{z}/{x}/{y}.webp`,
-            `${process.env.NEXT_PUBLIC_SENTINEL2_QUARTERLY_MOSAICS}/2025-04-01/2025-07-01/rgb/{z}/{x}/{y}.webp`,
-            `${process.env.NEXT_PUBLIC_SENTINEL2_QUARTERLY_MOSAICS}/2025-04-01/2025-07-01/rgb/{z}/{x}/{y}.webp`,
+            `${process.env.NEXT_PUBLIC_SENTINEL2_SEMIANNUAL_MOSAICS}/2025-02-15/2025-08-15/rgb/{z}/{x}/{y}.webp`,
+            `${process.env.NEXT_PUBLIC_SENTINEL2_SEMIANNUAL_MOSAICS}/2025-02-15/2025-08-15/rgb/{z}/{x}/{y}.webp`,
+            `${process.env.NEXT_PUBLIC_SENTINEL2_SEMIANNUAL_MOSAICS}/2025-02-15/2025-08-15/rgb/{z}/{x}/{y}.webp`,
+            `${process.env.NEXT_PUBLIC_SENTINEL2_SEMIANNUAL_MOSAICS}/2025-02-15/2025-08-15/rgb/{z}/{x}/{y}.webp`,
           ]}
           tileSize={256}
           bounds={[-80.0, -20.0, -50.0, 20.0]}
@@ -478,10 +478,10 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           id="sentinel-202503"
           type="raster"
           tiles={[
-            `${process.env.NEXT_PUBLIC_SENTINEL2_QUARTERLY_MOSAICS}/2025-07-01/2025-10-01/rgb/{z}/{x}/{y}.webp`,
-            `${process.env.NEXT_PUBLIC_SENTINEL2_QUARTERLY_MOSAICS}/2025-07-01/2025-10-01/rgb/{z}/{x}/{y}.webp`,
-            `${process.env.NEXT_PUBLIC_SENTINEL2_QUARTERLY_MOSAICS}/2025-07-01/2025-10-01/rgb/{z}/{x}/{y}.webp`,
-            `${process.env.NEXT_PUBLIC_SENTINEL2_QUARTERLY_MOSAICS}/2025-07-01/2025-10-01/rgb/{z}/{x}/{y}.webp`,
+            `${process.env.NEXT_PUBLIC_SENTINEL2_SEMIANNUAL_MOSAICS}/2025-05-15/2025-11-15/rgb/{z}/{x}/{y}.webp`,
+            `${process.env.NEXT_PUBLIC_SENTINEL2_SEMIANNUAL_MOSAICS}/2025-05-15/2025-11-15/rgb/{z}/{x}/{y}.webp`,
+            `${process.env.NEXT_PUBLIC_SENTINEL2_SEMIANNUAL_MOSAICS}/2025-05-15/2025-11-15/rgb/{z}/{x}/{y}.webp`,
+            `${process.env.NEXT_PUBLIC_SENTINEL2_SEMIANNUAL_MOSAICS}/2025-05-15/2025-11-15/rgb/{z}/{x}/{y}.webp`,
           ]}
           tileSize={256}
           bounds={[-80.0, -20.0, -50.0, 20.0]}
