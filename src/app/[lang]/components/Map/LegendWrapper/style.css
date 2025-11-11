@@ -1,0 +1,34 @@
+.legend-wrapper {
+  position: fixed;
+  left: 20px;
+  bottom: 50px;
+  z-index: 40px;
+  display: flex;
+  flex-direction: column;
+  row-gap: 24px;
+}
+
+.legend-container {
+  display: flex;
+  gap: 24px;
+}
+
+.legend-card {
+  background: #ffffffcc;
+  border-radius: 12px;
+  backdrop-filter: blur(30.75px);
+  padding: 6px;
+}
+
+@media (max-width: 600px) {
+  .mini-map-wrapper {
+    display: none;
+  }
+  .legend-wrapper {
+    bottom: 20px;
+    right: 32px;
+  }
+  .legend-card {
+    width: 100%;
+  }
+}

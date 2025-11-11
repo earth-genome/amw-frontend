@@ -1,0 +1,124 @@
+.areaCard {
+  position: fixed;
+  right: 20px;
+  bottom: 50px;
+  width: 380px;
+  z-index: 500;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 600px) {
+  .areaCard {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 60vh;
+    width: auto;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+      0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+}
+
+.areaTitle {
+  background: var(--green-light);
+  padding: 12px 24px;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  column-gap: 12px;
+}
+
+.areaTitleText {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.areaYear {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 3px;
+}
+
+.areaTitleRight {
+  display: flex;
+  gap: 6px;
+}
+
+.areaClose {
+  cursor: pointer;
+  font-size: 24px;
+}
+.areaClose:hover {
+  opacity: 80%;
+}
+
+.areaType {
+  font-size: 14px;
+  font-weight: 500;
+  margin-top: 3px;
+}
+
+.areaBody {
+  background: var(--green-dark);
+  padding: 12px 24px;
+  font-weight: 400;
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  row-gap: 4px;
+}
+
+.areaKm {
+  font-size: 30px;
+  font-weight: 800;
+}
+
+.areaKm sup {
+  font-size: 24px;
+}
+
+@media (max-width: 600px) {
+  .areaKm {
+    font-size: 32px;
+    font-weight: 800;
+  }
+
+  .areaKm sup {
+    font-size: 18px;
+  }
+}
+
+.areaFooter {
+  background: #efefef;
+  padding: 12px 24px;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+  display: flex;
+  justify-content: center;
+}
+
+@media (max-width: 600px) {
+  .areaFooter {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+}
+
+.showMoreButton {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--green-dark);
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.showMoreButton:hover {
+  opacity: 80%;
+}

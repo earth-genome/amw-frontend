@@ -3,49 +3,85 @@
     "title": "Amazon Mining Watch",
     "description": "A New Platform to Monitor Mining in Amazon Using Artificial Intelligence."
   },
-  "about": {
-    "title": "Sobre el Proyecto - Amazon Mining Watch",
-    "description": "Description"
-  },
-  "case_studies": {
-    "title": "Estudios de caso - Amazon Mining Watch",
-    "description": "Description"
-  },
-  "method": {
-    "title": "Metodología - Amazon Mining Watch",
-    "description": "Description"
-  },
-  "code": {
-    "title": "Datos + código - Amazon Mining Watch",
-    "description": "Description"
-  },
-  "contact": {
-    "title": "Contacto - Amazon Mining Watch",
-    "description": "Description"
-  },
   "menu": {
-    "about_amw": "Acerca de AMW",
+    "about_amw": "Acerca",
+    "results": "Resultados",
     "map": "Mapa",
     "about": "Sobre el Proyecto",
     "case_studies": "Estudios de caso",
-    "methodology": "Metodología",
-    "data_and_code": "Datos + código",
+    "methods_and_code": "Métodos y Código",
+    "policy_scoreboard": "Rastreador de Políticas",
+    "faq": "FAQ",
     "contact": "Contacto"
   },
   "intro": {
-    "title": "MONITOREA LA INDUSTRIA MINERA EN LA AMAZONÍA",
-    "text": "Amazon Mining Watch utiliza el aprendizaje automático (machine learning) para mapear las cicatrices de las actividades mineras de oro en los países amazónicos. Mediante el análisis de imágenes satelitales históricas, esta herramienta rastrea el rápido crecimiento de la minería a cielo abierto en el mayor bosque tropical del mundo. Esta base de datos está pensada para ayudar a periodistas, activistas e investigadores a comprender mejor las fuerzas impulsoras y el impacto de la industria minera de subsistencia.",
-    "explore": "Explorar mapa"
+    "title": "MAPEANDO LA MINERÍA EN LA AMAZONÍA",
+    "text": "Amazon Mining Watch utiliza la inteligencia artificial para mapear el impacto de las actividades de minería de oro en los nueve países amazónicos. Al analizar imágenes satelitales históricas y recientes, esta herramienta rastrea la rápida expansión de la minería, tanto legal como ilegal, en el bosque tropical más grande del mundo. Esta plataforma brinda a periodistas, activistas, investigadores y responsables de políticas públicas los datos pan-amazónicos necesarios para comprender las causas e impactos de la minería de oro y promover acciones para detenerla.",
+    "explore": "Explore el mapa"
   },
   "map_ui": {
     "loading": "cargando",
     "latest": "Anual",
     "hi_res": "Hi-Res",
     "map_mode": "OPCIÓN DE MAPA",
-    "mining_areas_detected": "Zona minera detectada"
+    "mining_areas_detected": "Zona minera detectada",
+    "search_for_a_place": "Buscar un lugar",
+    "countries": "Países",
+    "country": "País",
+    "subnational_jurisdictions": "Jurisdicciones subnacionales",
+    "subnational_jurisdiction": "Jurisdicción subnacional",
+    "indigenous_territories": "Territorios indígenas",
+    "indigenous_territory": "Territorio indígena",
+    "protected_areas": "Áreas protegidas",
+    "protected_area": "Área protegida",
+    "hotspots": "Puntos críticos",
+    "hotspot": "Punto crítico",
+    "economic_cost": "Costo económico acumulado en el área",
+    "economic_cost_currency": "USD",
+    "unknown": "Desconocido",
+    "area_status": "Estado del área",
+    "select_area_placeholder": "Selecciona un área...",
+    "economic_cost_calculator_intro": "El costo económico se estima utilizando la Calculadora de Impactos Mineros.",
+    "see_detailed_analysis": "Ver el",
+    "detailed_analysis_link": "análisis detallado aquí",
+    "area_over_time": "Área a lo largo del tiempo",
+    "hide_more_insights": "Ocultar más información",
+    "see_more_insights": "Ver más información",
+    "description": "Descripción",
+    "presumption_of_illegality": "Presunción de ilegalidad",
+    "presumption_of_illegality_tooltip": "\"Presunción de ilegalidad\" para actividades mineras basada en las designaciones de tierra. Muy Alto: La minería es muy probablemente ilegal. Bajo: La minería es probablemente legal.",
+    "units": "Unidades",
+    "hectares": "Hectáreas",
+    "squareKm": "Kilómetros cuadrados",
+    "imperial": "Imperial",
+    "hectaresAbbrev": "hectáreas",
+    "squareKmAbbrev": "km²",
+    "imperialAbbrev": "acres",
+    "type_of_mining": "Tipo de minería"
+  },
+  "types_of_mining": {
+    "hotspot": "Punto crítico",
+    "river_mining": "Minería fluvial"
+  },
+  "illegality_legend": {
+    "na": "N/A",
+    "low": "Bajo",
+    "medium": "Medio",
+    "high": "Alto",
+    "very_high": "Muy alto"
+  },
+  "illegality_tooltip": {
+    "low": "La actividad está ocurriendo dentro de una concesión activa pero no se pudo verificar el cumplimiento de todos los requisitos.",
+    "medium": "La actividad está ocurriendo dentro de una concesión pero no se pudo verificar el estado activo de la concesión y/o la concesión no cumple con los requisitos legales.",
+    "high": "La actividad está ocurriendo fuera de cualquier concesión explícita para hacerlo, en un área sin designación para minería.",
+    "very_high": "La actividad está ocurriendo dentro de un área protegida que no permite ningún tipo de explotación de recursos."
+  },
+  "map_legend": {
+    "old_mining_activity": "Minería más antigua",
+    "recent_mining_activity": "Minería más reciente"
   },
   "coverage": {
-    "area_affected_in": "ÁREA AFECTADA EN",
+    "total_area_affected": "Área total afectada por la minería",
     "or": "o",
     "million_acres": "millones de acres"
   },
@@ -56,5 +92,8 @@
     "slide_3": "Las minas detectadas están delimitadas por el trazo amarillo. Aquí hay algunos ejemplos característicos de minas del mapa.",
     "slide_landslides": "Ocasionalmente, el sistema detecta características del paisaje que NO SON MINAS. Estos son deslizamientos de tierra en terrenos escarpados.",
     "slide_aquaculture": "Ocasionalmente, el sistema detecta características del paisaje que NO SON MINAS. Estos son estanques de acuicultura."
+  },
+  "newsletter": {
+    "title": "Suscríbete para actualizaciones"
   }
 }

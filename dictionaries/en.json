@@ -3,33 +3,20 @@
     "title": "Amazon Mining Watch",
     "description": "A New Platform to Monitor Mining in Amazon Using Artificial Intelligence."
   },
-  "about": {
-    "title": "About - Amazon Mining Watch"
-  },
-  "case_studies": {
-    "title": "Case studies - Amazon Mining Watch"
-  },
-  "method": {
-    "title": "Methodology - Amazon Mining Watch"
-  },
-  "code": {
-    "title": "Code - Amazon Mining Watch"
-  },
-  "contact": {
-    "title": "Contact - Amazon Mining Watch"
-  },
   "menu": {
     "about_amw": "About AMW",
     "about": "About",
+    "results": "Results",
     "map": "Map",
     "case_studies": "Case Studies",
-    "methodology": "Methodology",
-    "data_and_code": "Data and code",
+    "methods_and_code": "Methods and Code",
+    "policy_scoreboard": "Policy Scoreboard",
+    "faq": "FAQ",
     "contact": "Contact"
   },
   "intro": {
     "title": "TRACK MINING IN THE RAINFOREST",
-    "text": "Amazon Mining Watch uses machine learning to map the scars of gold mining activities in the Amazonian countries. By analyzing historical satellite images, this tool tracks the fast-paced growth of open-pit mining in the largest rainforest in the world. This database is here to help journalists, activists, and researchers better understand the drivers and impacts of subsistence mining.",
+    "text": "Amazon Mining Watch leverages artificial intelligence to map the impact of gold mining activities across all nine Amazonian countries. By analyzing historical and recent satellite imagery, this tool tracks the rapid expansion of legal and illegal mining in the world's largest rainforest. This platform provides journalists, activists, researchers, and policymakers with the pan-Amazonian data needed to understand the drivers and impacts of gold mining and drive actions to stop it.",
     "explore": "Explore map"
   },
   "map_ui": {
@@ -37,10 +24,64 @@
     "latest": "Yearly",
     "hi_res": "Hi-Res",
     "map_mode": "Map mode",
-    "mining_areas_detected": "Mining Areas Detected"
+    "mining_areas_detected": "Mining Areas Detected",
+    "search_for_a_place": "Search for a place",
+    "countries": "Countries",
+    "country": "Country",
+    "subnational_jurisdictions": "Subnational jurisdictions",
+    "subnational_jurisdiction": "Subnational jurisdiction",
+    "indigenous_territories": "Indigenous territories",
+    "indigenous_territory": "Indigenous territory",
+    "protected_areas": "Protected areas",
+    "protected_area": "Protected area",
+    "hotspots": "Hotspots",
+    "hotspot": "Hotspot",
+    "economic_cost": "Cumulative economic cost in the area",
+    "economic_cost_currency": "USD",
+    "unknown": "Unknown",
+    "area_status": "Area status",
+    "select_area_placeholder": "Select an area...",
+    "area_over_time": "Area over time",
+    "economic_cost_calculator_intro": "Economic cost is estimated using the Mining Impacts Calculator.",
+    "see_detailed_analysis": "See the",
+    "detailed_analysis_link": "detailed analysis here",
+    "hide_more_insights": "Hide more insights",
+    "see_more_insights": "See more insights",
+    "description": "Description",
+    "presumption_of_illegality": "Presumption of illegality",
+    "presumption_of_illegality_tooltip": "Presumption of illegality for mining activities based on land designations. Very High: Mining is most likely illegal. Low: Mining is likely legal.",
+    "units": "Units",
+    "hectares": "Hectares",
+    "squareKm": "Square km",
+    "imperial": "Imperial",
+    "hectaresAbbrev": "hectares",
+    "squareKmAbbrev": "km²",
+    "imperialAbbrev": "acres",
+    "type_of_mining": "Type of mining"
+  },
+  "types_of_mining": {
+    "hotspot": "Hotspot",
+    "river_mining": "River mining"
+  },
+  "illegality_legend": {
+    "na": "N/A",
+    "low": "Low",
+    "medium": "Medium",
+    "high": "High",
+    "very_high": "Very high"
+  },
+  "illegality_tooltip": {
+    "low": "Activity is happening within active concession but compliance with all requirements could not be verified.",
+    "medium": "Activity is happening within a concession but active status of the concession could not be verified and/or concession doesn't meet legal requirements.",
+    "high": "Activity is occurring outside of any explicit concession for doing so, in an area without designation for mining.",
+    "very_high": "Activity is occurring within a protected area that doesn't allow for any kind of resource exploitation."
+  },
+  "map_legend": {
+    "old_mining_activity": "Older mining activity",
+    "recent_mining_activity": "More recent mining activity"
   },
   "coverage": {
-    "area_affected_in": "Area affected in",
+    "total_area_affected": "Total area affected by mining",
     "or": "or",
     "million_acres": "million acres"
   },
@@ -51,5 +92,8 @@
     "slide_3": "Detected mines are delineated by the yellow stroke. Here are some characteristic examples of mines from the map.",
     "slide_landslides": "Occasionally the system picks up landscape features that are NOT MINES. These are landslides, in steep terrain.",
     "slide_aquaculture": "Occasionally the system picks up landscape features that are NOT MINES.  These are aquaculture ponds."
+  },
+  "newsletter": {
+    "title": "Sign up for updates"
   }
 }

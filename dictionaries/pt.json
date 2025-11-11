@@ -3,38 +3,20 @@
     "title": "Amazon Mining Watch",
     "description": "A New Platform to Monitor Mining in Amazon Using Artificial Intelligence."
   },
-  "about": {
-    "title": "Sobre - Amazon Mining Watch",
-    "description": "Description"
-  },
-  "case_studies": {
-    "title": "Estudos de Caso - Amazon Mining Watch",
-    "description": "Description"
-  },
-  "method": {
-    "title": "Metodologia - Amazon Mining Watch",
-    "description": "Description"
-  },
-  "code": {
-    "title": "Dados e Código - Amazon Mining Watch",
-    "description": "Description"
-  },
-  "contact": {
-    "title": "Contato - Amazon Mining Watch",
-    "description": "Description"
-  },
   "menu": {
-    "about_amw": "Sobre AMW",
+    "about_amw": "Sobre",
+    "results": "Resultados",
     "map": "Mapa",
     "about": "Sobre",
     "case_studies": "Estudos de Caso",
-    "methodology": "Metodologia",
-    "data_and_code": "Dados e Código",
+    "methods_and_code": "Métodos e Código",
+    "policy_scoreboard": "Rastreador de Políticas",
+    "faq": "FAQ",
     "contact": "Contato"
   },
   "intro": {
-    "title": "MONITORE OS GARIMPOS NA FLORESTA",
-    "text": "Amazon Mining Watch utiliza inteligência artificial para mapear as cicatrizes deixadas pelas atividades de mineração de ouro na Amazônia. Ao analisar imagens de satélite, a ferramenta rastreia o crescimento acelerado dos garimpos na maior floresta tropical do mundo. Este banco de dados está aqui para ajudar jornalistas, ativistas e pesquisadores a entenderem melhor os forças motrizes e os impactos da mineração de subsistência.",
+    "title": "RASTREANDO A MINERAÇÃO E O GARIMPO NA AMAZÔNIA",
+    "text": "O Amazon Mining Watch utiliza inteligência artificial para mapear o impacto das atividades de mineração de ouro em nove países amazônicos. Ao analisar imagens de satélite históricas e recentes, esta ferramenta monitora a rápida expansão da mineração e do garimpo, legal e ilegal, na maior floresta tropical do mundo. A plataforma oferece a jornalistas, ativistas, pesquisadores e formuladores de políticas públicas os dados pan-amazônicos necessários para compreender as causas e os impactos da mineração de ouro e para impulsionar ações para detê-la.",
     "explore": "Explore o mapa"
   },
   "map_ui": {
@@ -42,10 +24,64 @@
     "latest": "Anual",
     "hi_res": "Hi-Res",
     "map_mode": "OPÇÃO DE MAPA",
-    "mining_areas_detected": "Area de mineração detectada"
+    "mining_areas_detected": "Area de mineração detectada",
+    "search_for_a_place": "Busque por um lugar",
+    "countries": "Países",
+    "country": "País",
+    "subnational_jurisdictions": "Jurisdições subnacionais",
+    "subnational_jurisdiction": "Jurisdição subnacional",
+    "indigenous_territories": "Territórios indígenas",
+    "indigenous_territory": "Território indígena",
+    "protected_areas": "Áreas protegidas",
+    "protected_area": "Área protegida",
+    "hotspots": "Pontos críticos",
+    "hotspot": "Ponto crítico",
+    "economic_cost": "Custo econômico acumulado na área",
+    "economic_cost_currency": "USD",
+    "unknown": "Desconhecido",
+    "area_status": "Status da área",
+    "select_area_placeholder": "Selecione uma área...",
+    "area_over_time": "Área ao longo do tempo",
+    "economic_cost_calculator_intro": "O custo econômico é estimado usando a Calculadora de Impactos da Mineração.",
+    "see_detailed_analysis": "Veja a",
+    "detailed_analysis_link": "análise detalhada aqui",
+    "hide_more_insights": "Ocultar mais informações",
+    "see_more_insights": "Ver mais informações",
+    "description": "Descrição",
+    "presumption_of_illegality": "Presunção de ilegalidade",
+    "presumption_of_illegality_tooltip": "\"Presunção de ilegalidade\" para atividades de mineração com base nas designações de terra. Muito Alto: A mineração é muito provavelmente ilegal. Baixo: A mineração é provavelmente legal.",
+    "units": "Unidades",
+    "hectares": "Hectares",
+    "squareKm": "Quilômetros quadrados",
+    "imperial": "Imperial",
+    "hectaresAbbrev": "hectares",
+    "squareKmAbbrev": "km²",
+    "imperialAbbrev": "acres",
+    "type_of_mining": "Tipo de mineração"
+  },
+  "types_of_mining": {
+    "hotspot": "Ponto crítico",
+    "river_mining": "Mineração fluvial"
+  },
+  "illegality_legend": {
+    "na": "N/A",
+    "low": "Baixo",
+    "medium": "Médio",
+    "high": "Alto",
+    "very_high": "Muito alto"
+  },
+  "illegality_tooltip": {
+    "low": "A atividade está ocorrendo dentro de uma concessão ativa, mas não foi possível verificar a conformidade com todos os requisitos.",
+    "medium": "A atividade está ocorrendo dentro de uma concessão, mas não foi possível verificar o status ativo da concessão e/ou a concessão não atende aos requisitos legais.",
+    "high": "A atividade está ocorrendo fora de qualquer concessão explícita para tal, em uma área sem designação para mineração.",
+    "very_high": "A atividade está ocorrendo dentro de uma área protegida que não permite qualquer tipo de exploração de recursos."
+  },
+  "map_legend": {
+    "old_mining_activity": "Mineração mais antiga",
+    "recent_mining_activity": "Mineração mais recente"
   },
   "coverage": {
-    "area_affected_in": "ÁREA AFETADA EM",
+    "total_area_affected": "Área total afetada pela mineração",
     "or": "ou",
     "million_acres": "milhões de acres"
   },
@@ -56,5 +92,8 @@
     "slide_3": "As minas detectadas são delineadas pelo traço amarelo. Aqui estão alguns exemplos característicos de minas do mapa.",
     "slide_landslides": "Ocasionalmente, o sistema detecta características da paisagem que NÃO SÃO MINAS. Estes são deslizamentos de terra em terrenos íngremes.",
     "slide_aquaculture": "Ocasionalmente, o sistema detecta características da paisagem que NÃO SÃO MINAS. Estes são tanques de aquicultura."
+  },
+  "newsletter": {
+    "title": "Inscreva-se para atualizações"
   }
 }

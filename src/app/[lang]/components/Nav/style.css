@@ -1,12 +1,13 @@
 .nav {
   position: fixed;
-  background: rgba(34, 181, 115, 0.7);
+  background: var(--green-light);
   left: 0;
   top: 0;
   width: 100%;
   z-index: 1000;
-  height: 28px;
+  height: var(--top-navbar-height);
   text-align: right;
+  font-weight: 500;
 }
 .nav .menu-link {
   color: #fff;
@@ -22,6 +23,10 @@
 @media (max-width: 600px) {
   .nav .menu-link {
     padding: 0 5px;
+  }
+
+  .newsletter-link {
+    display: none !important;
   }
 }
 .nav .menu-link:hover {
@@ -58,7 +63,7 @@
   font-weight: 900;
   line-height: 1.1;
 }
-@media (max-width: 800px) {
+@media (max-width: 900px) {
   .main-menu {
     font-size: 40px;
   }
@@ -74,6 +79,7 @@
 }
 .menu-lang {
   text-decoration: none;
+  text-transform: uppercase;
   margin: 0 10px;
   color: #fff;
   font-size: 12px;
@@ -91,4 +97,5 @@
   line-height: 2;
   font-weight: 400;
   letter-spacing: 4px;
+  text-transform: uppercase;
 }
