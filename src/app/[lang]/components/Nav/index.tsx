@@ -37,7 +37,7 @@ const Nav: React.FC<NavProps> = ({ children, dictionary }) => {
   const menuItems = [
     { href: `/${locale}`, label: dictionary.menu.map },
     { href: `/${locale}/about`, label: dictionary.menu.about },
-    { href: `/${locale}/results`, label: dictionary.menu.results },
+    // { href: `/${locale}/results`, label: dictionary.menu.results },
     { href: `/${locale}/case-studies`, label: dictionary.menu.case_studies },
     {
       href: `/${locale}/methods-and-code`,
