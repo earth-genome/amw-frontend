@@ -83,7 +83,7 @@ const Nav: React.FC<NavProps> = ({ children, dictionary }) => {
     <div className="nav">
       {children}
 
-      {!showMenu && isRootPath && (
+      {!showMenu && (
         <>
           {/* <a
             className="menu-link"
@@ -111,16 +111,18 @@ const Nav: React.FC<NavProps> = ({ children, dictionary }) => {
             </Link>
           )}
 
-          <Link
-            className="menu-link"
-            href={`/${locale}/about`}
-            onClick={() => {
-              setShowMenu(false);
-              setMenuOpen(false);
-            }}
-          >
-            {dictionary.menu.about_amw}
-          </Link>
+          {isRootPath && (
+            <Link
+              className="menu-link"
+              href={`/${locale}/about`}
+              onClick={() => {
+                setShowMenu(false);
+                setMenuOpen(false);
+              }}
+            >
+              {dictionary.menu.about_amw}
+            </Link>
+          )}
         </>
       )}
 
