@@ -39,4 +39,5 @@ next-env.d.ts
 # vscode
 .vscode
 
-/public/test-data
+# local data for testing
+public/test-data/
