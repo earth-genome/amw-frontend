@@ -54,43 +54,54 @@ const AreaSelect = ({ dictionary }: AreaSelectProps) => {
     <div className="area-types-wrapper">
       <div className="area-types-container">
         <div className="area-types">
-            <ConfigProvider
-              theme={{
-                components: {
-                  Select: {
-                    selectorBg: "rgb(11, 95, 58)",
-                    optionSelectedColor: "rgba(242, 236, 236, 0.88)",
-                    colorIconHover: "rgba(250, 246, 246, 0.88)",
-                    colorBgContainer: "rgb(11, 95, 58)",
-                    colorBgElevated: "rgb(11, 95, 58)",
-                    colorPrimary: "rgb(242, 237, 237)",
-                    colorIcon: "rgb(255,255,255)",
-                    colorBorder: "rgb(6, 89, 36)",
-                    optionSelectedBg: "rgb(76, 97, 77)",
-                    colorText: "rgba(250, 249, 249, 0.88)",
-                    colorFillTertiary: "rgba(242, 234, 234, 0.04)",
-                    colorFillSecondary: "rgba(241, 228, 228, 0.06)",
-                    colorTextQuaternary: "rgba(249, 249, 249, 0.99)",
-                    colorTextTertiary: "rgba(244, 236, 236, 0.9)",
-                    colorTextDescription: "rgba(255, 253, 253, 0.45)",
-                    colorTextDisabled: "rgba(239, 233, 233, 0.25)",
-                    colorTextPlaceholder: "rgba(255, 255, 255, 0.9)",
-                  },
+          <ConfigProvider
+            theme={{
+              components: {
+                Select: {
+                  selectorBg: "rgb(11, 95, 58)",
+                  optionSelectedColor: "rgba(242, 236, 236, 0.88)",
+                  colorIconHover: "rgba(250, 246, 246, 0.88)",
+                  colorBgContainer: "rgb(11, 95, 58)",
+                  colorBgElevated: "rgb(11, 95, 58)",
+                  colorPrimary: "rgb(242, 237, 237)",
+                  colorIcon: "rgb(255,255,255)",
+                  colorBorder: "rgb(6, 89, 36)",
+                  optionSelectedBg: "rgb(76, 97, 77)",
+                  colorText: "rgba(250, 249, 249, 0.88)",
+                  colorFillTertiary: "rgba(242, 234, 234, 0.04)",
+                  colorFillSecondary: "rgba(241, 228, 228, 0.06)",
+                  colorTextQuaternary: "rgba(249, 249, 249, 0.99)",
+                  colorTextTertiary: "rgba(244, 236, 236, 0.9)",
+                  colorTextDescription: "rgba(255, 253, 253, 0.45)",
+                  colorTextDisabled: "rgba(239, 233, 233, 0.25)",
+                  colorTextPlaceholder: "rgba(255, 255, 255, 0.9)",
                 },
-              }}
-            >
-              <Select
-                className="area-types-select-box"
-                value={selectedAreaType?.key}
-                onChange={(d) => setSelectedAreaType(d as PERMITTED_AREA_TYPES_KEYS)}
-              >
-                {AREA_TYPES.map((d) => (
-                  <Option key={d.key} value={d.key}>
-                    {dictionary?.map_ui?.[d.dictionaryKey]}
-                  </Option>
-                ))}
-              </Select>
-            </ConfigProvider>
+              },
+            }}
+          >
+            <Select
+              className="area-types-select-box"
+              value={selectedAreaType?.key}
+              onChange={(d) =>
+                setSelectedAreaType(d as PERMITTED_AREA_TYPES_KEYS)
+              }
+              options={AREA_TYPES.map((d) => ({
+                value: d.key,
+                label: dictionary?.map_ui?.[d.dictionaryKey],
+                description:
+                  d.dictionaryKeyDescription &&
+                  dictionary?.map_ui?.[d.dictionaryKeyDescription],
+              }))}
+              optionRender={({ data: { label, description } }) => (
+                <div>
+                  <div>{label}</div>
+                  {description && (
+                    <div className="area-option-description">{description}</div>
+                  )}
+                </div>
+              )}
+            />
+          </ConfigProvider>
         </div>
         <div className="area-select">
           {areasData && !areasDataIsLoading ? (
