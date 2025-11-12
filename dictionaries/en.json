@@ -51,6 +51,7 @@
     "see_more_insights": "See more insights",
     "description": "Description",
     "presumption_of_illegality": "Presumption of illegality",
+    "presumption_of_illegality_breakdown": "Breakdown of mined area",
     "presumption_of_illegality_tooltip": "Presumption of illegality for mining activities based on land designations. Very High: Mining is most likely illegal. Low: Mining is likely legal.",
     "units": "Units",
     "hectares": "Hectares",
