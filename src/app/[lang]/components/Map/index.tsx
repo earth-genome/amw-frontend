@@ -41,6 +41,7 @@ interface MainMapProps {
   dictionary: { [key: string]: any };
 }
 
+const AREA_BOUNDS = [-78, -21, -42, 11];
 const INITIAL_VIEW = {
   longitude: -67.78320182377449,
   latitude: -5.871455584726869,
@@ -391,7 +392,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
             `${process.env.NEXT_PUBLIC_SENTINEL2_URL_4}/2018-01-01/2019-01-01/rgb/{z}/{x}/{y}.webp`,
           ]}
           tileSize={256}
-          bounds={[-80.0, -20.0, -50.0, 20.0]}
+          bounds={AREA_BOUNDS}
         />
         <Source
           id="sentinel-201900"
@@ -403,7 +404,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
             `${process.env.NEXT_PUBLIC_SENTINEL2_URL_4}/2019-01-01/2020-01-01/rgb/{z}/{x}/{y}.webp`,
           ]}
           tileSize={256}
-          bounds={[-80.0, -20.0, -50.0, 20.0]}
+          bounds={AREA_BOUNDS}
         />
         <Source
           id="sentinel-202000"
@@ -415,7 +416,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
             `${process.env.NEXT_PUBLIC_SENTINEL2_URL_4}/2020-01-01/2021-01-01/rgb/{z}/{x}/{y}.webp`,
           ]}
           tileSize={256}
-          bounds={[-80.0, -20.0, -50.0, 20.0]}
+          bounds={AREA_BOUNDS}
         />
         <Source
           id="sentinel-202100"
@@ -427,7 +428,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
             `${process.env.NEXT_PUBLIC_SENTINEL2_URL_4}/2021-01-01/2022-01-01/rgb/{z}/{x}/{y}.webp`,
           ]}
           tileSize={256}
-          bounds={[-80.0, -20.0, -50.0, 20.0]}
+          bounds={AREA_BOUNDS}
         />
         <Source
           id="sentinel-202200"
@@ -439,7 +440,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
             `${process.env.NEXT_PUBLIC_SENTINEL2_URL_4}/2022-01-01/2023-01-01/rgb/{z}/{x}/{y}.webp`,
           ]}
           tileSize={256}
-          bounds={[-80.0, -20.0, -50.0, 20.0]}
+          bounds={AREA_BOUNDS}
         />
         <Source
           id="sentinel-202300"
@@ -451,6 +452,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
             `${process.env.NEXT_PUBLIC_SENTINEL2_V2_URL_4}/2023-01-01/2024-01-01/rgb/{z}/{x}/{y}.webp`,
           ]}
           tileSize={256}
+          bounds={AREA_BOUNDS}
         />
         <Source
           id="sentinel-202400"
@@ -462,7 +464,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
             `${process.env.NEXT_PUBLIC_SENTINEL2_V2_URL_4}/2024-01-01/2025-01-01/rgb/{z}/{x}/{y}.webp`,
           ]}
           tileSize={256}
-          bounds={[-80.0, -20.0, -50.0, 20.0]}
+          bounds={AREA_BOUNDS}
         />
         <Source
           id="sentinel-202502"
@@ -474,7 +476,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
             `${process.env.NEXT_PUBLIC_SENTINEL2_SEMIANNUAL_MOSAICS}/2025-02-15/2025-08-15/rgb/{z}/{x}/{y}.webp`,
           ]}
           tileSize={256}
-          bounds={[-80.0, -20.0, -50.0, 20.0]}
+          bounds={AREA_BOUNDS}
         />
         <Source
           id="sentinel-202503"
@@ -486,7 +488,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
             `${process.env.NEXT_PUBLIC_SENTINEL2_QUARTERLY_MOSAICS}/2025-07-01/2025-10-01/rgb/{z}/{x}/{y}.webp`,
           ]}
           tileSize={256}
-          bounds={[-80.0, -20.0, -50.0, 20.0]}
+          bounds={AREA_BOUNDS}
         />
         {/* ================== SENTINEL2 LAYERS =================== */}
         {LAYER_YEARS.map((d) => (
