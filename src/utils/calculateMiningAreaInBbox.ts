@@ -8,7 +8,7 @@ const calculateMiningAreaInBbox = (
 ) => {
   if (!miningData) return null;
 
-  const copiedFeatures = [...miningData.features];
+  const copiedFeatures = [...miningData?.features];
   if (!copiedFeatures.length) return null;
 
   const bboxPolygon = turf.bboxPolygon(bbox);
