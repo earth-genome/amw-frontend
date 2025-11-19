@@ -25,7 +25,10 @@ const useWindowSize = (debounceDelayMs: number = 250): WindowSize | undefined =>
 
     setWindowSize(getCurrentWindowSize());
 
-    return () => window.removeEventListener("resize", debouncedHandleWindowResize);
+    return () => {
+      window.removeEventListener("resize", debouncedHandleWindowResize);
+      debouncedHandleWindowResize.cancel();
+    };
   }, [debounceDelayMs]);
 
   return windowSize;

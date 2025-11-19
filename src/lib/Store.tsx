@@ -31,6 +31,7 @@ export interface IState {
   miningDataIsLoading: boolean;
   areasData: AreasData | undefined;
   areasDataIsLoading: boolean;
+  areasDataError: boolean;
   areasTimeseriesData: AreasTimeseriesData | undefined;
   areasTimeseriesDataIsLoading: boolean;
   areasOptions: AreaSelectOption[] | undefined;
@@ -57,6 +58,7 @@ export type ActionType =
       type: "SET_AREAS_DATA";
       areasData: AreasData | undefined;
       areasDataIsLoading: boolean;
+      areasDataError: boolean;
     }
   | {
       type: "SET_AREAS_TIMESERIES_DATA";
@@ -106,6 +108,7 @@ const Store = ({
     miningDataIsLoading: false,
     areasData: undefined,
     areasDataIsLoading: false,
+    areasDataError: false,
     areasTimeseriesData: undefined,
     areasTimeseriesDataIsLoading: false,
     areasOptions: undefined,

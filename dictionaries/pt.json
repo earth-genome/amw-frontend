@@ -21,6 +21,7 @@
   },
   "map_ui": {
     "loading": "carregando",
+    "error": "erro",
     "latest": "Anual",
     "hi_res": "Hi-Res",
     "map_mode": "OPÇÃO DE MAPA",

@@ -23,8 +23,13 @@ export interface AreaSelectOption {
 const AreaSelect = ({ dictionary }: AreaSelectProps) => {
   const [state, dispatch] = useContext(Context)!;
 
-  const { selectedArea, selectedAreaType, areasData, areasDataIsLoading } =
-    state;
+  const {
+    selectedArea,
+    selectedAreaType,
+    areasData,
+    areasDataIsLoading,
+    areasDataError,
+  } = state;
 
   const setSelectedArea = useCallback(
     (selectedArea: SingleValue<AreaSelectOption> | undefined) => {
@@ -104,7 +109,9 @@ const AreaSelect = ({ dictionary }: AreaSelectProps) => {
           </ConfigProvider>
         </div>
         <div className="area-select">
-          {areasData && !areasDataIsLoading ? (
+          {areasDataError ? (
+            <div className="area-loading">{dictionary?.map_ui?.error}</div>
+          ) : areasData && !areasDataIsLoading ? (
             <AreaSearch
               key={selectedAreaType?.key}
               handleAreaSelect={handleAreaSelect}

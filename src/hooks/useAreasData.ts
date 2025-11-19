@@ -46,13 +46,14 @@ const useAreasData = ({ state, dispatch, lang }: Props) => {
         type: "SET_AREAS_DATA",
         areasData: undefined,
         areasDataIsLoading: areasDataIsLoading,
+        areasDataError: areasDataError,
       });
       return;
     }
 
     const areasDataFiltered = {
       type: "FeatureCollection",
-      features: areasData?.features.filter(
+      features: areasData?.features?.filter(
         (d) =>
           // HACK: filter out two specific areas, Raposa Serra do Sol IT and Apolobamba PA
           d.properties.id !== "BOAP-0405_0" && d.properties.id !== "BR37901_0"
@@ -63,6 +64,7 @@ const useAreasData = ({ state, dispatch, lang }: Props) => {
       type: "SET_AREAS_DATA",
       areasData: areasDataFiltered,
       areasDataIsLoading: areasDataIsLoading,
+      areasDataError: areasDataError,
     });
 
     // if there is a pending area id to be set from the query parameters

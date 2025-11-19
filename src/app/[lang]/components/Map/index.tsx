@@ -199,6 +199,8 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
       },
       { hover: false }
     );
+
+    hoveredFeatureRef.current = undefined; // reset the ref after clearing hover state
   }, []);
 
   const handleClick = useCallback(
@@ -206,7 +208,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
       const map = event.target;
       const features = map.queryRenderedFeatures(event.point);
 
-      const clickedOnExcludedLayer = features.some(
+      const clickedOnExcludedLayer = features?.some(
         (feature) => feature?.layer?.id === "hole-layer"
       );
       if (clickedOnExcludedLayer) return;
