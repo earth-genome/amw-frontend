@@ -3,11 +3,9 @@ import HowToUse from "@/app/[lang]/components/HowToUse";
 import Overlay from "@/app/[lang]/components/Overlay";
 import { useMenu } from "@/app/[lang]/menuContext";
 import gsap from "gsap";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { Fragment, ReactNode, useEffect, useRef, useState } from "react";
-import Logo from "./logo.svg";
 import "./style.css";
 import { LOCALES } from "@/utils/content";
 import ExternalLink from "@/app/[lang]/components/Icons/ExternalLink";
@@ -165,16 +163,6 @@ const Nav: React.FC<NavProps> = ({ children, dictionary }) => {
         {showMenu ? "Close" : "Menu"}
       </a>
 
-      <Link
-        href="/"
-        className="amw-logo"
-        onClick={() => {
-          setShowMenu(false);
-          setMenuOpen(false);
-        }}
-      >
-        <Image src={Logo} alt="Logo" />
-      </Link>
       {showMenu && (
         <Overlay opacity={1}>
           <div className="main-menu">
