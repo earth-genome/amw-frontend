@@ -36,6 +36,9 @@ import MapPopup, { TooltipInfo } from "@/app/[lang]/components/Map/MapPopup";
 import Hotspots from "@/app/[lang]/components/Map/Hotspots";
 // import calculateMiningAreaInBbox from "@/utils/calculateMiningAreaInBbox";
 import useWindowSize from "@/hooks/useWindowSize";
+import Link from "next/link";
+import Image from "next/image";
+import Logo from "../Nav/logo.svg";
 
 interface MainMapProps {
   dictionary: { [key: string]: any };
@@ -187,12 +190,11 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
     [isMobile, selectedAreaTypeKey]
   );
 
-  const handleMouseLeave = useCallback((event: MapMouseEvent) => {
+  const handleMouseLeaveMap = useCallback((event: MapMouseEvent) => {
     setTooltip(null);
-    if (!hoveredFeatureRef.current) return;
+    if (!hoveredFeatureRef.current || !mapRef.current) return;
 
-    const map = event.target;
-    map.setFeatureState(
+    mapRef.current.setFeatureState(
       {
         source: "areas",
         id: hoveredFeatureRef.current,
@@ -378,7 +380,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         }}
         onClick={handleClick}
         onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
+        onMouseLeave={handleMouseLeaveMap}
         interactiveLayerIds={["areas-layer-fill", "hotspots-circle"]}
       >
         {!isMobile && <NavigationControl position={"top-right"} />}
@@ -705,46 +707,55 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         )}
       </Map>
 
-      <AreaSelect dictionary={dictionary} />
+      {/* @ts-ignore */}
+      <div onMouseEnter={handleMouseLeaveMap}>
+        {/* we need to check here otherwise mouseLeave only triggers on map canvas leave */}
 
-      {isGeocoderHidden && !isMobile && (
-        <div className="geocoder-toggle">
-          <button
-            onClick={() => {
-              const element = document.querySelector(".geocoder-hidden");
-              if (!element) return;
-              element.classList.remove("geocoder-hidden");
-              setIsGeocoderHidden(false);
-            }}
-          >
-            <GeocoderIcon />
-          </button>
-        </div>
-      )}
+        <Link href="/" className="amw-logo">
+          <Image src={Logo} alt="Logo" />
+        </Link>
 
-      <LegendWrapper
-        showMinimap={true}
-        showMinimapBounds={
-          (mapRef.current && mapRef.current.getZoom() > 5) ?? false
-        }
-        bounds={bounds}
-        years={LAYER_YEARS}
-        activeYear={activeYear}
-        setActiveYear={setActiveYear}
-        dictionary={dictionary}
-      />
+        <AreaSelect dictionary={dictionary} />
 
-      {selectedArea && (
-        <AreaSummary
-          dictionary={dictionary}
-          year={activeYear}
-          maxYear={maxYear}
+        {isGeocoderHidden && !isMobile && (
+          <div className="geocoder-toggle">
+            <button
+              onClick={() => {
+                const element = document.querySelector(".geocoder-hidden");
+                if (!element) return;
+                element.classList.remove("geocoder-hidden");
+                setIsGeocoderHidden(false);
+              }}
+            >
+              <GeocoderIcon />
+            </button>
+          </div>
+        )}
+
+        <LegendWrapper
+          showMinimap={true}
+          showMinimapBounds={
+            (mapRef.current && mapRef.current.getZoom() > 5) ?? false
+          }
+          bounds={bounds}
+          years={LAYER_YEARS}
           activeYear={activeYear}
-          yearsColors={yearsColors}
+          setActiveYear={setActiveYear}
+          dictionary={dictionary}
         />
-      )}
 
-      <Footer dictionary={dictionary} />
+        {selectedArea && (
+          <AreaSummary
+            dictionary={dictionary}
+            year={activeYear}
+            maxYear={maxYear}
+            activeYear={activeYear}
+            yearsColors={yearsColors}
+          />
+        )}
+
+        <Footer dictionary={dictionary} />
+      </div>
     </div>
   );
 };
