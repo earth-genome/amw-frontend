@@ -63,21 +63,22 @@ if (!DATA_BASE_URL) {
 }
 
 export const MINING_DATA_URLS = [
-  `${DATA_BASE_URL}/outputs/test-data/mining_201800_simplified.json`,
-  `${DATA_BASE_URL}/outputs/test-data/mining_201900_simplified.json`,
-  `${DATA_BASE_URL}/outputs/test-data/mining_202000_simplified.json`,
-  `${DATA_BASE_URL}/outputs/test-data/mining_202100_simplified.json`,
-  `${DATA_BASE_URL}/outputs/test-data/mining_202200_simplified.json`,
-  `${DATA_BASE_URL}/outputs/test-data/mining_202300_simplified.json`,
-  `${DATA_BASE_URL}/outputs/test-data/mining_202400_simplified.json`,
-  `${DATA_BASE_URL}/outputs/test-data/mining_202502_simplified.json`,
-  `${DATA_BASE_URL}/outputs/test-data/mining_202503_simplified.json`,
+  `${DATA_BASE_URL}/outputs/website/mining_201800_simplified.json`,
+  `${DATA_BASE_URL}/outputs/website/mining_201900_simplified.json`,
+  `${DATA_BASE_URL}/outputs/website/mining_202000_simplified.json`,
+  `${DATA_BASE_URL}/outputs/website/mining_202100_simplified.json`,
+  `${DATA_BASE_URL}/outputs/website/mining_202200_simplified.json`,
+  `${DATA_BASE_URL}/outputs/website/mining_202300_simplified.json`,
+  `${DATA_BASE_URL}/outputs/website/mining_202400_simplified.json`,
+  `${DATA_BASE_URL}/outputs/website/mining_202502_simplified.json`,
+  `${DATA_BASE_URL}/outputs/website/mining_202503_simplified.json`,
 ];
 
 export const AREA_TYPES = [
   {
     key: "countries",
     dictionaryKey: "countries",
+    dictionaryKeyDescription: undefined,
     dictionaryKeySingular: "country",
     url: `${DATA_BASE_URL}/boundaries/national_admin/out/national_admin_impacts.json`,
     timeseriesUrl: `${DATA_BASE_URL}/boundaries/national_admin/out/national_admin_yearly.json`,
@@ -91,6 +92,7 @@ export const AREA_TYPES = [
   {
     key: "subnational-areas",
     dictionaryKey: "subnational_jurisdictions",
+    dictionaryKeyDescription: undefined,
     dictionaryKeySingular: "subnational_jurisdiction",
     url: `${DATA_BASE_URL}/boundaries/subnational_admin/out/admin_areas_display_impacts_unfiltered.json`,
     timeseriesUrl: `${DATA_BASE_URL}/boundaries/subnational_admin/out/admin_areas_display_yearly.json`,
@@ -108,6 +110,7 @@ export const AREA_TYPES = [
   {
     key: "indigenous-territory",
     dictionaryKey: "indigenous_territories",
+    dictionaryKeyDescription: "indigenous_territories_description",
     dictionaryKeySingular: "indigenous_territory",
     url: `${DATA_BASE_URL}/boundaries/protected_areas_and_indigenous_territories/out/indigenous_territories_impacts.json`,
     timeseriesUrl: `${DATA_BASE_URL}/boundaries/protected_areas_and_indigenous_territories/out/indigenous_territories_yearly.json`,
@@ -125,6 +128,7 @@ export const AREA_TYPES = [
   {
     key: "protected-area",
     dictionaryKey: "protected_areas",
+    dictionaryKeyDescription: "protected_areas_description",
     dictionaryKeySingular: "protected_area",
     url: `${DATA_BASE_URL}/boundaries/protected_areas_and_indigenous_territories/out/protected_areas_impacts.json`,
     timeseriesUrl: `${DATA_BASE_URL}/boundaries/protected_areas_and_indigenous_territories/out/protected_areas_yearly.json`,
@@ -142,6 +146,7 @@ export const AREA_TYPES = [
   {
     key: "hotspots",
     dictionaryKey: "hotspots",
+    dictionaryKeyDescription: undefined,
     dictionaryKeySingular: "hotspot",
     url: HOTSPOTS_GEOJSON_URL,
     // FIXME:

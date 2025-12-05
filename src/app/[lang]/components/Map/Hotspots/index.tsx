@@ -44,7 +44,7 @@ const Hotspots = () => {
     // label is a point to be places on the NW corner of the polygon
     () => ({
       type: "FeatureCollection",
-      features: hotspotsData?.features.map((hotspot) => ({
+      features: hotspotsData?.features?.map((hotspot) => ({
         type: "Feature",
         geometry: {
           type: "Point",

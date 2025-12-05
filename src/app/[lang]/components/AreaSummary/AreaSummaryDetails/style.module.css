@@ -28,6 +28,12 @@
   margin-bottom: 2px;
 }
 
+.subLabel {
+  font-weight: 500;
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+
 .figure {
   display: flex;
   justify-content: space-between;

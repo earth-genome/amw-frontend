@@ -28,6 +28,7 @@ const Reducer = (state: IState, action: ActionType): IState => {
         ...state,
         areasData: action.areasData,
         areasDataIsLoading: action.areasDataIsLoading,
+        areasDataError: action.areasDataError,
         areasOptions: action.areasData?.features
           ?.filter((d: GeoJSONFeature) => d.properties?.id !== undefined)
           ?.map((d: GeoJSONFeature) => d.properties)

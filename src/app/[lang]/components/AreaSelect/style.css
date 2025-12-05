@@ -125,3 +125,10 @@
     width: 200px;
   }
 }
+
+.area-option-description {
+  font-size: 13px;
+  opacity: 0.8;
+  white-space: normal;
+  word-break: break-word;
+}

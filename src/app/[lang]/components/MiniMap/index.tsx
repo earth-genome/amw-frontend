@@ -71,7 +71,7 @@ const MiniMap: React.FC<MiniMapProps> = ({ bounds, showMinimapBounds }) => {
         />
 
         {showMinimapBounds && (
-          <Source type="geojson" data={bounds}>
+          <Source type="geojson" data={bounds} id="bounds-source">
             <Layer
               id={"bounds-outline"}
               source={"bounds"}

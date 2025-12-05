@@ -49,7 +49,7 @@ export const formatNumber = (
   );
 
   // If number is <1, display it "<1"
-  if (number < 1) return `<1`;
+  if (number < 1 && number > 0) return `<1`;
 
   // If number is >= 1 billion, format as millions instead of using the "giga" / "G" from d3 format
   if (Math.abs(number) >= 1_000_000_000) {

@@ -136,6 +136,9 @@ const AreaSummaryDetails = ({
               />
             </div>
           </div>
+          <div className={style.subLabel}>
+            {dictionary?.map_ui?.presumption_of_illegality_breakdown}
+          </div>
           <IllegalityBarChart
             dictionary={dictionary}
             percentages={illegalityAreas.map((d) => ({
