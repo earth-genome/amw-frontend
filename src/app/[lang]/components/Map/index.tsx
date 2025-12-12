@@ -214,10 +214,14 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
       );
       if (clickedOnExcludedLayer) return;
 
-      const featuresWithoutEntireAmazon = features.filter(
-        (d) => d?.properties?.id !== ENTIRE_AMAZON_AREA_ID
+      const featuresFiltered = features.filter(
+        (d) =>
+          // ignore entire amazon layer as it covers everything
+          d?.properties?.id !== ENTIRE_AMAZON_AREA_ID &&
+          // ignore these two parts of the hotspots layers as they have too big click targets
+          !["hotspots-labels", "hotspots-circle"].includes(d?.layer?.id ?? "")
       );
-      const feature = featuresWithoutEntireAmazon[0];
+      const feature = featuresFiltered[0];
       const id = feature?.properties?.id;
       const type = feature?.properties?.type as PERMITTED_AREA_TYPES_KEYS;
 
@@ -383,7 +387,13 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         onClick={handleClick}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeaveMap}
-        interactiveLayerIds={["areas-layer-fill", "hotspots-circle"]}
+        interactiveLayerIds={[
+          "areas-layer-fill",
+          "hotspots-dot",
+          "hotspots-outline",
+          "hotspots-polygon",
+          "hotspots-fill",
+        ]}
       >
         {!isMobile && <NavigationControl position={"top-right"} />}
 
