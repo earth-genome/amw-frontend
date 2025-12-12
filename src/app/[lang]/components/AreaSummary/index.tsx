@@ -27,7 +27,11 @@ interface AreaProps {
   yearsColors: string[];
 }
 
-const Area: React.FC<AreaProps> = ({ dictionary, maxYear, yearsColors }) => {
+const AreaSummary: React.FC<AreaProps> = ({
+  dictionary,
+  maxYear,
+  yearsColors,
+}) => {
   const [state, dispatch] = useContext(Context)!;
   const {
     selectedAreaType,
@@ -194,4 +198,4 @@ const Area: React.FC<AreaProps> = ({ dictionary, maxYear, yearsColors }) => {
   );
 };
 
-export default Area;
+export default AreaSummary;

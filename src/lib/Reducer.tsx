@@ -66,6 +66,9 @@ const Reducer = (state: IState, action: ActionType): IState => {
         ...state,
         areasTimeseriesData: action.areasTimeseriesData,
         areasTimeseriesDataIsLoading: action.areasTimeseriesDataIsLoading,
+        selectedAreaTimeseriesData: action.areasTimeseriesData?.filter(
+          (d) => d?.id === state.selectedArea?.value
+        ),
       };
     case "SET_SELECTED_AREA_BY_ID":
       return {
