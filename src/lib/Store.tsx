@@ -41,7 +41,6 @@ export interface IState {
   pendingSelectedAreaId: string | undefined;
   selectedAreaTypeKey: PERMITTED_AREA_TYPES_KEYS | undefined;
   selectedAreaType: AreaType | undefined;
-  showAreaSummaryMoreInsights: boolean;
   areaUnits: PERMITTED_AREA_UNITS;
   hoveredYear: number | undefined;
 }
@@ -73,10 +72,6 @@ export type ActionType =
   | {
       type: "SET_SELECTED_AREA_TYPE_BY_KEY";
       selectedAreaTypeKey: PERMITTED_AREA_TYPES_KEYS | undefined;
-    }
-  | {
-      type: "SHOW_AREA_SUMMARY_MORE_INSIGHTS";
-      showAreaSummaryMoreInsights: boolean;
     }
   | {
       type: "SET_AREA_UNITS";
@@ -118,7 +113,6 @@ const Store = ({
     selectedAreaTimeseriesData: undefined,
     selectedAreaTypeKey: AREA_TYPES[0].key,
     selectedAreaType: AREA_TYPES[0],
-    showAreaSummaryMoreInsights: false,
     areaUnits: AREA_UNITS_OPTIONS[0].value as PERMITTED_AREA_UNITS,
     hoveredYear: undefined,
   };

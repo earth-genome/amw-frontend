@@ -23,6 +23,7 @@ import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import * as turf from "@turf/turf";
 import {
+  ENTIRE_AMAZON_AREA_ID,
   getColorsForYears,
   LAYER_YEARS,
   MAP_MISSING_DATA_COLOR,
@@ -61,12 +62,10 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
   const router = useRouter();
   const mapRef = useRef<MapRef>(null);
   const [bounds, setBounds] = useState<GeoJSONType | undefined>(undefined);
-  const [yearly, setYearly] = useState(true);
   const [activeYear, setActiveYear] = useState(
     String(Math.max(...LAYER_YEARS))
   );
   const maxYear = Math.max(...LAYER_YEARS);
-  const [mapStyle, setMapStyle] = useState(SATELLITE_LAYERS["yearly"]);
   const [isGeocoderHidden, setIsGeocoderHidden] = useState(true);
   const [tooltip, setTooltip] = useState<TooltipInfo | null>(null);
   const hoveredFeatureRef = useRef<string | number | undefined>(undefined);
@@ -190,7 +189,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
     [isMobile, selectedAreaTypeKey]
   );
 
-  const handleMouseLeaveMap = useCallback((event: MapMouseEvent) => {
+  const handleMouseLeaveMap = useCallback(() => {
     setTooltip(null);
     if (!hoveredFeatureRef.current || !mapRef.current) return;
 
@@ -215,7 +214,10 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
       );
       if (clickedOnExcludedLayer) return;
 
-      const feature = features[0];
+      const featuresWithoutEntireAmazon = features.filter(
+        (d) => d?.properties?.id !== ENTIRE_AMAZON_AREA_ID
+      );
+      const feature = featuresWithoutEntireAmazon[0];
       const id = feature?.properties?.id;
       const type = feature?.properties?.type as PERMITTED_AREA_TYPES_KEYS;
 
@@ -309,7 +311,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           bottom: 0,
           width: "100hw",
         }}
-        mapStyle={mapStyle}
+        mapStyle={SATELLITE_LAYERS["yearly"]}
         // onIdle={() => {
         //   if (!mapRef.current) return;
         //   if (mapRef.current.getZoom() <= 11) return; // don't run if too zoomed out
@@ -519,8 +521,8 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           source-layer={"amazon_aca_mask-6i3usc"}
           type="fill"
           paint={{
-            "fill-color": yearly ? "#dddddd" : "#ffffff",
-            "fill-opacity": yearly ? 1 : 0.6,
+            "fill-color": "#dddddd",
+            "fill-opacity": 1,
           }}
         />
         {/* ================== BORDERS =================== */}
@@ -747,9 +749,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         {selectedArea && (
           <AreaSummary
             dictionary={dictionary}
-            year={activeYear}
             maxYear={maxYear}
-            activeYear={activeYear}
             yearsColors={yearsColors}
           />
         )}

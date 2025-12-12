@@ -187,3 +187,5 @@ export const getAreaSignificantDigits = (number: number) => {
 };
 
 export const ECONOMIC_COST_SIGNIFICANT_DIGITS = 2;
+
+export const ENTIRE_AMAZON_AREA_ID = "AMAZ";

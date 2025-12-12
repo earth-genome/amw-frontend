@@ -97,11 +97,6 @@ const Reducer = (state: IState, action: ActionType): IState => {
         selectedAreaData: undefined,
         selectedAreaTimeseriesData: undefined,
       };
-    case "SHOW_AREA_SUMMARY_MORE_INSIGHTS":
-      return {
-        ...state,
-        showAreaSummaryMoreInsights: action.showAreaSummaryMoreInsights,
-      };
     case "SET_AREA_UNITS":
       return {
         ...state,
