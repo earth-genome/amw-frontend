@@ -30,7 +30,7 @@
     "mapbox-gl": "3.11.1",
     "marked": "^12.0.0",
     "negotiator": "^0.6.3",
-    "next": "14.1.0",
+    "next": "14.2.35",
     "nextjs-google-analytics": "^2.3.3",
     "react": "^18",
     "react-dom": "^18",
