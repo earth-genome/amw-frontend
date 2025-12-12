@@ -45,15 +45,15 @@ export interface AreaType {
   url: string;
   timeseriesUrl: string;
   isDefault?: boolean;
-  renderLabel: (properties: Record<string, any>) => string;
-  renderTitle: (properties: Record<string, any>) => string;
-  renderStatus: (properties: Record<string, any>) => string;
+  renderLabel: (_properties: Record<string, any>) => string;
+  renderTitle: (_properties: Record<string, any>) => string;
+  renderStatus: (_properties: Record<string, any>) => string;
   showCountry: boolean;
   useLocale: boolean;
 }
 
 const DATA_BASE_URL =
-  // "/test-data";
+  // "/website";
   process.env.NEXT_PUBLIC_DATA_URL;
 
 if (!DATA_BASE_URL) {
@@ -154,7 +154,7 @@ export const AREA_TYPES = [
     isDefault: false,
     renderLabel: (properties: Record<string, any>) => properties.title,
     renderTitle: (properties: Record<string, any>) => properties.title,
-    renderStatus: (properties: Record<string, any>) => "",
+    renderStatus: () => "",
     showCountry: false,
     useLocale: true,
   },
