@@ -32,6 +32,7 @@ const swrConfig = {
   dedupingInterval: 60 * 60 * 1000, // 1 hour: cache same key requests
 };
 
+// eslint-disable-next-line no-unused-vars
 const useMiningData = ({ state, dispatch }: Props) => {
   const {
     data: miningDataArray,

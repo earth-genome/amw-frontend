@@ -38,14 +38,6 @@ const calculateMiningAreaInBbox = (
     return acc;
   }, {} as Record<string, number>);
 
-  // convert to array and sort by year
-  const sortedYears = Object.entries(areaMinesHaPerYear)
-    .map(([year, area]) => ({
-      admin_year: Number(year),
-      intersected_area_ha: area,
-    }))
-    .sort((a, b) => a.admin_year - b.admin_year);
-
   // calculate cumulative sum, filling in gaps in years if any
   let cumulative = 0;
   const areaMinesHaPerYearArray = LAYER_YEARS.map((year) => {

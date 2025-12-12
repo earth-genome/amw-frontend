@@ -27,11 +27,7 @@ interface AreaProps {
   yearsColors: string[];
 }
 
-const Area: React.FC<AreaProps> = ({
-  dictionary,
-  maxYear,
-  yearsColors,
-}) => {
+const Area: React.FC<AreaProps> = ({ dictionary, maxYear, yearsColors }) => {
   const [state, dispatch] = useContext(Context)!;
   const {
     selectedAreaType,
@@ -96,7 +92,7 @@ const Area: React.FC<AreaProps> = ({
     id: areaId,
     description,
     illegality_areas: illegalityAreas,
-    hotspotType,
+    // hotspotType,
   } = areaProperties;
   const { showCountry, renderTitle, renderStatus } = selectedAreaType || {};
   const areaTitle = renderTitle && renderTitle(areaProperties);
@@ -160,7 +156,6 @@ const Area: React.FC<AreaProps> = ({
                   ) || undefined
                 : undefined
             }
-            maxYear={maxYear}
             calculatorIsLoading={calculatorIsLoading}
             calculatorUrl={calculatorUrl}
             // @ts-ignore
@@ -176,8 +171,9 @@ const Area: React.FC<AreaProps> = ({
                 // removing areas which are zero pct
                 d.mining_affected_area_pct > 0
             )}
-            hotspotType={hotspotType}
             yearsColors={yearsColors}
+            // maxYear={maxYear}
+            // hotspotType={hotspotType}
           />
         </div>
       )}

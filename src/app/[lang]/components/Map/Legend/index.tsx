@@ -8,7 +8,7 @@ import { formatLayerYear } from "@/utils/content";
 export interface LegendProps {
   years: number[];
   activeYear: string;
-  setActiveYear: (value: string) => void;
+  setActiveYear: (_value: string) => void;
   dictionary: { [key: string]: any };
 }
 

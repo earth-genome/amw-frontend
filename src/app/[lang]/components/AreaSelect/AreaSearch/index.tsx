@@ -1,16 +1,16 @@
 import Select, { SingleValue, components, OptionProps } from "react-select";
 import { AreaSelectOption } from "@/app/[lang]/components/AreaSelect";
-import { useContext, useMemo } from "react";
+import { useContext } from "react";
 import { Context } from "@/lib/Store";
 
 interface AreaSearchProps {
-  handleAreaSelect: (value: SingleValue<AreaSelectOption>) => void;
+  handleAreaSelect: (_value: SingleValue<AreaSelectOption>) => void;
   selectedArea?: SingleValue<AreaSelectOption>;
   dictionary: { [key: string]: any };
 }
 
 const CustomOption = (props: OptionProps<AreaSelectOption>) => {
-  const { data, isSelected, isFocused } = props;
+  const { data } = props;
 
   return (
     <components.Option {...props}>
@@ -111,9 +111,7 @@ const AreaSearch = ({
   };
 
   return (
-    <div
-      className="area-search-select-box"
-    >
+    <div className="area-search-select-box">
       <Select
         options={areasOptions}
         styles={customStyles}

@@ -1,6 +1,5 @@
 import { useHotspots } from "@/cms/hotspots";
 import { Context } from "@/lib/Store";
-import { PERMITTED_LANGUAGES } from "@/utils/content";
 import { centroid, polygon } from "@turf/turf";
 import { SymbolLayer } from "mapbox-gl";
 import { FillLayer } from "mapbox-gl";
@@ -15,10 +14,15 @@ const darkBlue = "#0047AB";
 const lightBlue = "#4169E1";
 
 const Hotspots = () => {
+  // eslint-disable-next-line no-unused-vars
   const [state, dispatch] = useContext(Context)!;
   const { lang } = state;
 
-  const { hotspots: hotspotsData, isLoading, error } = useHotspots(lang);
+  const {
+    hotspots: hotspotsData,
+    // isLoading,
+    // error
+  } = useHotspots(lang);
 
   const hotspotsCentroidsData = useMemo(() => {
     /* @ts-ignore */

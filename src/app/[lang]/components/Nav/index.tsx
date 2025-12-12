@@ -26,6 +26,7 @@ const Nav: React.FC<NavProps> = ({ children, dictionary }) => {
   const [showMenu, setShowMenu] = useState(false);
   const [animate, setAnimate] = useState("");
   const [showHowToUse, setShowHowToUse] = useState(false);
+  // eslint-disable-next-line no-unused-vars
   const { menuOpen, setMenuOpen } = useMenu();
   const menuRef = useRef<HTMLUListElement>(null); // Ref for the menu to animate
   const isRootPath = /^\/(en|es|pt)?\/?$/.test(pathname);
