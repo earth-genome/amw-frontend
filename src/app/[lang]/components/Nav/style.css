@@ -35,29 +35,6 @@
 .nav .menu-link-last {
   margin-right: 20px;
 }
-.amw-logo {
-  position: fixed;
-  top: 50px;
-  left: 40px;
-  z-index: 1000;
-  display: block;
-}
-@media (max-width: 900px) {
-  .amw-logo {
-    left: 10px;
-    top: 40px;
-  }
-}
-.amw-logo img {
-  width: 170px;
-  height: 100px;
-}
-@media (max-width: 900px) {
-  .amw-logo img {
-    width: 70px;
-    height: 60px;
-  }
-}
 .main-menu {
   font-size: 60px;
   font-weight: 900;

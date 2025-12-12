@@ -4,7 +4,7 @@ import React, { createContext, useContext, useState, ReactNode } from "react";
 
 interface MenuContextType {
   menuOpen: boolean;
-  setMenuOpen: (open: boolean) => void;
+  setMenuOpen: (_open: boolean) => void;
 }
 
 const MenuContext = createContext<MenuContextType | undefined>(undefined);

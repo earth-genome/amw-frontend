@@ -38,10 +38,11 @@ const AreaSummaryDetails = ({
   hideMiningCalculator,
   description,
   illegalityAreas,
-  hotspotType,
-  maxYear,
+  // hotspotType,
+  // maxYear,
   yearsColors,
 }: AreaSummaryDetailsProps) => {
+  // eslint-disable-next-line no-unused-vars
   const [state, dispatch] = useContext(Context)!;
 
   const { areaUnits } = state;

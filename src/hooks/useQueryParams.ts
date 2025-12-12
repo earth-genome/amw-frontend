@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { IState } from "@/lib/Store";
 import { slugify } from "@/utils/slugify";
+import { ENTIRE_AMAZON_AREA_ID } from "@/constants/map";
 
 interface Props {
   state: IState;
@@ -92,6 +93,18 @@ export const useQueryParams = ({ state, dispatch, ignore }: Props) => {
       dispatch({
         type: "SET_PENDING_SELECTED_AREA_ID",
         pendingSelectedAreaId: pendingAreaId,
+      });
+    }
+
+    // if there is no area set and it's the countries level, set entire amazon as default area
+    if (
+      !pendingAreaId &&
+      !state.selectedArea?.value &&
+      state.selectedAreaTypeKey === "countries"
+    ) {
+      dispatch({
+        type: "SET_PENDING_SELECTED_AREA_ID",
+        pendingSelectedAreaId: ENTIRE_AMAZON_AREA_ID,
       });
     }
 

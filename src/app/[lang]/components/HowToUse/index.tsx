@@ -1,6 +1,8 @@
+/* eslint-disable jsx-a11y/alt-text */
+/* eslint-disable @next/next/no-img-element */
 "use client";
-import React, { useState, useEffect, useRef } from "react";
-import { Carousel, Button } from "antd";
+import React, { useCallback, useEffect, useRef } from "react";
+import { Carousel } from "antd";
 import { CloseOutlined, CaretUpFilled } from "@ant-design/icons";
 import "./style.css";
 
@@ -13,27 +15,30 @@ export default function HowToUse(params: HowToUseParams) {
   const { onClose, dictionary } = params;
   const ref = useRef(null);
 
-  const handleClickOutside = (e: Event) => {
-    /* @ts-ignore */
-    if (ref.current && !ref.current.contains(e.target)) {
-      onClose();
-    }
-  };
+  const handleClickOutside = useCallback(
+    (e: Event) => {
+      /* @ts-ignore */
+      if (ref.current && !ref.current.contains(e.target)) {
+        onClose();
+      }
+    },
+    [onClose]
+  );
 
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
+  }, [handleClickOutside]);
 
   const SampleNextArrow = (props: any) => {
-    const { className, style, onClick } = props;
+    const { className, onClick } = props;
     return <div className={className} onClick={onClick} />;
   };
 
   const SamplePrevArrow = (props: any) => {
-    const { className, style, onClick } = props;
+    const { className, onClick } = props;
     return <div className={className} onClick={onClick} />;
   };
 
@@ -58,39 +63,39 @@ export default function HowToUse(params: HowToUseParams) {
       <Carousel dots={false} arrows {...settings}>
         <div>
           <div className="content">
-          <h2>{dictionary.how_to_use.title}</h2>
-          <p>{dictionary.how_to_use.slide_1}</p>
+            <h2>{dictionary.how_to_use.title}</h2>
+            <p>{dictionary.how_to_use.slide_1}</p>
             <img src="/images/how-to-use-1.jpg" />
           </div>
-         </div>
-	        <div>
+        </div>
+        <div>
           <div className="content">
-          <h2>{dictionary.how_to_use.title}</h2>
-          <p>{dictionary.how_to_use.slide_2}</p>
+            <h2>{dictionary.how_to_use.title}</h2>
+            <p>{dictionary.how_to_use.slide_2}</p>
             <img src="/images/how-to-use-2.jpg" />
           </div>
         </div>
-	        <div>
+        <div>
           <div className="content">
-          <h2>{dictionary.how_to_use.title}</h2>
-          <p>{dictionary.how_to_use.slide_3}</p>
+            <h2>{dictionary.how_to_use.title}</h2>
+            <p>{dictionary.how_to_use.slide_3}</p>
             <img src="/images/how-to-use-3.jpg" />
           </div>
         </div>
-	        <div>
+        <div>
           <div className="content">
-          <h2>{dictionary.how_to_use.title}</h2>
-          <p>{dictionary.how_to_use.slide_landslides}</p>
+            <h2>{dictionary.how_to_use.title}</h2>
+            <p>{dictionary.how_to_use.slide_landslides}</p>
             <img src="/images/how-to-use-landslides.jpg" />
           </div>
         </div>
         <div>
           <div className="content">
-          <h2>{dictionary.how_to_use.title}</h2>
-          <p>{dictionary.how_to_use.slide_aquaculture}</p>
+            <h2>{dictionary.how_to_use.title}</h2>
+            <p>{dictionary.how_to_use.slide_aquaculture}</p>
             <img src="/images/how-to-use-aquaculture.jpg" />
           </div>
-        </div>  
+        </div>
       </Carousel>
     </div>
   );

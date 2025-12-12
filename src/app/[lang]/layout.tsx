@@ -7,7 +7,7 @@ import { MenuProvider } from "./menuContext";
 import Loader from "./components/Loader";
 import React from "react";
 import "./globals.css";
-import type { Metadata, ResolvingMetadata } from "next";
+import type { Metadata } from "next";
 import GoogleAnalytics from "./components/Tracking";
 import "mapbox-gl/dist/mapbox-gl.css";
 import MapWrapper from "@/app/[lang]/components/Map/Wrapper";
@@ -25,10 +25,7 @@ type Props = {
   params: { lang: PERMITTED_LANGUAGES };
 };
 
-export async function generateMetadata(
-  { params }: Props,
-  parent: ResolvingMetadata
-): Promise<Metadata> {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   // read route params
   const { lang } = params;
   const dictionary = await getDictionary(lang);

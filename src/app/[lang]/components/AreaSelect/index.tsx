@@ -1,11 +1,10 @@
-import { ConfigProvider, Radio, Select } from "antd";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { ConfigProvider, Select } from "antd";
+import { useCallback, useContext } from "react";
 import "./style.css";
 import { Context } from "@/lib/Store";
 import AreaSearch from "@/app/[lang]/components/AreaSelect/AreaSearch";
 import { SingleValue } from "react-select";
 import { AREA_TYPES, PERMITTED_AREA_TYPES_KEYS } from "@/constants/map";
-const { Option } = Select;
 
 interface AreaSelectProps {
   dictionary: { [key: string]: any };

@@ -1,5 +1,5 @@
 "use client";
-import React, { useContext, useMemo, useState } from "react";
+import React, { useContext, useMemo } from "react";
 import style from "./style.module.css";
 // import Eye from "@/app/[lang]/components/Icons/Eye";
 import { Context } from "@/lib/Store";
@@ -17,29 +17,25 @@ import calculateMiningAreaInBbox from "@/utils/calculateMiningAreaInBbox";
 import useMiningCalculator from "@/hooks/useMiningCalculator";
 import {
   ECONOMIC_COST_SIGNIFICANT_DIGITS,
+  ENTIRE_AMAZON_AREA_ID,
   getAreaSignificantDigits,
 } from "@/constants/map";
 
 interface AreaProps {
   dictionary: { [key: string]: any };
-  year: string;
   maxYear: number;
-  activeYear: string;
   yearsColors: string[];
 }
 
-const Area: React.FC<AreaProps> = ({
+const AreaSummary: React.FC<AreaProps> = ({
   dictionary,
-  year,
   maxYear,
-  activeYear,
   yearsColors,
 }) => {
   const [state, dispatch] = useContext(Context)!;
   const {
     selectedAreaType,
     selectedAreaData,
-    // showAreaSummaryMoreInsights: showMoreInsights,
     areaUnits,
     selectedAreaTimeseriesData,
     selectedAreaTypeKey,
@@ -58,7 +54,7 @@ const Area: React.FC<AreaProps> = ({
     calculatorData,
     calculatorUrl,
     calculatorIsLoading,
-    calculatorError,
+    // calculatorError,
   } = useMiningCalculator(
     hideMiningCalculator ? [] : selectedAreaData?.properties?.locations
   );
@@ -100,19 +96,11 @@ const Area: React.FC<AreaProps> = ({
     id: areaId,
     description,
     illegality_areas: illegalityAreas,
-    hotspotType,
+    // hotspotType,
   } = areaProperties;
   const { showCountry, renderTitle, renderStatus } = selectedAreaType || {};
   const areaTitle = renderTitle && renderTitle(areaProperties);
   const areaStatus = renderStatus && renderStatus(areaProperties);
-
-  const setShowMoreInsights = (value: boolean) =>
-    dispatch({
-      type: "SHOW_AREA_SUMMARY_MORE_INSIGHTS",
-      showAreaSummaryMoreInsights: value,
-    });
-
-  const toggleShowMoreInsights = () => setShowMoreInsights(!showMoreInsights);
 
   const handleClose = () =>
     dispatch({ type: "SET_SELECTED_AREA_BY_ID", selectedAreaId: undefined });
@@ -124,7 +112,7 @@ const Area: React.FC<AreaProps> = ({
           {/* <div className={style.areaYear}>{formatLayerYear(year)}</div> */}
           <div className={style.areaYear}>{formatLayerYear(maxYear)}</div>
           {areaTitle && <div className={style.areaTitleText}>{areaTitle}</div>}
-          {selectedAreaType && areaId !== "AMAZ" ? (
+          {selectedAreaType && areaId !== ENTIRE_AMAZON_AREA_ID ? (
             <div className={style.areaType}>
               {dictionary?.map_ui?.[selectedAreaType?.dictionaryKeySingular]}
               {showCountry && country && <span> - {country}</span>}
@@ -172,7 +160,6 @@ const Area: React.FC<AreaProps> = ({
                   ) || undefined
                 : undefined
             }
-            maxYear={maxYear}
             calculatorIsLoading={calculatorIsLoading}
             calculatorUrl={calculatorUrl}
             // @ts-ignore
@@ -188,8 +175,9 @@ const Area: React.FC<AreaProps> = ({
                 // removing areas which are zero pct
                 d.mining_affected_area_pct > 0
             )}
-            hotspotType={hotspotType}
             yearsColors={yearsColors}
+            // maxYear={maxYear}
+            // hotspotType={hotspotType}
           />
         </div>
       )}
@@ -210,4 +198,4 @@ const Area: React.FC<AreaProps> = ({
   );
 };
 
-export default Area;
+export default AreaSummary;

@@ -158,7 +158,7 @@ const MiningAreaBarChart = ({
 
               return (
                 <g key={year}>
-                  {sortedEntries.map((d, i) => {
+                  {sortedEntries.map((d, _i) => {
                     const suffix = String(d.admin_year).slice(4);
                     const isQuarter = suffix !== "00";
                     let barWidth;
