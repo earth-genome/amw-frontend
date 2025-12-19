@@ -23,6 +23,7 @@ import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import * as turf from "@turf/turf";
 import {
+  ENTIRE_AMAZON_AREA_ID,
   getColorsForYears,
   LAYER_YEARS,
   MAP_MISSING_DATA_COLOR,
@@ -36,6 +37,9 @@ import MapPopup, { TooltipInfo } from "@/app/[lang]/components/Map/MapPopup";
 import Hotspots from "@/app/[lang]/components/Map/Hotspots";
 // import calculateMiningAreaInBbox from "@/utils/calculateMiningAreaInBbox";
 import useWindowSize from "@/hooks/useWindowSize";
+import Link from "next/link";
+import Image from "next/image";
+import Logo from "../Nav/logo.svg";
 
 interface MainMapProps {
   dictionary: { [key: string]: any };
@@ -58,12 +62,10 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
   const router = useRouter();
   const mapRef = useRef<MapRef>(null);
   const [bounds, setBounds] = useState<GeoJSONType | undefined>(undefined);
-  const [yearly, setYearly] = useState(true);
   const [activeYear, setActiveYear] = useState(
     String(Math.max(...LAYER_YEARS))
   );
   const maxYear = Math.max(...LAYER_YEARS);
-  const [mapStyle, setMapStyle] = useState(SATELLITE_LAYERS["yearly"]);
   const [isGeocoderHidden, setIsGeocoderHidden] = useState(true);
   const [tooltip, setTooltip] = useState<TooltipInfo | null>(null);
   const hoveredFeatureRef = useRef<string | number | undefined>(undefined);
@@ -187,12 +189,11 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
     [isMobile, selectedAreaTypeKey]
   );
 
-  const handleMouseLeave = useCallback((event: MapMouseEvent) => {
+  const handleMouseLeaveMap = useCallback(() => {
     setTooltip(null);
-    if (!hoveredFeatureRef.current) return;
+    if (!hoveredFeatureRef.current || !mapRef.current) return;
 
-    const map = event.target;
-    map.setFeatureState(
+    mapRef.current.setFeatureState(
       {
         source: "areas",
         id: hoveredFeatureRef.current,
@@ -213,7 +214,14 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
       );
       if (clickedOnExcludedLayer) return;
 
-      const feature = features[0];
+      const featuresFiltered = features.filter(
+        (d) =>
+          // ignore entire amazon layer as it covers everything
+          d?.properties?.id !== ENTIRE_AMAZON_AREA_ID &&
+          // ignore these two parts of the hotspots layers as they have too big click targets
+          !["hotspots-labels", "hotspots-circle"].includes(d?.layer?.id ?? "")
+      );
+      const feature = featuresFiltered[0];
       const id = feature?.properties?.id;
       const type = feature?.properties?.type as PERMITTED_AREA_TYPES_KEYS;
 
@@ -307,7 +315,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           bottom: 0,
           width: "100hw",
         }}
-        mapStyle={mapStyle}
+        mapStyle={SATELLITE_LAYERS["yearly"]}
         // onIdle={() => {
         //   if (!mapRef.current) return;
         //   if (mapRef.current.getZoom() <= 11) return; // don't run if too zoomed out
@@ -378,8 +386,14 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         }}
         onClick={handleClick}
         onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
-        interactiveLayerIds={["areas-layer-fill", "hotspots-circle"]}
+        onMouseLeave={handleMouseLeaveMap}
+        interactiveLayerIds={[
+          "areas-layer-fill",
+          "hotspots-dot",
+          "hotspots-outline",
+          "hotspots-polygon",
+          "hotspots-fill",
+        ]}
       >
         {!isMobile && <NavigationControl position={"top-right"} />}
 
@@ -517,8 +531,8 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           source-layer={"amazon_aca_mask-6i3usc"}
           type="fill"
           paint={{
-            "fill-color": yearly ? "#dddddd" : "#ffffff",
-            "fill-opacity": yearly ? 1 : 0.6,
+            "fill-color": "#dddddd",
+            "fill-opacity": 1,
           }}
         />
         {/* ================== BORDERS =================== */}
@@ -705,46 +719,53 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         )}
       </Map>
 
-      <AreaSelect dictionary={dictionary} />
+      {/* @ts-ignore */}
+      <div onMouseEnter={handleMouseLeaveMap}>
+        {/* we need to check here otherwise mouseLeave only triggers on map canvas leave */}
 
-      {isGeocoderHidden && !isMobile && (
-        <div className="geocoder-toggle">
-          <button
-            onClick={() => {
-              const element = document.querySelector(".geocoder-hidden");
-              if (!element) return;
-              element.classList.remove("geocoder-hidden");
-              setIsGeocoderHidden(false);
-            }}
-          >
-            <GeocoderIcon />
-          </button>
-        </div>
-      )}
+        <Link href="/" className="amw-logo">
+          <Image src={Logo} alt="Logo" />
+        </Link>
 
-      <LegendWrapper
-        showMinimap={true}
-        showMinimapBounds={
-          (mapRef.current && mapRef.current.getZoom() > 5) ?? false
-        }
-        bounds={bounds}
-        years={LAYER_YEARS}
-        activeYear={activeYear}
-        setActiveYear={setActiveYear}
-        dictionary={dictionary}
-      />
+        <AreaSelect dictionary={dictionary} />
 
-      {selectedArea && (
-        <AreaSummary
-          dictionary={dictionary}
-          year={activeYear}
-          maxYear={maxYear}
+        {isGeocoderHidden && !isMobile && (
+          <div className="geocoder-toggle">
+            <button
+              onClick={() => {
+                const element = document.querySelector(".geocoder-hidden");
+                if (!element) return;
+                element.classList.remove("geocoder-hidden");
+                setIsGeocoderHidden(false);
+              }}
+            >
+              <GeocoderIcon />
+            </button>
+          </div>
+        )}
+
+        <LegendWrapper
+          showMinimap={true}
+          showMinimapBounds={
+            (mapRef.current && mapRef.current.getZoom() > 5) ?? false
+          }
+          bounds={bounds}
+          years={LAYER_YEARS}
           activeYear={activeYear}
-          yearsColors={yearsColors}
+          setActiveYear={setActiveYear}
+          dictionary={dictionary}
         />
-      )}
 
-      <Footer dictionary={dictionary} />
+        {selectedArea && (
+          <AreaSummary
+            dictionary={dictionary}
+            maxYear={maxYear}
+            yearsColors={yearsColors}
+          />
+        )}
+
+        <Footer dictionary={dictionary} />
+      </div>
     </div>
   );
 };

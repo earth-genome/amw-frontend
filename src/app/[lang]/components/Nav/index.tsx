@@ -3,11 +3,9 @@ import HowToUse from "@/app/[lang]/components/HowToUse";
 import Overlay from "@/app/[lang]/components/Overlay";
 import { useMenu } from "@/app/[lang]/menuContext";
 import gsap from "gsap";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { Fragment, ReactNode, useEffect, useRef, useState } from "react";
-import Logo from "./logo.svg";
 import "./style.css";
 import { LOCALES } from "@/utils/content";
 import ExternalLink from "@/app/[lang]/components/Icons/ExternalLink";
@@ -28,6 +26,7 @@ const Nav: React.FC<NavProps> = ({ children, dictionary }) => {
   const [showMenu, setShowMenu] = useState(false);
   const [animate, setAnimate] = useState("");
   const [showHowToUse, setShowHowToUse] = useState(false);
+  // eslint-disable-next-line no-unused-vars
   const { menuOpen, setMenuOpen } = useMenu();
   const menuRef = useRef<HTMLUListElement>(null); // Ref for the menu to animate
   const isRootPath = /^\/(en|es|pt)?\/?$/.test(pathname);
@@ -165,16 +164,6 @@ const Nav: React.FC<NavProps> = ({ children, dictionary }) => {
         {showMenu ? "Close" : "Menu"}
       </a>
 
-      <Link
-        href="/"
-        className="amw-logo"
-        onClick={() => {
-          setShowMenu(false);
-          setMenuOpen(false);
-        }}
-      >
-        <Image src={Logo} alt="Logo" />
-      </Link>
       {showMenu && (
         <Overlay opacity={1}>
           <div className="main-menu">

@@ -8,7 +8,7 @@ interface ChartDimensions {
 
 const LAYOUT_UPDATE_DELAY_MS = 25;
 
-const useChartDimensions: (elementRef: RefObject<HTMLElement>) => ChartDimensions = (elementRef) => {
+const useChartDimensions: (_elementRef: RefObject<HTMLElement>) => ChartDimensions = (elementRef) => {
   const windowSize = useWindowSize();
   const [chartDimensions, setChartDimensions] = useState<ChartDimensions>({
     width: 0,

@@ -66,6 +66,9 @@ const Reducer = (state: IState, action: ActionType): IState => {
         ...state,
         areasTimeseriesData: action.areasTimeseriesData,
         areasTimeseriesDataIsLoading: action.areasTimeseriesDataIsLoading,
+        selectedAreaTimeseriesData: action.areasTimeseriesData?.filter(
+          (d) => d?.id === state.selectedArea?.value
+        ),
       };
     case "SET_SELECTED_AREA_BY_ID":
       return {
@@ -96,11 +99,6 @@ const Reducer = (state: IState, action: ActionType): IState => {
         selectedArea: undefined, // clear when area type changes
         selectedAreaData: undefined,
         selectedAreaTimeseriesData: undefined,
-      };
-    case "SHOW_AREA_SUMMARY_MORE_INSIGHTS":
-      return {
-        ...state,
-        showAreaSummaryMoreInsights: action.showAreaSummaryMoreInsights,
       };
     case "SET_AREA_UNITS":
       return {

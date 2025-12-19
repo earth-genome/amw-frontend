@@ -7,7 +7,7 @@ interface OverlayProps {
 }
 
 const Overlay: React.FC<OverlayProps> = (props) => {
-  const { children, opacity } = props;
+  const { children } = props;
   return (
     <div
       className="overlay"
