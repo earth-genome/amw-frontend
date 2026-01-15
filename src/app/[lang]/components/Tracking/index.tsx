@@ -2,7 +2,7 @@
 import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import Script from 'next/script';
-import * as gtag from '../../../../google-analytics';
+import * as gtag from '@/google-analytics';
 
 const GoogleAnalytics = () => {
   const pathname = usePathname();

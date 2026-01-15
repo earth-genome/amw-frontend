@@ -15,10 +15,10 @@ import Map, {
   ScaleControl,
 } from "react-map-gl";
 import type { MapMouseEvent, MapRef } from "react-map-gl";
-import AreaSummary from "../AreaSummary";
-import Footer from "../Footer";
+import AreaSummary from "@/app/[lang]/components/AreaSummary";
+import Footer from "@/app/[lang]/components/Footer";
 import { convertBoundsToGeoJSON, GeoJSONType } from "./helpers";
-import LegendWrapper from "./LegendWrapper";
+import LegendWrapper from "@/app/[lang]/components/Map/LegendWrapper";
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import * as turf from "@turf/turf";
@@ -39,7 +39,7 @@ import Hotspots from "@/app/[lang]/components/Map/Hotspots";
 import useWindowSize from "@/hooks/useWindowSize";
 import Link from "next/link";
 import Image from "next/image";
-import Logo from "../Nav/logo.svg";
+import Logo from "@/app/[lang]/components/Nav/logo.svg";
 
 interface MainMapProps {
   dictionary: { [key: string]: any };
@@ -78,6 +78,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
     selectedAreaTypeKey,
     areaUnits,
     hoveredYear,
+    isEmbed,
   } = state;
 
   const setMapPositionFromURL = useCallback(() => {
@@ -294,6 +295,14 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
     };
   }, []);
 
+  // in case we're in an iframe embed, this sends a post message to the parent window,
+  // for the mining calculator
+  const miningLocations = selectedAreaData?.properties?.locations;
+  useEffect(() => {
+    if (!isEmbed || !miningLocations?.length) return;
+    window.parent.postMessage({ locations: miningLocations }, "*");
+  }, [miningLocations, isEmbed]);
+
   const getBeforeId = (targetLayerId: string) =>
     // make sure the layer exists to avoid errors
     mapRef.current?.getLayer(targetLayerId) ? targetLayerId : undefined;
@@ -311,7 +320,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           parallels: [30, 30],
         }}
         style={{
-          top: "var(--top-navbar-height)",
+          top: isEmbed ? 0 : "var(--top-navbar-height)",
           bottom: 0,
           width: "100hw",
         }}
@@ -395,7 +404,9 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           "hotspots-fill",
         ]}
       >
-        {!isMobile && <NavigationControl position={"top-right"} />}
+        {!isMobile && (
+          <NavigationControl position={isEmbed ? "bottom-left" : "top-right"} />
+        )}
 
         {/* ================== SENTINEL2 SOURCES =================== */}
         <Source
@@ -712,7 +723,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           <MapPopup tooltip={tooltip} dictionary={dictionary} />
         )}
 
-        {!isMobile && (
+        {!isMobile && !isEmbed && (
           <ScaleControl
             unit={areaUnits === "imperial" ? "imperial" : "metric"}
           />
@@ -723,13 +734,13 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
       <div onMouseEnter={handleMouseLeaveMap}>
         {/* we need to check here otherwise mouseLeave only triggers on map canvas leave */}
 
-        <Link href="/" className="amw-logo">
+        <Link href="/" className="amw-logo" style={{ top: isEmbed ? 10 : 50 }}>
           <Image src={Logo} alt="Logo" />
         </Link>
 
         <AreaSelect dictionary={dictionary} />
 
-        {isGeocoderHidden && !isMobile && (
+        {isGeocoderHidden && !isMobile && !isEmbed && (
           <div className="geocoder-toggle">
             <button
               onClick={() => {
@@ -744,19 +755,21 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           </div>
         )}
 
-        <LegendWrapper
-          showMinimap={true}
-          showMinimapBounds={
-            (mapRef.current && mapRef.current.getZoom() > 5) ?? false
-          }
-          bounds={bounds}
-          years={LAYER_YEARS}
-          activeYear={activeYear}
-          setActiveYear={setActiveYear}
-          dictionary={dictionary}
-        />
+        {!isEmbed && (
+          <LegendWrapper
+            showMinimap={true}
+            showMinimapBounds={
+              (mapRef.current && mapRef.current.getZoom() > 5) ?? false
+            }
+            bounds={bounds}
+            years={LAYER_YEARS}
+            activeYear={activeYear}
+            setActiveYear={setActiveYear}
+            dictionary={dictionary}
+          />
+        )}
 
-        {selectedArea && (
+        {selectedArea && !isEmbed && (
           <AreaSummary
             dictionary={dictionary}
             maxYear={maxYear}
@@ -764,7 +777,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           />
         )}
 
-        <Footer dictionary={dictionary} />
+        {!isEmbed && <Footer dictionary={dictionary} />}
       </div>
     </div>
   );

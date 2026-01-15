@@ -1,7 +1,6 @@
 .area-types-wrapper {
   position: fixed;
   text-align: center;
-  top: calc(var(--top-navbar-height) + 10px);
   left: 0;
   right: 0;
   z-index: 1000;

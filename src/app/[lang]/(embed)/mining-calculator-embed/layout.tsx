@@ -1,18 +1,16 @@
 import { AntdRegistry } from "@ant-design/nextjs-registry";
-import { i18n, type Locale } from "../../../i18n-config";
-import MainMap from "./components/Map";
-import Nav from "./components/Nav";
-import { getDictionary } from "../../get-dictionary";
-import { MenuProvider } from "./menuContext";
-import Loader from "./components/Loader";
+import MainMap from "@/app/[lang]/components/Map";
+import Loader from "@/app/[lang]/components/Loader";
 import React from "react";
-import "./globals.css";
+import "@/app/[lang]/globals.css";
 import type { Metadata } from "next";
-import GoogleAnalytics from "./components/Tracking";
+import GoogleAnalytics from "@/app/[lang]/components/Tracking";
 import "mapbox-gl/dist/mapbox-gl.css";
 import MapWrapper from "@/app/[lang]/components/Map/Wrapper";
 import { PERMITTED_LANGUAGES } from "@/utils/content";
 import type { Viewport } from "next";
+import { getDictionary } from "@/get-dictionary";
+import { i18n, Locale } from "@root/i18n-config";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -52,16 +50,13 @@ export default async function RootLayout({
     <html lang={params.lang}>
       <AntdRegistry>
         <GoogleAnalytics />
-        <MenuProvider>
-          <body>
-            <Nav dictionary={dictionary} />
-            <MapWrapper lang={params.lang}>
-              <MainMap dictionary={dictionary} />
-            </MapWrapper>
-            {children}
-            <Loader dictionary={dictionary} />
-          </body>
-        </MenuProvider>
+        <body>
+          <MapWrapper lang={params.lang} isEmbed={true}>
+            <MainMap dictionary={dictionary} />
+          </MapWrapper>
+          {children}
+          <Loader dictionary={dictionary} />
+        </body>
       </AntdRegistry>
     </html>
   );
