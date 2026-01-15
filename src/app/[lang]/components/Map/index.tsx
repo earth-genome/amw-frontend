@@ -734,7 +734,11 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
       <div onMouseEnter={handleMouseLeaveMap}>
         {/* we need to check here otherwise mouseLeave only triggers on map canvas leave */}
 
-        <Link href="/" className="amw-logo" style={{ top: isEmbed ? 10 : 50 }}>
+        <Link
+          href="/"
+          className="amw-logo"
+          style={{ top: isEmbed ? 10 : undefined }}
+        >
           <Image src={Logo} alt="Logo" />
         </Link>
 
