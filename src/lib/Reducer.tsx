@@ -1,4 +1,4 @@
-import { AREA_TYPES } from "@/constants/map";
+import { AREA_TYPES, ENTIRE_AMAZON_AREA_ID } from "@/constants/map";
 import { ActionType, IState } from "@/lib/Store";
 import { GeoJSONFeature } from "@/types/types";
 
@@ -51,8 +51,16 @@ const Reducer = (state: IState, action: ActionType): IState => {
           }))
           ?.sort((a, b) => {
             // place "Whole Amazon" first
-            if (a?.value === "AMAZ" && b?.value !== "AMAZ") return -1;
-            if (b?.value === "AMAZ" && a?.value !== "AMAZ") return 1;
+            if (
+              a?.value === ENTIRE_AMAZON_AREA_ID &&
+              b?.value !== ENTIRE_AMAZON_AREA_ID
+            )
+              return -1;
+            if (
+              b?.value === ENTIRE_AMAZON_AREA_ID &&
+              a?.value !== ENTIRE_AMAZON_AREA_ID
+            )
+              return 1;
 
             // sort by country, then title
             return (

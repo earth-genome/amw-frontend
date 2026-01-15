@@ -2,8 +2,8 @@
 import "./style.css";
 import React from "react";
 import Map, { Layer, Source } from "react-map-gl";
-import geojson from "../../data/amazon_aca.json";
-import { GeoJSONType } from "../Map/helpers";
+import geojson from "@/app/[lang]/data/amazon_aca.json";
+import { GeoJSONType } from "@/app/[lang]/components/Map/helpers";
 
 interface MiniMapProps {
   bounds?: GeoJSONType;

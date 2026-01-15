@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import Overlay from "../Overlay";
+import Overlay from "@/app/[lang]/components/Overlay";
 import "./style.css";
 
 interface IntroProps {

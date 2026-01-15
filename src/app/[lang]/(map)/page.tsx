@@ -1,7 +1,7 @@
 import React from "react";
-import { Locale } from "../../../i18n-config";
-import { getDictionary } from "../../get-dictionary";
-import Intro from "./components/Intro";
+import { Locale } from "@root/i18n-config";
+import { getDictionary } from "@/get-dictionary";
+import Intro from "@/app/[lang]/components/Intro";
 
 export default async function Page({
   params: { lang },
