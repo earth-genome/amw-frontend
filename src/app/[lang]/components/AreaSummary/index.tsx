@@ -56,7 +56,7 @@ const AreaSummary: React.FC<AreaProps> = ({
     calculatorIsLoading,
     // calculatorError,
   } = useMiningCalculator(
-    hideMiningCalculator ? [] : selectedAreaData?.properties?.locations
+    hideMiningCalculator ? [] : selectedAreaData?.properties?.locations,
   );
 
   const [affectedAreaHa, economicCost, hotspotsTimeseries] = useMemo(() => {
@@ -66,28 +66,29 @@ const AreaSummary: React.FC<AreaProps> = ({
         number,
         number,
         number,
-        number
+        number,
       ];
       const { areaMinesHa, areaMinesHaPerYearArray } =
         calculateMiningAreaInBbox(bbox, miningData) ?? {};
       return [areaMinesHa, null, areaMinesHaPerYearArray];
     } else {
-      // else use the data that is pre-calculated and baked into the geojson,
+      // else use the data that is pre-calculated in the timeseries,
       // and mining calculator data that is fetched on the fly
+
       return [
-        // selectedAreaTimeseriesData?.find(
-        //   (d) => d.admin_year === Number(activeYear)
-        // )?.intersected_area_ha_cumulative,
-        areaProperties?.mining_affected_area_ha,
+        // always display the latest year
+        selectedAreaTimeseriesData?.find((d) => d.admin_year === maxYear)
+          ?.intersected_area_ha_cumulative,
         calculatorData?.totalImpact,
         null,
       ];
     }
   }, [
-    areaProperties?.mining_affected_area_ha,
     calculatorData?.totalImpact,
+    maxYear,
     miningData,
     selectedAreaData,
+    selectedAreaTimeseriesData,
     selectedAreaTypeKey,
   ]);
 
@@ -141,7 +142,7 @@ const AreaSummary: React.FC<AreaProps> = ({
             ? formatNumber(
                 displayAreaInUnits(affectedAreaHa, areaUnits),
                 lang,
-                getAreaSignificantDigits(affectedAreaHa)
+                getAreaSignificantDigits(affectedAreaHa),
               )
             : 0}{" "}
           {dictionary?.map_ui?.[`${areaUnits}Abbrev`]}
@@ -156,7 +157,7 @@ const AreaSummary: React.FC<AreaProps> = ({
                 ? formatNumber(
                     economicCost,
                     lang,
-                    ECONOMIC_COST_SIGNIFICANT_DIGITS
+                    ECONOMIC_COST_SIGNIFICANT_DIGITS,
                   ) || undefined
                 : undefined
             }
@@ -173,7 +174,7 @@ const AreaSummary: React.FC<AreaProps> = ({
             illegalityAreas={illegalityAreas?.filter(
               (d: IllegalityAreaData) =>
                 // removing areas which are zero pct
-                d.mining_affected_area_pct > 0
+                d.mining_affected_area_pct > 0,
             )}
             yearsColors={yearsColors}
             // maxYear={maxYear}
