@@ -1,0 +1,72 @@
+.container {
+}
+
+.chart {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.barRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.label {
+  width: 80px;
+  font-size: 16;
+  font-weight: 700;
+}
+
+.barContainer {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.barBackground {
+  flex: 1;
+  height: 26px;
+  background-color: #e0e0e0;
+  overflow: hidden;
+}
+
+.barStack {
+  display: flex;
+  height: 100%;
+}
+
+.barSegment {
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.value {
+  width: 70px;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.legend {
+  display: flex;
+  gap: 20px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.legendColor {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+}
