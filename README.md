@@ -39,3 +39,12 @@ and then start the dev server:
 ```bash
 yarn dev
 ```
+
+## Adding new mining data
+
+After uploading the mining data to S3 from the [mining-detector](https://github.com/earthrise-media/mining-detector/) repo, you will need to add a new layer to `MINING_LAYERS`, in `src/constants/map.ts`. Remember to set the values:
+
+- `yearQuarter`: in YYYYQQ format, e.g. 202504 is 2025-Q4, 202200 means the entire year of 2022, no quarter
+- `satelliteEndpoint`: the endpoint for the satellite imagery
+- `satelliteDates`: the dates part of the satellite imagery url, in the format: `YYYY-MM-DD/YYYY-MM-DD` (start date/end date)
+- `dataUrl`: the url to the geojson containing the mining detection data

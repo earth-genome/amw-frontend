@@ -83,7 +83,7 @@
   color: #003e36b2;
   border-radius: 5px;
   display: flex;
-  justify-content: start;
+  justify-content: flex-start;
   align-items: center;
   height: 37px;
   padding: 0 24px;
@@ -109,7 +109,7 @@
 
   .area-types-container {
     flex-direction: column;
-    align-items: end;
+    align-items: flex-end;
     row-gap: 10px;
   }
 
