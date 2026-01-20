@@ -72,6 +72,12 @@ export const MINING_LAYERS = [
     satelliteDates: "2025-07-01/2025-10-01",
     dataUrl: `${DATA_BASE_URL}/outputs/website/mining_202503_simplified.json`,
   },
+  {
+    yearQuarter: 202504,
+    satelliteEndpoint: SENTINEL2_QUARTERLY,
+    satelliteDates: "2025-10-01/2026-01-01",
+    dataUrl: `${DATA_BASE_URL}/outputs/website/mining_202504_simplified.json`,
+  },
 ];
 
 export const LAYER_YEARS = MINING_LAYERS.map((d) => d.yearQuarter).sort(
