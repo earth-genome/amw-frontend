@@ -75,13 +75,10 @@ const AreaSummary: React.FC<AreaProps> = ({
       // else use the data that is pre-calculated in the timeseries,
       // and mining calculator data that is fetched on the fly
 
-      return [
-        // always display the latest year
-        selectedAreaTimeseriesData?.find((d) => d.admin_year === maxYear)
-          ?.intersected_area_ha_cumulative,
-        calculatorData?.totalImpact,
-        null,
-      ];
+      const latestYearAffectedArea = selectedAreaTimeseriesData?.find(
+        (d) => d.admin_year === maxYear,
+      )?.intersected_area_ha_cumulative;
+      return [latestYearAffectedArea, calculatorData?.totalImpact, null];
     }
   }, [
     calculatorData?.totalImpact,
@@ -138,14 +135,13 @@ const AreaSummary: React.FC<AreaProps> = ({
           {dictionary.coverage.total_area_affected}
         </div>
         <div className={style.areaKm}>
-          {affectedAreaHa !== undefined && affectedAreaHa !== null
-            ? formatNumber(
+          {affectedAreaHa !== null && affectedAreaHa !== undefined
+            ? `${formatNumber(
                 displayAreaInUnits(affectedAreaHa, areaUnits),
                 lang,
                 getAreaSignificantDigits(affectedAreaHa),
-              )
-            : 0}{" "}
-          {dictionary?.map_ui?.[`${areaUnits}Abbrev`]}
+              )} ${dictionary?.map_ui?.[`${areaUnits}Abbrev`] ?? ""}`
+            : "N/A"}
         </div>
       </div>
       {showMoreInsights && (

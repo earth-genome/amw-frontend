@@ -2,9 +2,92 @@ import { scaleSequential } from "d3-scale";
 import { interpolateRgbBasis } from "d3-interpolate";
 import { HOTSPOTS_GEOJSON_URL } from "@/cms/hotspots";
 
-export const LAYER_YEARS = [
-  202503, 202502, 202400, 202300, 202200, 202100, 202000, 201900, 201800,
-].sort((a, b) => a - b);
+const DATA_BASE_URL =
+  // "/website";
+  process.env.NEXT_PUBLIC_DATA_URL;
+
+if (!DATA_BASE_URL) {
+  throw new Error(
+    "NEXT_PUBLIC_DATA_URL environment variable is not set. Please add it to your .env file.",
+  );
+}
+
+const SENTINEL2_TEMPORAL = "v1/tiles/sentinel2-temporal-mosaics";
+const SENTINEL2_YEARLY = "v1/tiles/sentinel2-yearly-mosaics";
+const SENTINEL2_SEMIANNUAL = "v1/tiles/sentinel2-semiannual-mosaics";
+const SENTINEL2_QUARTERLY = "v1/tiles/sentinel2-quarterly-mosaics";
+
+export const MINING_LAYERS = [
+  {
+    yearQuarter: 201800,
+    satelliteEndpoint: SENTINEL2_TEMPORAL,
+    satelliteDates: "2018-01-01/2019-01-01",
+    dataUrl: `${DATA_BASE_URL}/outputs/website/mining_201800_simplified.json`,
+  },
+  {
+    yearQuarter: 201900,
+    satelliteEndpoint: SENTINEL2_TEMPORAL,
+    satelliteDates: "2019-01-01/2020-01-01",
+    dataUrl: `${DATA_BASE_URL}/outputs/website/mining_201900_simplified.json`,
+  },
+  {
+    yearQuarter: 202000,
+    satelliteEndpoint: SENTINEL2_TEMPORAL,
+    satelliteDates: "2020-01-01/2021-01-01",
+    dataUrl: `${DATA_BASE_URL}/outputs/website/mining_202000_simplified.json`,
+  },
+  {
+    yearQuarter: 202100,
+    satelliteEndpoint: SENTINEL2_TEMPORAL,
+    satelliteDates: "2021-01-01/2022-01-01",
+    dataUrl: `${DATA_BASE_URL}/outputs/website/mining_202100_simplified.json`,
+  },
+  {
+    yearQuarter: 202200,
+    satelliteEndpoint: SENTINEL2_TEMPORAL,
+    satelliteDates: "2022-01-01/2023-01-01",
+    dataUrl: `${DATA_BASE_URL}/outputs/website/mining_202200_simplified.json`,
+  },
+  {
+    yearQuarter: 202300,
+    satelliteEndpoint: SENTINEL2_YEARLY,
+    satelliteDates: "2023-01-01/2024-01-01",
+    dataUrl: `${DATA_BASE_URL}/outputs/website/mining_202300_simplified.json`,
+  },
+  {
+    yearQuarter: 202400,
+    satelliteEndpoint: SENTINEL2_YEARLY,
+    satelliteDates: "2024-01-01/2025-01-01",
+    dataUrl: `${DATA_BASE_URL}/outputs/website/mining_202400_simplified.json`,
+  },
+  {
+    yearQuarter: 202502,
+    satelliteEndpoint: SENTINEL2_SEMIANNUAL,
+    satelliteDates: "2025-02-15/2025-08-15",
+    dataUrl: `${DATA_BASE_URL}/outputs/website/mining_202502_simplified.json`,
+  },
+  {
+    yearQuarter: 202503,
+    satelliteEndpoint: SENTINEL2_QUARTERLY,
+    satelliteDates: "2025-07-01/2025-10-01",
+    dataUrl: `${DATA_BASE_URL}/outputs/website/mining_202503_simplified.json`,
+  },
+];
+
+export const LAYER_YEARS = MINING_LAYERS.map((d) => d.yearQuarter).sort(
+  (a, b) => a - b,
+);
+
+export const MINING_DATA_URLS = MINING_LAYERS.map((d) => d.dataUrl);
+
+// generates satellite tiles for a react-map-gl raster source, using 4 different subdmonains
+// for faster loading
+export const generateSatelliteTiles = (endpoint: string, dates: string) => [
+  `${process.env.NEXT_PUBLIC_SENTINEL2_DOMAIN_1}/${endpoint}/${dates}/rgb/{z}/{x}/{y}.webp`,
+  `${process.env.NEXT_PUBLIC_SENTINEL2_DOMAIN_2}/${endpoint}/${dates}/rgb/{z}/{x}/{y}.webp`,
+  `${process.env.NEXT_PUBLIC_SENTINEL2_DOMAIN_3}/${endpoint}/${dates}/rgb/{z}/{x}/{y}.webp`,
+  `${process.env.NEXT_PUBLIC_SENTINEL2_DOMAIN_4}/${endpoint}/${dates}/rgb/{z}/{x}/{y}.webp`,
+];
 
 export const MAP_COLOR_SCALE = [
   "#F7E4BC",
@@ -34,7 +117,7 @@ export const createYearsColorScale = (years: number[]) => {
 export const getColorsForYears = (years: number[]) => {
   const colorScale = createYearsColorScale(years.slice(0, -1));
   return years.map((_, index) =>
-    index === years.length - 1 ? MAP_LATEST_YEAR_COLOR : colorScale(index)
+    index === years.length - 1 ? MAP_LATEST_YEAR_COLOR : colorScale(index),
   );
 };
 
@@ -51,28 +134,6 @@ export interface AreaType {
   showCountry: boolean;
   useLocale: boolean;
 }
-
-const DATA_BASE_URL =
-  // "/website";
-  process.env.NEXT_PUBLIC_DATA_URL;
-
-if (!DATA_BASE_URL) {
-  throw new Error(
-    "NEXT_PUBLIC_DATA_URL environment variable is not set. Please add it to your .env file."
-  );
-}
-
-export const MINING_DATA_URLS = [
-  `${DATA_BASE_URL}/outputs/website/mining_201800_simplified.json`,
-  `${DATA_BASE_URL}/outputs/website/mining_201900_simplified.json`,
-  `${DATA_BASE_URL}/outputs/website/mining_202000_simplified.json`,
-  `${DATA_BASE_URL}/outputs/website/mining_202100_simplified.json`,
-  `${DATA_BASE_URL}/outputs/website/mining_202200_simplified.json`,
-  `${DATA_BASE_URL}/outputs/website/mining_202300_simplified.json`,
-  `${DATA_BASE_URL}/outputs/website/mining_202400_simplified.json`,
-  `${DATA_BASE_URL}/outputs/website/mining_202502_simplified.json`,
-  `${DATA_BASE_URL}/outputs/website/mining_202503_simplified.json`,
-];
 
 export const AREA_TYPES = [
   {

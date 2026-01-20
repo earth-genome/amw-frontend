@@ -24,9 +24,11 @@ import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import * as turf from "@turf/turf";
 import {
   ENTIRE_AMAZON_AREA_ID,
+  generateSatelliteTiles,
   getColorsForYears,
   LAYER_YEARS,
   MAP_MISSING_DATA_COLOR,
+  MINING_LAYERS,
   PERMITTED_AREA_TYPES_KEYS,
 } from "@/constants/map";
 import { Expression } from "mapbox-gl";
@@ -63,7 +65,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
   const mapRef = useRef<MapRef>(null);
   const [bounds, setBounds] = useState<GeoJSONType | undefined>(undefined);
   const [activeYear, setActiveYear] = useState(
-    String(Math.max(...LAYER_YEARS))
+    String(Math.max(...LAYER_YEARS)),
   );
   const maxYear = Math.max(...LAYER_YEARS);
   const [isGeocoderHidden, setIsGeocoderHidden] = useState(true);
@@ -147,7 +149,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
       const map = event.target;
       // always show hotspots first if present
       const hotspots = features?.filter(
-        (d) => d?.properties?.type === "hotspots"
+        (d) => d?.properties?.type === "hotspots",
       );
       const feature = hotspots?.[0] ?? features?.[0];
 
@@ -170,7 +172,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
             source: "areas",
             id: hoveredFeatureRef.current,
           },
-          { hover: false }
+          { hover: false },
         );
       }
 
@@ -182,11 +184,11 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
             source: "areas",
             id: feature.id,
           },
-          { hover: true }
+          { hover: true },
         );
       }
     },
-    [isMobile, selectedAreaTypeKey]
+    [isMobile, selectedAreaTypeKey],
   );
 
   const handleMouseLeaveMap = useCallback(() => {
@@ -198,7 +200,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         source: "areas",
         id: hoveredFeatureRef.current,
       },
-      { hover: false }
+      { hover: false },
     );
 
     hoveredFeatureRef.current = undefined; // reset the ref after clearing hover state
@@ -210,7 +212,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
       const features = map.queryRenderedFeatures(event.point);
 
       const clickedOnExcludedLayer = features?.some(
-        (feature) => feature?.layer?.id === "hole-layer"
+        (feature) => feature?.layer?.id === "hole-layer",
       );
       if (clickedOnExcludedLayer) return;
 
@@ -219,7 +221,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           // ignore entire amazon layer as it covers everything
           d?.properties?.id !== ENTIRE_AMAZON_AREA_ID &&
           // ignore these two parts of the hotspots layers as they have too big click targets
-          !["hotspots-labels", "hotspots-circle"].includes(d?.layer?.id ?? "")
+          !["hotspots-labels", "hotspots-circle"].includes(d?.layer?.id ?? ""),
       );
       const feature = featuresFiltered[0];
       const id = feature?.properties?.id;
@@ -243,7 +245,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
 
       dispatch({ type: "SET_SELECTED_AREA_BY_ID", selectedAreaId: id });
     },
-    [dispatch]
+    [dispatch],
   );
 
   useEffect(() => {
@@ -254,7 +256,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
       number,
       number,
       number,
-      number
+      number,
     ];
 
     mapRef.current.fitBounds(bbox, {
@@ -369,7 +371,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           if (mapContainer) {
             mapContainer.appendChild(geocoderContainer);
             geocoderContainer.appendChild(
-              geocoder.onAdd(mapRef.current.getMap())
+              geocoder.onAdd(mapRef.current.getMap()),
             );
           }
 
@@ -398,114 +400,19 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         {!isMobile && <NavigationControl position={"top-right"} />}
 
         {/* ================== SENTINEL2 SOURCES =================== */}
-        <Source
-          id="sentinel-201800"
-          type="raster"
-          tiles={[
-            `${process.env.NEXT_PUBLIC_SENTINEL2_URL_1}/2018-01-01/2019-01-01/rgb/{z}/{x}/{y}.webp`,
-            `${process.env.NEXT_PUBLIC_SENTINEL2_URL_2}/2018-01-01/2019-01-01/rgb/{z}/{x}/{y}.webp`,
-            `${process.env.NEXT_PUBLIC_SENTINEL2_URL_3}/2018-01-01/2019-01-01/rgb/{z}/{x}/{y}.webp`,
-            `${process.env.NEXT_PUBLIC_SENTINEL2_URL_4}/2018-01-01/2019-01-01/rgb/{z}/{x}/{y}.webp`,
-          ]}
-          tileSize={256}
-          bounds={AREA_BOUNDS}
-        />
-        <Source
-          id="sentinel-201900"
-          type="raster"
-          tiles={[
-            `${process.env.NEXT_PUBLIC_SENTINEL2_URL_1}/2019-01-01/2020-01-01/rgb/{z}/{x}/{y}.webp`,
-            `${process.env.NEXT_PUBLIC_SENTINEL2_URL_2}/2019-01-01/2020-01-01/rgb/{z}/{x}/{y}.webp`,
-            `${process.env.NEXT_PUBLIC_SENTINEL2_URL_3}/2019-01-01/2020-01-01/rgb/{z}/{x}/{y}.webp`,
-            `${process.env.NEXT_PUBLIC_SENTINEL2_URL_4}/2019-01-01/2020-01-01/rgb/{z}/{x}/{y}.webp`,
-          ]}
-          tileSize={256}
-          bounds={AREA_BOUNDS}
-        />
-        <Source
-          id="sentinel-202000"
-          type="raster"
-          tiles={[
-            `${process.env.NEXT_PUBLIC_SENTINEL2_URL_1}/2020-01-01/2021-01-01/rgb/{z}/{x}/{y}.webp`,
-            `${process.env.NEXT_PUBLIC_SENTINEL2_URL_2}/2020-01-01/2021-01-01/rgb/{z}/{x}/{y}.webp`,
-            `${process.env.NEXT_PUBLIC_SENTINEL2_URL_3}/2020-01-01/2021-01-01/rgb/{z}/{x}/{y}.webp`,
-            `${process.env.NEXT_PUBLIC_SENTINEL2_URL_4}/2020-01-01/2021-01-01/rgb/{z}/{x}/{y}.webp`,
-          ]}
-          tileSize={256}
-          bounds={AREA_BOUNDS}
-        />
-        <Source
-          id="sentinel-202100"
-          type="raster"
-          tiles={[
-            `${process.env.NEXT_PUBLIC_SENTINEL2_URL_1}/2021-01-01/2022-01-01/rgb/{z}/{x}/{y}.webp`,
-            `${process.env.NEXT_PUBLIC_SENTINEL2_URL_2}/2021-01-01/2022-01-01/rgb/{z}/{x}/{y}.webp`,
-            `${process.env.NEXT_PUBLIC_SENTINEL2_URL_3}/2021-01-01/2022-01-01/rgb/{z}/{x}/{y}.webp`,
-            `${process.env.NEXT_PUBLIC_SENTINEL2_URL_4}/2021-01-01/2022-01-01/rgb/{z}/{x}/{y}.webp`,
-          ]}
-          tileSize={256}
-          bounds={AREA_BOUNDS}
-        />
-        <Source
-          id="sentinel-202200"
-          type="raster"
-          tiles={[
-            `${process.env.NEXT_PUBLIC_SENTINEL2_URL_1}/2022-01-01/2023-01-01/rgb/{z}/{x}/{y}.webp`,
-            `${process.env.NEXT_PUBLIC_SENTINEL2_URL_2}/2022-01-01/2023-01-01/rgb/{z}/{x}/{y}.webp`,
-            `${process.env.NEXT_PUBLIC_SENTINEL2_URL_3}/2022-01-01/2023-01-01/rgb/{z}/{x}/{y}.webp`,
-            `${process.env.NEXT_PUBLIC_SENTINEL2_URL_4}/2022-01-01/2023-01-01/rgb/{z}/{x}/{y}.webp`,
-          ]}
-          tileSize={256}
-          bounds={AREA_BOUNDS}
-        />
-        <Source
-          id="sentinel-202300"
-          type="raster"
-          tiles={[
-            `${process.env.NEXT_PUBLIC_SENTINEL2_V2_URL_1}/2023-01-01/2024-01-01/rgb/{z}/{x}/{y}.webp`,
-            `${process.env.NEXT_PUBLIC_SENTINEL2_V2_URL_2}/2023-01-01/2024-01-01/rgb/{z}/{x}/{y}.webp`,
-            `${process.env.NEXT_PUBLIC_SENTINEL2_V2_URL_3}/2023-01-01/2024-01-01/rgb/{z}/{x}/{y}.webp`,
-            `${process.env.NEXT_PUBLIC_SENTINEL2_V2_URL_4}/2023-01-01/2024-01-01/rgb/{z}/{x}/{y}.webp`,
-          ]}
-          tileSize={256}
-          bounds={AREA_BOUNDS}
-        />
-        <Source
-          id="sentinel-202400"
-          type="raster"
-          tiles={[
-            `${process.env.NEXT_PUBLIC_SENTINEL2_V2_URL_4}/2024-01-01/2025-01-01/rgb/{z}/{x}/{y}.webp`,
-            `${process.env.NEXT_PUBLIC_SENTINEL2_V2_URL_4}/2024-01-01/2025-01-01/rgb/{z}/{x}/{y}.webp`,
-            `${process.env.NEXT_PUBLIC_SENTINEL2_V2_URL_4}/2024-01-01/2025-01-01/rgb/{z}/{x}/{y}.webp`,
-            `${process.env.NEXT_PUBLIC_SENTINEL2_V2_URL_4}/2024-01-01/2025-01-01/rgb/{z}/{x}/{y}.webp`,
-          ]}
-          tileSize={256}
-          bounds={AREA_BOUNDS}
-        />
-        <Source
-          id="sentinel-202502"
-          type="raster"
-          tiles={[
-            `${process.env.NEXT_PUBLIC_SENTINEL2_SEMIANNUAL_MOSAICS}/2025-02-15/2025-08-15/rgb/{z}/{x}/{y}.webp`,
-            `${process.env.NEXT_PUBLIC_SENTINEL2_SEMIANNUAL_MOSAICS}/2025-02-15/2025-08-15/rgb/{z}/{x}/{y}.webp`,
-            `${process.env.NEXT_PUBLIC_SENTINEL2_SEMIANNUAL_MOSAICS}/2025-02-15/2025-08-15/rgb/{z}/{x}/{y}.webp`,
-            `${process.env.NEXT_PUBLIC_SENTINEL2_SEMIANNUAL_MOSAICS}/2025-02-15/2025-08-15/rgb/{z}/{x}/{y}.webp`,
-          ]}
-          tileSize={256}
-          bounds={AREA_BOUNDS}
-        />
-        <Source
-          id="sentinel-202503"
-          type="raster"
-          tiles={[
-            `${process.env.NEXT_PUBLIC_SENTINEL2_QUARTERLY_MOSAICS}/2025-07-01/2025-10-01/rgb/{z}/{x}/{y}.webp`,
-            `${process.env.NEXT_PUBLIC_SENTINEL2_QUARTERLY_MOSAICS}/2025-07-01/2025-10-01/rgb/{z}/{x}/{y}.webp`,
-            `${process.env.NEXT_PUBLIC_SENTINEL2_QUARTERLY_MOSAICS}/2025-07-01/2025-10-01/rgb/{z}/{x}/{y}.webp`,
-            `${process.env.NEXT_PUBLIC_SENTINEL2_QUARTERLY_MOSAICS}/2025-07-01/2025-10-01/rgb/{z}/{x}/{y}.webp`,
-          ]}
-          tileSize={256}
-          bounds={AREA_BOUNDS}
-        />
+        {MINING_LAYERS.map(
+          ({ yearQuarter, satelliteEndpoint, satelliteDates }) => (
+            <Source
+              key={`sentinel-${yearQuarter}`}
+              id={`sentinel-${yearQuarter}`}
+              type="raster"
+              tiles={generateSatelliteTiles(satelliteEndpoint, satelliteDates)}
+              tileSize={256}
+              bounds={AREA_BOUNDS}
+            />
+          ),
+        )}
+
         {/* ================== SENTINEL2 LAYERS =================== */}
         {LAYER_YEARS.map((d) => (
           <Layer
@@ -519,6 +426,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
             beforeId={getBeforeId("hole-layer")}
           />
         ))}
+
         {/* ================== MASK =================== */}
         <Source
           id={"hole-source"}
