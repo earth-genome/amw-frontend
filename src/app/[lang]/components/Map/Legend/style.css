@@ -9,7 +9,7 @@
 
 .legend-carousel {
   display: flex;
-  align-items: end;
+  align-items: flex-end;
   gap: 8px;
   position: relative;
   margin-top: 10px;
