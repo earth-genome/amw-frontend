@@ -41,7 +41,6 @@ const swrConfig = {
   revalidateOnFocus: false, // don’t refetch when window regains focus
   revalidateOnReconnect: false, // don’t refetch when reconnecting
   refreshInterval: 0, // don’t poll automatically
-  dedupingInterval: 60 * 60 * 1000, // 1 hour: cache same key requests
 };
 
 interface UseMiningCalculatorReturn {

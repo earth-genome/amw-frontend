@@ -47,7 +47,6 @@ interface MainMapProps {
   dictionary: { [key: string]: any };
 }
 
-const AREA_BOUNDS = [-78, -21, -42, 11];
 const INITIAL_VIEW = {
   longitude: -67.78320182377449,
   latitude: -5.871455584726869,
@@ -419,7 +418,6 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
               type="raster"
               tiles={generateSatelliteTiles(satelliteEndpoint, satelliteDates)}
               tileSize={256}
-              bounds={AREA_BOUNDS}
             />
           ),
         )}
