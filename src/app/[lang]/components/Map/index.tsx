@@ -573,7 +573,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         {miningData && (
           <Layer
             id={"mines-layer"}
-            beforeId={getBeforeId("hotspots-fill")}
+            beforeId={isEmbed ? getBeforeId("hotspots-fill") : ""}
             source={"mines"}
             type="line"
             filter={[
@@ -622,7 +622,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         />
 
         {/* wait for mines to load so that hotspots are layered on top of mines */}
-        {miningData && <Hotspots />}
+        {miningData && !isEmbed && <Hotspots />}
 
         {/* ================== POPUP =================== */}
         {tooltip && !isMobile && (
