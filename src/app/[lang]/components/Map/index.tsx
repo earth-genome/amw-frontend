@@ -573,7 +573,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         {miningData && (
           <Layer
             id={"mines-layer"}
-            beforeId={isEmbed ? getBeforeId("hotspots-fill") : ""}
+            beforeId={!isEmbed ? getBeforeId("hotspots-fill") : ""}
             source={"mines"}
             type="line"
             filter={[
