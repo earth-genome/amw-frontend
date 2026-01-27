@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-import { i18n } from "../i18n-config";
+import { i18n } from "@root/i18n-config";
 
 export function middleware(request: NextRequest) {
   const cookie = request.cookies.get("NEXT_LOCALE");

@@ -17,7 +17,13 @@ export const useQueryParams = ({ state, dispatch, ignore }: Props) => {
 
   // sync state changes to URL (outbound)
   useEffect(() => {
-    if (ignore) return;
+    if (ignore) {
+      dispatch({
+        type: "SET_IS_QUERY_CHECKED",
+        isQueryChecked: true,
+      });
+      return;
+    }
     if (!state?.isQueryChecked) return; // wait for query to be checked
 
     const params = new URLSearchParams(window.location.search);
@@ -64,6 +70,7 @@ export const useQueryParams = ({ state, dispatch, ignore }: Props) => {
       router.replace(`${pathname}?${params.toString()}`);
     }
   }, [
+    dispatch,
     ignore,
     pathname,
     router,
@@ -100,7 +107,8 @@ export const useQueryParams = ({ state, dispatch, ignore }: Props) => {
     if (
       !pendingAreaId &&
       !state.selectedArea?.value &&
-      state.selectedAreaTypeKey === "countries"
+      state.selectedAreaTypeKey === "countries" &&
+      !state.isEmbed
     ) {
       dispatch({
         type: "SET_PENDING_SELECTED_AREA_ID",
