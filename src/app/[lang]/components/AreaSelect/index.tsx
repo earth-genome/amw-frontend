@@ -28,6 +28,7 @@ const AreaSelect = ({ dictionary }: AreaSelectProps) => {
     areasData,
     areasDataIsLoading,
     areasDataError,
+    isEmbed,
   } = state;
 
   const setSelectedArea = useCallback(
@@ -55,7 +56,10 @@ const AreaSelect = ({ dictionary }: AreaSelectProps) => {
   };
 
   return (
-    <div className="area-types-wrapper">
+    <div
+      className="area-types-wrapper"
+      style={{ top: isEmbed ? 20 : "calc(var(--top-navbar-height) + 10px)" }}
+    >
       <div className="area-types-container">
         <div className="area-types">
           <ConfigProvider
@@ -89,7 +93,10 @@ const AreaSelect = ({ dictionary }: AreaSelectProps) => {
               onChange={(d) =>
                 setSelectedAreaType(d as PERMITTED_AREA_TYPES_KEYS)
               }
-              options={AREA_TYPES.map((d) => ({
+              options={AREA_TYPES.filter((d) =>
+                // if we're in embed mode, only show certain areas for selection
+                isEmbed ? d.allowInEmbed : true
+              ).map((d) => ({
                 value: d.key,
                 label: dictionary?.map_ui?.[d.dictionaryKey],
                 description:

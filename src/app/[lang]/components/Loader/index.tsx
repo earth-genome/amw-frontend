@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import Logo from "../Nav/logo.svg";
+import Logo from "@/app/[lang]/components/Nav/logo.svg";
 import gsap from "gsap";
 import "./style.css";
 

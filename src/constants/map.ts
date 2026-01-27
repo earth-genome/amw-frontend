@@ -156,6 +156,7 @@ export const AREA_TYPES = [
     renderStatus: () => "",
     showCountry: false,
     useLocale: false,
+    allowInEmbed: false,
   },
   {
     key: "subnational-areas",
@@ -174,6 +175,7 @@ export const AREA_TYPES = [
     renderStatus: () => "",
     showCountry: true,
     useLocale: false,
+    allowInEmbed: true,
   },
   {
     key: "indigenous-territory",
@@ -192,6 +194,7 @@ export const AREA_TYPES = [
     renderStatus: (properties: Record<string, any>) => properties.status_field,
     showCountry: true,
     useLocale: false,
+    allowInEmbed: true,
   },
   {
     key: "protected-area",
@@ -210,6 +213,7 @@ export const AREA_TYPES = [
     renderStatus: (properties: Record<string, any>) => properties.status_field,
     showCountry: true,
     useLocale: false,
+    allowInEmbed: true,
   },
   {
     key: "hotspots",
@@ -225,6 +229,7 @@ export const AREA_TYPES = [
     renderStatus: () => "",
     showCountry: false,
     useLocale: true,
+    allowInEmbed: false,
   },
 ] as const;
 

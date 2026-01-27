@@ -43,6 +43,7 @@ export interface IState {
   selectedAreaType: AreaType | undefined;
   areaUnits: PERMITTED_AREA_UNITS;
   hoveredYear: number | undefined;
+  isEmbed: boolean;
 }
 
 export type ActionType =
@@ -90,11 +91,16 @@ const Store = ({
   children,
   lang,
   isBaseRoute,
+  isEmbed = false,
 }: Readonly<{
   children: React.ReactNode;
   lang: PERMITTED_LANGUAGES;
   isBaseRoute: boolean;
+  isEmbed?: boolean;
 }>) => {
+  const defaultAreaType = isEmbed
+    ? AREA_TYPES.filter((d) => d.allowInEmbed)[0]
+    : AREA_TYPES[0];
   const initialState: IState = {
     map: null,
     lang: lang,
@@ -111,10 +117,11 @@ const Store = ({
     pendingSelectedAreaId: undefined,
     selectedAreaData: undefined,
     selectedAreaTimeseriesData: undefined,
-    selectedAreaTypeKey: AREA_TYPES[0].key,
-    selectedAreaType: AREA_TYPES[0],
+    selectedAreaTypeKey: defaultAreaType.key,
+    selectedAreaType: defaultAreaType,
     areaUnits: AREA_UNITS_OPTIONS[0].value as PERMITTED_AREA_UNITS,
     hoveredYear: undefined,
+    isEmbed: isEmbed,
   };
 
   const [state, dispatch] = useReducer(Reducer, initialState);

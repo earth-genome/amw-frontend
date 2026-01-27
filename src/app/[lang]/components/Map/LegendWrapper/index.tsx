@@ -1,6 +1,6 @@
 import { GeoJSONType } from "@/app/[lang]/components/Map/helpers";
-import MiniMap from "../../MiniMap";
-import Logos from "../Logos";
+import MiniMap from "@/app/[lang]/components/MiniMap";
+import Logos from "@/app/[lang]/components/Map/Logos";
 import Legend, { LegendProps } from "@/app/[lang]/components/Map/Legend";
 import "./style.css";
 
