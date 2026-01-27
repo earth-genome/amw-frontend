@@ -7,6 +7,12 @@
   gap: 12px;
 }
 
+.barWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
 .barRow {
   display: flex;
   align-items: center;
@@ -14,9 +20,12 @@
 }
 
 .label {
-  width: 80px;
+  width: calc(100% - 80px);
   font-size: 16;
   font-weight: 700;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .barContainer {

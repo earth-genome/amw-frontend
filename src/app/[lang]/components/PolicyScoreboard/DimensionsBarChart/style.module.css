@@ -1,0 +1,12 @@
+.dimensionSections {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    margin: 48px 0;
+}
+
+.dimensionTitle {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
