@@ -99,5 +99,18 @@
   },
   "newsletter": {
     "title": "Inscreva-se para atualizações"
+  },
+  "policy_scoreboard": {
+    "country_rankings": "Ranking de Países",
+    "assessment_dimensions": "Dimensões de Avaliação",
+    "details": "Detalhes →",
+    "back_to_scoreboard": "← Voltar ao Rastreador de Políticas",
+    "country_assessment_score": "Pontuação de Avaliação do País",
+    "overall_score": "Pontuação Geral",
+    "country_comparison": "Comparação de Países",
+    "categories": "Categorias",
+    "criteria": "critérios",
+    "score": "Pontuação",
+    "sources": "Fontes"
   }
 }

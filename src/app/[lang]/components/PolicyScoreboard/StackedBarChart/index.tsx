@@ -1,3 +1,7 @@
+"use client";
+
+import { useState } from "react";
+import { ConfigProvider, Tooltip } from "antd";
 import styles from "./style.module.css";
 
 interface Segment {
@@ -21,6 +25,7 @@ interface StackedBarChartProps {
   legend?: { label: string; color: string }[];
   showLegend?: boolean;
   showMaxValue?: boolean;
+  compact?: boolean;
 }
 
 const StackedBarChart = ({
@@ -29,29 +34,55 @@ const StackedBarChart = ({
   legend,
   showLegend = true,
   showMaxValue = false,
+  compact = false,
 }: StackedBarChartProps) => {
+  const [hoveredSegment, setHoveredSegment] = useState<string | null>(null);
+
   return (
     <div className={styles.container}>
-      <div className={styles.chart}>
+      <div className={`${styles.chart} ${compact ? styles.compact : ""}`}>
         {items.map((item) => (
           <div key={item.key} className={styles.barWrapper}>
             <div className={styles.label}>{item.label}</div>
             <div className={styles.barRow}>
               <div className={styles.barContainer}>
                 <div className={styles.barBackground}>
-                  <div className={styles.barStack}>
-                    {item.segments.map((segment) => (
-                      <div
-                        key={segment.key}
-                        className={styles.barSegment}
-                        style={{
-                          width: `${(segment.value / maxValue) * 100}%`,
-                          backgroundColor: segment.color,
-                        }}
-                        title={segment.label}
-                      />
-                    ))}
-                  </div>
+                  <ConfigProvider
+                    theme={{
+                      components: {
+                        Tooltip: {
+                          colorBgSpotlight: "#003E36",
+                          colorTextLightSolid: "#fff",
+                          paddingXS: 12,
+                        },
+                      },
+                    }}
+                  >
+                    <div className={styles.barStack}>
+                      {item.segments.map((segment) => (
+                        <Tooltip
+                          key={segment.key}
+                          title={segment.label}
+                          placement="top"
+                        >
+                          <div
+                            className={styles.barSegment}
+                            style={{
+                              width: `${(segment.value / maxValue) * 100}%`,
+                              backgroundColor: segment.color,
+                              opacity:
+                                hoveredSegment !== null &&
+                                hoveredSegment !== segment.key
+                                  ? 0.3
+                                  : 1,
+                            }}
+                            onMouseEnter={() => setHoveredSegment(segment.key)}
+                            onMouseLeave={() => setHoveredSegment(null)}
+                          />
+                        </Tooltip>
+                      ))}
+                    </div>
+                  </ConfigProvider>
                 </div>
                 <span className={styles.value}>
                   {item.formatter ? item.formatter(item.total) : item.total.toFixed(2)}

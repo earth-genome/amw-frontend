@@ -1,5 +1,8 @@
 import { NextPage } from "next";
-import { getMarkdownText, PERMITTED_LANGUAGES } from "@/utils/content";
+import {
+  // getMarkdownText,
+  PERMITTED_LANGUAGES,
+} from "@/utils/content";
 import { apiFetcher } from "@/cms/client";
 import Overlay from "@/app/[lang]/components/Overlay";
 import {
@@ -33,30 +36,42 @@ export async function generateMetadata({ params: { lang } }: PageProps) {
 }
 
 const Page: NextPage<PageProps> = async ({ params: { lang } }) => {
-  const response = await apiFetcher<PolicyScoreboardResponse>(
-    POLICY_SCOREBOARD_URL,
-    {
-      locale: lang,
-    },
-  );
+  // const response = await apiFetcher<PolicyScoreboardResponse>(
+  //   POLICY_SCOREBOARD_URL,
+  //   {
+  //     locale: lang,
+  //   },
+  // );
 
-  const {
-    data: { title, body },
-  } = response;
+  // const {
+  //   data: { title, body },
+  // } = response;
+
+  const dictionary = await getDictionary(lang);
 
   const { scoreboardData, byCategory, byDimension, byCountry, countryNames } =
     await getPolicyData(lang);
 
   return (
     <Overlay>
-      {title && <h1>{title}</h1>}
-      {body && <div dangerouslySetInnerHTML={getMarkdownText(body)} />}
+      {/* {title && <h1>{title}</h1>} */}
+      {/* {body && <div dangerouslySetInnerHTML={getMarkdownText(body)} />} */}
+      {/* TODO: localize */}
+      <h1>Policy Scoreboard</h1>
+      <p>
+        <strong>
+          Comprehensive assessment of regulatory frameworks and enforcement
+          mechanisms for artisanal and small-scale gold mining across eight
+          Amazonian countries.
+        </strong>
+      </p>
       <PolicyScoreboard
         data={scoreboardData}
         byCategory={byCategory}
         byDimension={byDimension}
         byCountry={byCountry}
         countries={countryNames}
+        dictionary={dictionary}
       />
     </Overlay>
   );

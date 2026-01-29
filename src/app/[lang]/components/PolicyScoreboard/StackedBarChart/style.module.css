@@ -42,6 +42,19 @@
   overflow: hidden;
 }
 
+.compact .barBackground {
+  height: 18px;
+}
+
+.compact .label {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.compact .value {
+  font-size: 12px;
+}
+
 .barStack {
   display: flex;
   height: 100%;
@@ -49,7 +62,8 @@
 
 .barSegment {
   height: 100%;
-  transition: width 0.3s ease;
+  transition: width 0.3s ease, opacity 0.3s ease;
+  cursor: pointer;
 }
 
 .value {

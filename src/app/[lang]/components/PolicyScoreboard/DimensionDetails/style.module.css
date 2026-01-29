@@ -1,0 +1,32 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  margin: 24px 0;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sectionTitle {
+  font-size: 20px;
+  font-weight: 700;
+  border-color: #fff !important;
+}
+
+.categorySection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-left: 24px;
+  padding-left: 16px;
+  border-left: 2px solid #e0e0e0;
+}
+
+.categoryTitle {
+  font-size: 16px;
+  font-weight: 600;
+}

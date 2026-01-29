@@ -1,12 +1,25 @@
 .dimensionSections {
-    display: flex;
-    flex-direction: column;
-    gap: 32px;
-    margin: 48px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
 }
 
 .dimensionTitle {
-    font-size: 24px;
-    font-weight: 700;
-    margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.dimensionLink {
+  font-size: 16px;
+  font-weight: 400;
+  color: #fff;
+  margin-right: 80px;
+}
+
+.dimensionLink:hover {
+  text-decoration: underline;
 }

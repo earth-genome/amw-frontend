@@ -99,5 +99,18 @@
   },
   "newsletter": {
     "title": "Sign up for updates"
+  },
+  "policy_scoreboard": {
+    "country_rankings": "Country Rankings",
+    "assessment_dimensions": "Assessment Dimensions",
+    "details": "Details →",
+    "back_to_scoreboard": "← Back to Policy Scoreboard",
+    "country_assessment_score": "Country Assessment Score",
+    "overall_score": "Overall Score",
+    "country_comparison": "Country Comparison",
+    "categories": "Categories",
+    "criteria": "criteria",
+    "score": "Score",
+    "sources": "Sources"
   }
 }
