@@ -89,11 +89,15 @@ const CountryDetails = ({
       <div className={styles.countryScoreSection}>
         <div>
           <h2 className={styles.sectionTitle}>{t?.country_assessment_score}</h2>
-          {/* TODO: localize */}
           <p>
-            {`${countryName}'s `}
-            <strong>{`overall score is ${getCountryTotal()} out of ${MAX_VALUE}`}</strong>
-            {`. It represents the sum of its scores across the three dimensions listed below.`}
+            {countryName}
+            {t?.country_overall_score_desc_1}
+            <strong>
+              {getCountryTotal()}
+              {t?.country_overall_score_desc_2}
+              {MAX_VALUE}
+            </strong>
+            {t?.country_overall_score_desc_3}
           </p>
 
           <StackedBarChart
@@ -109,12 +113,7 @@ const CountryDetails = ({
         <h2 className={styles.dimensionTitle} style={{ borderColor: "white" }}>
           {t?.assessment_dimensions}
         </h2>
-        {/* TODO: localize */}
-        <p>
-          {
-            "Below you’ll find the category assessments that comprise each dimension. Each dimension is scored from 0 to 5, based on a weighted combination of its category scores."
-          }
-        </p>
+        <p>{t?.dimensions_intro}</p>
 
         {dimensions.map((dimension) => {
           // Get dimension-level score for this country
@@ -196,11 +195,17 @@ const CountryDetails = ({
                   showMaxValue={true}
                   showLegend={false}
                 />
-                {/* TODO: localize */}
                 <div style={{ lineHeight: 1.6, marginTop: 12 }}>
-                  {`${countryName}'s score in the `}
-                  <strong>{`${dimensionLocalized} dimension is ${dimensionScore} out of ${5}`}</strong>
-                  {`. It represents a weighted combination of the category scores below.`}
+                  {countryName}
+                  {t?.country_dimension_score_desc_1}
+                  <strong>
+                    {dimensionLocalized}
+                    {t?.country_dimension_score_desc_2}
+                    {dimensionScore}
+                    {t?.country_dimension_score_desc_3}
+                    {5}
+                  </strong>
+                  {t?.country_dimension_score_desc_4}
                 </div>
                 {dimensionDescriptionLocalized.map((d) => (
                   <p key={d}>{d}</p>
@@ -208,9 +213,8 @@ const CountryDetails = ({
               </div>
               <div>
                 <div className={styles.categoryCharts}>
-                  {/* TODO: localize */}
                   <div className={styles.categoryChartsTitle}>
-                    {dimensionLocalized} - {"Assessment categories"}
+                    {dimensionLocalized} - {t?.assessment_categories}
                   </div>
                   <StackedBarChart
                     items={categoryItems}

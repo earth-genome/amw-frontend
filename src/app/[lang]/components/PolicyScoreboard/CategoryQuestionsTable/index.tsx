@@ -69,12 +69,9 @@ const CategoryQuestionsTable = ({
 
   return (
     <div className={styles.container}>
-      {/* TODO: localize */}
       <div>
-        <div className={styles.title}>Categories details</div>
-        <div>
-          {"Each category is scored using the criteria outlined below."}
-        </div>
+        <div className={styles.title}>{t?.categories_details}</div>
+        <div>{t?.categories_details_desc}</div>
       </div>
       {categories.map((category) => {
         const isExpanded = expandedCategory === category;

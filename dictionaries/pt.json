@@ -111,6 +111,21 @@
     "categories": "Categorias",
     "criteria": "critérios",
     "score": "Pontuação",
-    "sources": "Fontes"
+    "sources": "Fontes",
+    "title": "Rastreador de Políticas",
+    "intro": "Avaliação abrangente dos marcos regulatórios e mecanismos de fiscalização para a mineração artesanal e de pequena escala de ouro em oito países amazônicos.",
+    "country_rankings_desc": "Os países são avaliados em três dimensões-chave, cada uma valendo até cinco pontos, para uma pontuação total possível de 15.",
+    "assessment_dimensions_desc": "Cada dimensão de avaliação é composta por múltiplas categorias e critérios. Visite a página de detalhes de cada dimensão para ver como a pontuação é calculada.",
+    "country_overall_score_desc_1": " tem uma pontuação geral de ",
+    "country_overall_score_desc_2": " de ",
+    "country_overall_score_desc_3": ". Representa a soma de suas pontuações nas três dimensões detalhadas abaixo.",
+    "dimensions_intro": "Abaixo você encontrará as avaliações de categorias que compõem cada dimensão. Cada dimensão é pontuada de 0 a 5, com base em uma combinação ponderada das pontuações de suas categorias.",
+    "country_dimension_score_desc_1": " tem uma pontuação na dimensão ",
+    "country_dimension_score_desc_2": " de ",
+    "country_dimension_score_desc_3": " de ",
+    "country_dimension_score_desc_4": ". Representa uma combinação ponderada das pontuações das categorias abaixo.",
+    "assessment_categories": "Categorias de avaliação",
+    "categories_details": "Detalhes das categorias",
+    "categories_details_desc": "Cada categoria é pontuada utilizando os critérios descritos abaixo."
   }
 }

@@ -56,13 +56,10 @@ const Page: NextPage<PageProps> = async ({ params: { lang } }) => {
     <Overlay>
       {/* {title && <h1>{title}</h1>} */}
       {/* {body && <div dangerouslySetInnerHTML={getMarkdownText(body)} />} */}
-      {/* TODO: localize */}
-      <h1>Policy Scoreboard</h1>
+      <h1>{dictionary?.policy_scoreboard?.title}</h1>
       <p>
         <strong>
-          Comprehensive assessment of regulatory frameworks and enforcement
-          mechanisms for artisanal and small-scale gold mining across eight
-          Amazonian countries.
+          {dictionary?.policy_scoreboard?.intro}
         </strong>
       </p>
       <PolicyScoreboard

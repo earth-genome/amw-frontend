@@ -39,12 +39,7 @@ const PolicyScoreboard = ({
   return (
     <div>
       <h2 className={styles.sectionTitle}>{t?.country_rankings}</h2>
-      {/* TODO: localize */}
-      <p>
-        {
-          "Countries are evaluated across three key dimensions, each worth up to five points, for a total possible score of 15."
-        }
-      </p>
+      <p>{t?.country_rankings_desc}</p>
       <CountriesBarChart
         byDimension={byDimension}
         countries={countries}
@@ -52,12 +47,7 @@ const PolicyScoreboard = ({
       />
 
       <h2 className={styles.sectionTitle}>{t?.assessment_dimensions}</h2>
-      {/* TODO: localize */}
-      <p>
-        {
-          "Each assessment dimension is made up of multiple categories and criteria. Visit the details page for each dimension to see how the score is calculated."
-        }
-      </p>
+      <p>{t?.assessment_dimensions_desc}</p>
       <DimensionsBarChart byDimension={byDimension} dictionary={dictionary} />
     </div>
   );
