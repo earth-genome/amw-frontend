@@ -38,7 +38,7 @@ const AreaSelect = ({ dictionary }: AreaSelectProps) => {
         selectedAreaId: selectedArea?.value,
       });
     },
-    [dispatch]
+    [dispatch],
   );
 
   const setSelectedAreaType = useCallback(
@@ -48,7 +48,7 @@ const AreaSelect = ({ dictionary }: AreaSelectProps) => {
         selectedAreaTypeKey: selectedAreaTypeKey,
       });
     },
-    [dispatch]
+    [dispatch],
   );
 
   const handleAreaSelect = (value: SingleValue<AreaSelectOption>) => {
@@ -95,7 +95,11 @@ const AreaSelect = ({ dictionary }: AreaSelectProps) => {
               }
               options={AREA_TYPES.filter((d) =>
                 // if we're in embed mode, only show certain areas for selection
-                isEmbed ? d.allowInEmbed : true
+                isEmbed
+                  ? d.allowInEmbed
+                  : true &&
+                    // and we don't allow selecting certain area types (hotspots)
+                    d.allowSelect,
               ).map((d) => ({
                 value: d.key,
                 label: dictionary?.map_ui?.[d.dictionaryKey],

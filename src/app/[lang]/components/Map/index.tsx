@@ -29,7 +29,6 @@ import {
   LAYER_YEARS,
   MAP_MISSING_DATA_COLOR,
   MINING_LAYERS,
-  PERMITTED_AREA_TYPES_KEYS,
 } from "@/constants/map";
 import { Expression } from "mapbox-gl";
 import AreaSelect from "@/app/[lang]/components/AreaSelect";
@@ -147,11 +146,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
       if (isMobile) return; // ignore hover effect on mobile
       const { features } = event;
       const map = event.target;
-      // always show hotspots first if present
-      const hotspots = features?.filter(
-        (d) => d?.properties?.type === "hotspots",
-      );
-      const feature = hotspots?.[0] ?? features?.[0];
+      const feature = features?.[0];
 
       if (!feature?.properties) return;
 
@@ -220,29 +215,13 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         (d) =>
           // ignore entire amazon layer as it covers everything
           d?.properties?.id !== ENTIRE_AMAZON_AREA_ID &&
-          // ignore these two parts of the hotspots layers as they have too big click targets
-          !["hotspots-labels", "hotspots-circle"].includes(d?.layer?.id ?? ""),
+          // ignore these hotspots for clicks
+          !d?.layer?.id.includes("hotspots"),
       );
       const feature = featuresFiltered[0];
       const id = feature?.properties?.id;
-      const type = feature?.properties?.type as PERMITTED_AREA_TYPES_KEYS;
 
       if (!id) return;
-
-      if (type === "hotspots") {
-        dispatch({
-          type: "SET_SELECTED_AREA_TYPE_BY_KEY",
-          selectedAreaTypeKey: "hotspots",
-        });
-        // because this will trigger a change in area type, we need to wait
-        // for the data to load, so we set it as pending
-        dispatch({
-          type: "SET_PENDING_SELECTED_AREA_ID",
-          pendingSelectedAreaId: id,
-        });
-        return;
-      }
-
       dispatch({ type: "SET_SELECTED_AREA_BY_ID", selectedAreaId: id });
     },
     [dispatch],
@@ -326,20 +305,6 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           width: "100hw",
         }}
         mapStyle={SATELLITE_LAYERS["yearly"]}
-        // onIdle={() => {
-        //   if (!mapRef.current) return;
-        //   if (mapRef.current.getZoom() <= 11) return; // don't run if too zoomed out
-
-        //   let bbox = getCurrentBounds();
-        //   if (!bbox) return;
-        //   // FIXME: we're not using the mining areas yet
-        //   const miningArea = calculateMiningAreaInBbox(
-        //     bbox,
-        //     activeYear,
-        //     miningData
-        //   );
-        //   // console.log("using viewport, mining area in ha", miningArea);
-        // }}
         onMoveEnd={() => {
           updateURLParamsMapPosition();
 
@@ -397,13 +362,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         onClick={handleClick}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeaveMap}
-        interactiveLayerIds={[
-          "areas-layer-fill",
-          "hotspots-dot",
-          "hotspots-outline",
-          "hotspots-polygon",
-          "hotspots-fill",
-        ]}
+        interactiveLayerIds={["areas-layer-fill"]}
       >
         {!isMobile && (
           <NavigationControl position={isEmbed ? "bottom-left" : "top-right"} />
@@ -499,20 +458,17 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
               paint={{
                 "line-color": "#ccc",
                 "line-opacity": 1,
-                "line-width":
-                  selectedAreaTypeKey === "hotspots"
-                    ? 0
-                    : [
-                        "interpolate",
-                        ["exponential", 2],
-                        ["zoom"],
-                        0,
-                        1,
-                        10,
-                        1,
-                        14,
-                        2.5,
-                      ],
+                "line-width": [
+                  "interpolate",
+                  ["exponential", 2],
+                  ["zoom"],
+                  0,
+                  1,
+                  10,
+                  1,
+                  14,
+                  2.5,
+                ],
               }}
             />
             <Layer
@@ -625,9 +581,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         {miningData && !isEmbed && <Hotspots />}
 
         {/* ================== POPUP =================== */}
-        {tooltip && !isMobile && (
-          <MapPopup tooltip={tooltip} dictionary={dictionary} />
-        )}
+        {tooltip && !isMobile && <MapPopup tooltip={tooltip} />}
 
         {!isMobile && !isEmbed && (
           <ScaleControl

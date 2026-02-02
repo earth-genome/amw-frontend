@@ -2,7 +2,7 @@ import { scaleSequential } from "d3-scale";
 import { interpolateRgbBasis } from "d3-interpolate";
 import { HOTSPOTS_GEOJSON_URL } from "@/cms/hotspots";
 
-const DATA_UPDATED_AT = "20260124"
+const DATA_UPDATED_AT = "20260124";
 const DATA_BASE_URL =
   // "/website";
   `${process.env.NEXT_PUBLIC_DATA_URL}/${DATA_UPDATED_AT}`;
@@ -157,6 +157,7 @@ export const AREA_TYPES = [
     showCountry: false,
     useLocale: false,
     allowInEmbed: false,
+    allowSelect: true,
   },
   {
     key: "subnational-areas",
@@ -176,6 +177,7 @@ export const AREA_TYPES = [
     showCountry: true,
     useLocale: false,
     allowInEmbed: true,
+    allowSelect: true,
   },
   {
     key: "indigenous-territory",
@@ -195,6 +197,7 @@ export const AREA_TYPES = [
     showCountry: true,
     useLocale: false,
     allowInEmbed: true,
+    allowSelect: true,
   },
   {
     key: "protected-area",
@@ -214,6 +217,7 @@ export const AREA_TYPES = [
     showCountry: true,
     useLocale: false,
     allowInEmbed: true,
+    allowSelect: true,
   },
   {
     key: "hotspots",
@@ -230,6 +234,7 @@ export const AREA_TYPES = [
     showCountry: false,
     useLocale: true,
     allowInEmbed: false,
+    allowSelect: false,
   },
 ] as const;
 
