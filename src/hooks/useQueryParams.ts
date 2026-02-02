@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { IState } from "@/lib/Store";
 import { slugify } from "@/utils/slugify";
-import { ENTIRE_AMAZON_AREA_ID } from "@/constants/map";
+import { ENTIRE_AMAZON_AREA_ID, LAYER_YEARS } from "@/constants/map";
 
 interface Props {
   state: IState;
@@ -66,6 +66,18 @@ export const useQueryParams = ({ state, dispatch, ignore }: Props) => {
       shouldUpdate = true;
     }
 
+    // sync yearStart
+    if (params.get("yearStart") !== state.activeYearStart) {
+      params.set("yearStart", state.activeYearStart);
+      shouldUpdate = true;
+    }
+
+    // sync yearEnd
+    if (params.get("yearEnd") !== state.activeYearEnd) {
+      params.set("yearEnd", state.activeYearEnd);
+      shouldUpdate = true;
+    }
+
     if (shouldUpdate) {
       router.replace(`${pathname}?${params.toString()}`);
     }
@@ -79,6 +91,8 @@ export const useQueryParams = ({ state, dispatch, ignore }: Props) => {
     state.selectedArea?.title,
     state.selectedArea?.value,
     state.selectedAreaTypeKey,
+    state.activeYearStart,
+    state.activeYearEnd,
   ]);
 
   // load initial state from URL (inbound) - only runs once on mount
@@ -100,6 +114,22 @@ export const useQueryParams = ({ state, dispatch, ignore }: Props) => {
       dispatch({
         type: "SET_PENDING_SELECTED_AREA_ID",
         pendingSelectedAreaId: pendingAreaId,
+      });
+    }
+
+    // restore year range from URL params
+    const yearStart = searchParams.get("yearStart");
+    const yearEnd = searchParams.get("yearEnd");
+    if (yearStart && LAYER_YEARS.includes(Number(yearStart))) {
+      dispatch({
+        type: "SET_ACTIVE_YEAR_START",
+        activeYearStart: yearStart,
+      });
+    }
+    if (yearEnd && LAYER_YEARS.includes(Number(yearEnd))) {
+      dispatch({
+        type: "SET_ACTIVE_YEAR_END",
+        activeYearEnd: yearEnd,
       });
     }
 

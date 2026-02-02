@@ -61,7 +61,10 @@
     "hectaresAbbrev": "hectares",
     "squareKmAbbrev": "km²",
     "imperialAbbrev": "acres",
-    "type_of_mining": "Tipo de mineração"
+    "type_of_mining": "Tipo de mineração",
+    "period_start": "Visualizar de",
+    "period_end": "Até",
+    "period_end_tooltip": "As imagens de satélite exibem o período de tempo mais recente selecionado."
   },
   "types_of_mining": {
     "hotspot": "Ponto crítico",
