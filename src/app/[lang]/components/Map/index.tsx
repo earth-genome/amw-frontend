@@ -215,8 +215,8 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         (d) =>
           // ignore entire amazon layer as it covers everything
           d?.properties?.id !== ENTIRE_AMAZON_AREA_ID &&
-          // ignore these hotspots for clicks
-          !d?.layer?.id.includes("hotspots"),
+          // ignore layers except the areas one
+          d?.layer?.id === "areas-layer-fill",
       );
       const feature = featuresFiltered[0];
       const id = feature?.properties?.id;
@@ -362,7 +362,13 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         onClick={handleClick}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeaveMap}
-        interactiveLayerIds={["areas-layer-fill"]}
+        interactiveLayerIds={[
+          "areas-layer-fill",
+          "hotspots-dot",
+          "hotspots-outline",
+          "hotspots-polygon",
+          "hotspots-fill",
+        ]}
       >
         {!isMobile && (
           <NavigationControl position={isEmbed ? "bottom-left" : "top-right"} />
@@ -581,7 +587,9 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         {miningData && !isEmbed && <Hotspots />}
 
         {/* ================== POPUP =================== */}
-        {tooltip && !isMobile && <MapPopup tooltip={tooltip} />}
+        {tooltip && !isMobile && (
+          <MapPopup tooltip={tooltip} dictionary={dictionary} />
+        )}
 
         {!isMobile && !isEmbed && (
           <ScaleControl
