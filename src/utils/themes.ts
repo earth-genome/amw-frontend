@@ -1,0 +1,23 @@
+export const SELECT_ANTD_THEME = {
+  components: {
+    Select: {
+      selectorBg: "rgb(11, 95, 58)",
+      optionSelectedColor: "rgba(242, 236, 236, 0.88)",
+      colorIconHover: "rgba(250, 246, 246, 0.88)",
+      colorBgContainer: "rgb(11, 95, 58)",
+      colorBgElevated: "rgb(11, 95, 58)",
+      colorPrimary: "rgb(242, 237, 237)",
+      colorIcon: "rgb(255,255,255)",
+      colorBorder: "rgb(6, 89, 36)",
+      optionSelectedBg: "rgb(76, 97, 77)",
+      colorText: "rgba(250, 249, 249, 0.88)",
+      colorFillTertiary: "rgba(242, 234, 234, 0.04)",
+      colorFillSecondary: "rgba(241, 228, 228, 0.06)",
+      colorTextQuaternary: "rgba(249, 249, 249, 0.99)",
+      colorTextTertiary: "rgba(244, 236, 236, 0.9)",
+      colorTextDescription: "rgba(255, 253, 253, 0.45)",
+      colorTextDisabled: "rgba(239, 233, 233, 0.25)",
+      colorTextPlaceholder: "rgba(255, 255, 255, 0.9)",
+    },
+  },
+};
