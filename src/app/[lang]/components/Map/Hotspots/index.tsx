@@ -57,7 +57,7 @@ const Hotspots = () => {
         properties: hotspot.properties,
       })),
     }),
-    [hotspotsData]
+    [hotspotsData],
   );
 
   const circleLayer: CircleLayer = {
@@ -221,7 +221,7 @@ const Hotspots = () => {
       )}
       <Source id="hotspots-polygon" type="geojson" data={hotspotsData}>
         <Layer {...outlineLayer} />
-        <Layer {...fillLayer} beforeId={"hotspots-outline"} />
+        <Layer {...fillLayer} />
       </Source>
 
       <Source id="hotspots-labels" type="geojson" data={labelData}>

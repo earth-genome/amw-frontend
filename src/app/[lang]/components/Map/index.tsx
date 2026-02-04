@@ -55,6 +55,21 @@ const SATELLITE_LAYERS = {
   yearly: "mapbox://styles/earthrise/clvwchqxi06gh01pe1huv70id",
   hiRes: "mapbox://styles/earthrise/cmdxgrceq014x01s22jfm5muv", // Mapbox satellite
 };
+const LAYER_ORDER = [
+  // bottom to top
+  ...LAYER_YEARS.map((d) => `sentinel-layer-${d}`),
+  "hole-layer",
+  "areas-layer",
+  "areas-layer-fill",
+  "selected-area-layer",
+  "selected-area-layer-fill",
+  "mines-layer",
+  // "hotspots-fill",
+  // "hotspots-outline",
+  // "hotspots-circle",
+  // "hotspots-dot",
+  // "hotspots-labels",
+];
 
 const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
   const [state, dispatch] = useContext(Context)!;
@@ -69,6 +84,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
   const [isGeocoderHidden, setIsGeocoderHidden] = useState(true);
   const [tooltip, setTooltip] = useState<TooltipInfo | null>(null);
   const hoveredFeatureRef = useRef<string | number | undefined>(undefined);
+  const orderedLayerSetRef = useRef<string>("");
 
   const {
     miningData,
@@ -140,6 +156,33 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
 
   const windowSize = useWindowSize();
   const isMobile = windowSize?.width && windowSize.width <= 600;
+
+  const reorderLayers = useCallback(() => {
+    // this ensures layer order
+    const map = mapRef.current?.getMap();
+    if (!map || !map.isStyleLoaded()) return;
+
+    const existingLayers = LAYER_ORDER.filter((id) => map.getLayer(id));
+    if (existingLayers?.length < 2) return;
+
+    // key representing current layer set
+    const layerSetKey = existingLayers.join(",");
+
+    // skip if we've already ordered this exact set
+    if (orderedLayerSetRef.current === layerSetKey) return;
+
+    // place each layer on the top, in order
+    for (let i = 1; i < LAYER_ORDER.length; i++) {
+      try {
+        map.moveLayer(LAYER_ORDER[i]);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    // save layer set
+    orderedLayerSetRef.current = layerSetKey;
+  }, []);
 
   const handleMouseMove = useCallback(
     (event: MapMouseEvent) => {
@@ -283,10 +326,6 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
     window.parent.postMessage({ locations: miningLocations }, "*");
   }, [miningLocations, isEmbed]);
 
-  const getBeforeId = (targetLayerId: string) =>
-    // make sure the layer exists to avoid errors
-    mapRef.current?.getLayer(targetLayerId) ? targetLayerId : undefined;
-
   return (
     <div className="main-map">
       <Map
@@ -362,12 +401,14 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         onClick={handleClick}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeaveMap}
+        onIdle={reorderLayers}
+        onSourceData={reorderLayers}
         interactiveLayerIds={[
           "areas-layer-fill",
           // NOTE: hiding hotspots on Feb 2026
           // "hotspots-dot",
           // "hotspots-outline",
-          // "hotspots-polygon",
+          // "hotspots-circle",
           // "hotspots-fill",
         ]}
       >
@@ -398,7 +439,6 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
             layout={{
               visibility: activeYear === String(d) ? "visible" : "none",
             }}
-            beforeId={getBeforeId("hole-layer")}
           />
         ))}
 
@@ -459,7 +499,6 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           <>
             <Layer
               id={"areas-layer"}
-              beforeId={getBeforeId("mines-layer")}
               source={"areas"}
               type="line"
               paint={{
@@ -480,7 +519,6 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
             />
             <Layer
               id={"areas-layer-fill"}
-              beforeId={getBeforeId("areas-layer")}
               source={"areas"}
               type="fill"
               paint={{
@@ -500,7 +538,6 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           <>
             <Layer
               id={"selected-area-layer-fill"}
-              beforeId={getBeforeId("areas-layer")}
               source={"selected-area"}
               type="fill"
               paint={{
@@ -511,7 +548,6 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
             />
             <Layer
               id={"selected-area-layer"}
-              beforeId={getBeforeId("selected-area-layer-fill")}
               source={"selected-area"}
               type="line"
               paint={{
@@ -538,7 +574,6 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
             id={"mines-layer"}
             // NOTE: hiding hotspots on Feb 2026
             // beforeId={!isEmbed ? getBeforeId("hotspots-fill") : undefined}
-            beforeId={getBeforeId("hole-layer")}
             source={"mines"}
             type="line"
             filter={[
