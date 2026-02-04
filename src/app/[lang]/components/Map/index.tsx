@@ -77,10 +77,6 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
   const router = useRouter();
   const mapRef = useRef<MapRef>(null);
   const [bounds, setBounds] = useState<GeoJSONType | undefined>(undefined);
-  const [activeYear, setActiveYear] = useState(
-    String(Math.max(...LAYER_YEARS)),
-  );
-  const maxYear = Math.max(...LAYER_YEARS);
   const [isGeocoderHidden, setIsGeocoderHidden] = useState(true);
   const [tooltip, setTooltip] = useState<TooltipInfo | null>(null);
   const hoveredFeatureRef = useRef<string | number | undefined>(undefined);
@@ -94,6 +90,8 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
     selectedAreaTypeKey,
     areaUnits,
     hoveredYear,
+    activeYearStart,
+    activeYearEnd,
     isEmbed,
   } = state;
 
@@ -437,7 +435,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
             type="raster"
             source={`sentinel-${d}`}
             layout={{
-              visibility: activeYear === String(d) ? "visible" : "none",
+              visibility: activeYearEnd === String(d) ? "visible" : "none",
             }}
           />
         ))}
@@ -576,11 +574,15 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
             // beforeId={!isEmbed ? getBeforeId("hotspots-fill") : undefined}
             source={"mines"}
             type="line"
-            filter={[
-              hoveredYear ? "==" : "<=",
-              ["get", "year"],
-              hoveredYear ? hoveredYear : Number(activeYear),
-            ]}
+            filter={
+              hoveredYear
+                ? ["==", ["get", "year"], hoveredYear]
+                : [
+                    "all",
+                    [">=", ["get", "year"], Number(activeYearStart)],
+                    ["<=", ["get", "year"], Number(activeYearEnd)],
+                  ]
+            }
             paint={{
               "line-color": mineLayerColors,
               "line-opacity": 1,
@@ -652,8 +654,14 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
             }
             bounds={bounds}
             years={LAYER_YEARS}
-            activeYear={activeYear}
-            setActiveYear={setActiveYear}
+            activeYearStart={activeYearStart}
+            activeYearEnd={activeYearEnd}
+            setActiveYearStart={(v) =>
+              dispatch({ type: "SET_ACTIVE_YEAR_START", activeYearStart: v })
+            }
+            setActiveYearEnd={(v) =>
+              dispatch({ type: "SET_ACTIVE_YEAR_END", activeYearEnd: v })
+            }
             dictionary={dictionary}
           />
         )}
@@ -661,7 +669,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         {selectedArea && !isEmbed && (
           <AreaSummary
             dictionary={dictionary}
-            maxYear={maxYear}
+            maxYear={LAYER_YEARS[LAYER_YEARS.length - 1]}
             yearsColors={yearsColors}
           />
         )}

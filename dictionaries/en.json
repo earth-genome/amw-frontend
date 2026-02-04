@@ -61,7 +61,10 @@
     "hectaresAbbrev": "hectares",
     "squareKmAbbrev": "km²",
     "imperialAbbrev": "acres",
-    "type_of_mining": "Type of mining"
+    "type_of_mining": "Type of mining",
+    "period_start": "Display from",
+    "period_end": "To",
+    "period_end_tooltip": "Satellite imagery displays the most recent time period selected."
   },
   "types_of_mining": {
     "hotspot": "Hotspot",
