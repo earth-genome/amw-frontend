@@ -35,7 +35,7 @@ import AreaSelect from "@/app/[lang]/components/AreaSelect";
 import { Context } from "@/lib/Store";
 import GeocoderIcon from "@/app/[lang]/components/Icons/GeocoderIcon";
 import MapPopup, { TooltipInfo } from "@/app/[lang]/components/Map/MapPopup";
-import Hotspots from "@/app/[lang]/components/Map/Hotspots";
+// import Hotspots from "@/app/[lang]/components/Map/Hotspots";
 // import calculateMiningAreaInBbox from "@/utils/calculateMiningAreaInBbox";
 import useWindowSize from "@/hooks/useWindowSize";
 import Link from "next/link";
@@ -364,10 +364,11 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         onMouseLeave={handleMouseLeaveMap}
         interactiveLayerIds={[
           "areas-layer-fill",
-          "hotspots-dot",
-          "hotspots-outline",
-          "hotspots-polygon",
-          "hotspots-fill",
+          // NOTE: hiding hotspots on Feb 2026
+          // "hotspots-dot",
+          // "hotspots-outline",
+          // "hotspots-polygon",
+          // "hotspots-fill",
         ]}
       >
         {!isMobile && (
@@ -535,7 +536,9 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         {miningData && (
           <Layer
             id={"mines-layer"}
-            beforeId={!isEmbed ? getBeforeId("hotspots-fill") : undefined}
+            // NOTE: hiding hotspots on Feb 2026
+            // beforeId={!isEmbed ? getBeforeId("hotspots-fill") : undefined}
+            beforeId={getBeforeId("hole-layer")}
             source={"mines"}
             type="line"
             filter={[
@@ -560,31 +563,10 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
             }}
           />
         )}
-        {/* ================== LABELS =================== */}
-        <Layer
-          id="country-labels"
-          type="symbol"
-          source="amazon-cover-water"
-          source-layer="place_label"
-          filter={[
-            "all",
-            [
-              "<=",
-              ["string", ["get", "class"]],
-              "settlement, settlement_subdivision",
-            ],
-          ]}
-          minzoom={6}
-          layout={{
-            "text-field": ["coalesce", ["get", "name_en"], ["get", "name"]],
-          }}
-          paint={{
-            "text-color": "#ffffff",
-          }}
-        />
 
+        {/* NOTE: hiding hotspots on Feb 2026 */}
         {/* wait for mines to load so that hotspots are layered on top of mines */}
-        {miningData && !isEmbed && <Hotspots />}
+        {/* {miningData && !isEmbed && <Hotspots />} */}
 
         {/* ================== POPUP =================== */}
         {tooltip && !isMobile && (
