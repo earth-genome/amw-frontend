@@ -24,8 +24,6 @@ interface AreaSummaryDetailsProps {
   selectedAreaTimeseriesData: AreasTimeseriesData | undefined;
   hideMiningCalculator: boolean;
   description?: string;
-  hotspotType?: string;
-  maxYear: number;
   yearsColors: string[];
 }
 
@@ -38,8 +36,6 @@ const AreaSummaryDetails = ({
   hideMiningCalculator,
   description,
   illegalityAreas,
-  // hotspotType,
-  // maxYear,
   yearsColors,
 }: AreaSummaryDetailsProps) => {
   // eslint-disable-next-line no-unused-vars
@@ -155,17 +151,6 @@ const AreaSummaryDetails = ({
           />
         </>
       ) : null}
-
-      {/* {hotspotType ? (
-        <>
-          <div className={style.label}>
-            {dictionary?.map_ui?.type_of_mining}
-          </div>
-          <div className={style.paragraph}>
-            {dictionary?.types_of_mining?.[hotspotType]}
-          </div>
-        </>
-      ) : null} */}
 
       {description ? (
         <>
