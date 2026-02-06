@@ -31,7 +31,7 @@ const Intro: React.FC<IntroProps> = ({ dictionary }) => {
   }
 
   return (
-    <Overlay opacity={1}>
+    <Overlay>
       <div className="intro">
         <h1>{dictionary.intro.title}</h1>
         <p>{dictionary.intro.text}</p>
