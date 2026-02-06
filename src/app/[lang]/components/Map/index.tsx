@@ -59,11 +59,12 @@ const LAYER_ORDER = [
   // bottom to top
   ...LAYER_YEARS.map((d) => `sentinel-layer-${d}`),
   "hole-layer",
+  "country-boundaries",
   "areas-layer",
   "areas-layer-fill",
+  "mines-layer",
   "selected-area-layer",
   "selected-area-layer-fill",
-  "mines-layer",
   // "hotspots-fill",
   // "hotspots-outline",
   // "hotspots-circle",
@@ -604,6 +605,24 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         {/* NOTE: hiding hotspots on Feb 2026 */}
         {/* wait for mines to load so that hotspots are layered on top of mines */}
         {/* {miningData && !isEmbed && <Hotspots />} */}
+
+        {/* ============ COUNTRY BOUNDARIES ============== */}
+        <Source
+          id="country-boundaries-source"
+          type="vector"
+          url="mapbox://mapbox.country-boundaries-v1"
+        >
+          <Layer
+            id="country-boundaries"
+            type="line"
+            source-layer="country_boundaries"
+            paint={{
+              "line-color": "hsl(0, 0%, 48%)",
+              "line-opacity": 1,
+              "line-width": 0.3,
+            }}
+          />
+        </Source>
 
         {/* ================== POPUP =================== */}
         {tooltip && !isMobile && (
