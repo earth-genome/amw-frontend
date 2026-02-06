@@ -3,16 +3,26 @@ import "./style.css";
 
 interface OverlayProps {
   children?: ReactNode;
-  opacity?: number;
+  maxWidth?: number;
+  widthPct?: string;
 }
 
-const Overlay: React.FC<OverlayProps> = (props) => {
-  const { children } = props;
+const Overlay: React.FC<OverlayProps> = ({
+  children,
+  maxWidth = 600,
+  widthPct,
+}) => {
   return (
-    <div
-      className="overlay"
-    >
-      <div className="content">{children}</div>
+    <div className="overlay">
+      <div
+        className="content"
+        style={{
+          maxWidth,
+          width: widthPct,
+        }}
+      >
+        {children}
+      </div>
     </div>
   );
 };

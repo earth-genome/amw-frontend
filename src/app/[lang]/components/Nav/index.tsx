@@ -39,8 +39,8 @@ const Nav: React.FC<NavProps> = ({ children, dictionary }) => {
     // { href: `/${locale}/results`, label: dictionary.menu.results },
     { href: `/${locale}/case-studies`, label: dictionary.menu.case_studies },
     {
-      href: `/${locale}/methods-and-code`,
-      label: dictionary.menu.methods_and_code,
+      href: `/${locale}/data-code-and-methods`,
+      label: dictionary.menu.data_code_and_methods,
     },
     {
       href: `/${locale}/policy-scoreboard`,
@@ -61,7 +61,7 @@ const Nav: React.FC<NavProps> = ({ children, dictionary }) => {
             duration: 0.8,
             stagger: 0.07,
             ease: "back.out(1.4)",
-          }
+          },
         );
       } else {
         gsap.fromTo(
@@ -72,7 +72,7 @@ const Nav: React.FC<NavProps> = ({ children, dictionary }) => {
             duration: 0.7,
             stagger: 0.06,
             ease: "back.in(1.4)",
-          }
+          },
         );
       }
     }
@@ -165,7 +165,7 @@ const Nav: React.FC<NavProps> = ({ children, dictionary }) => {
       </a>
 
       {showMenu && (
-        <Overlay opacity={1}>
+        <Overlay maxWidth={800} widthPct={"100%"}>
           <div className="main-menu">
             <div>
               <ul
