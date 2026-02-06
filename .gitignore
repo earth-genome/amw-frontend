@@ -42,3 +42,6 @@ next-env.d.ts
 # local data for testing
 public/test-data/
 public/website/
+
+# Sentry Config File
+.env.sentry-build-plugin
