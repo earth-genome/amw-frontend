@@ -7,7 +7,7 @@ import React, {
   useContext,
   useEffect,
 } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import Map, {
   Layer,
   Source,
@@ -29,12 +29,12 @@ import {
   LAYER_YEARS,
   MAP_MISSING_DATA_COLOR,
   MINING_LAYERS,
+  PERMITTED_AREA_TYPES_KEYS,
 } from "@/constants/map";
-import { Expression } from "mapbox-gl";
+import { Expression, Popup } from "mapbox-gl";
 import AreaSelect from "@/app/[lang]/components/AreaSelect";
 import { Context } from "@/lib/Store";
 import GeocoderIcon from "@/app/[lang]/components/Icons/GeocoderIcon";
-import MapPopup, { TooltipInfo } from "@/app/[lang]/components/Map/MapPopup";
 // import Hotspots from "@/app/[lang]/components/Map/Hotspots";
 // import calculateMiningAreaInBbox from "@/utils/calculateMiningAreaInBbox";
 import useWindowSize from "@/hooks/useWindowSize";
@@ -75,13 +75,12 @@ const LAYER_ORDER = [
 const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
   const [state, dispatch] = useContext(Context)!;
   const pathname = usePathname();
-  const router = useRouter();
   const mapRef = useRef<MapRef>(null);
   const [bounds, setBounds] = useState<GeoJSONType | undefined>(undefined);
   const [isGeocoderHidden, setIsGeocoderHidden] = useState(true);
-  const [tooltip, setTooltip] = useState<TooltipInfo | null>(null);
   const hoveredFeatureRef = useRef<string | number | undefined>(undefined);
   const orderedLayerSetRef = useRef<string>("");
+  const popupRef = useRef<mapboxgl.Popup | null>(null);
 
   const {
     miningData,
@@ -125,8 +124,8 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
     params.set("lng", lng.toFixed(2));
     params.set("lat", lat.toFixed(2));
 
-    router.replace(`${pathname}?${params.toString()}`);
-  }, [pathname, router]);
+    window.history.replaceState({}, "", `${pathname}?${params.toString()}`);
+  }, [pathname]);
 
   // const getCurrentBounds = useCallback(() => {
   //   if (!mapRef.current) return;
@@ -185,62 +184,74 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
 
   const handleMouseMove = useCallback(
     (event: MapMouseEvent) => {
-      if (isMobile) return; // ignore hover effect on mobile
-      const { features } = event;
+      if (isMobile || !mapRef.current || !popupRef.current) return;
+
+      const feature = event.features?.[0];
       const map = event.target;
-      const feature = features?.[0];
 
-      if (!feature?.properties) return;
+      if (!feature?.properties) {
+        map.getCanvas().style.cursor = "";
+        popupRef.current.remove();
+        return;
+      }
 
-      event.target.getCanvas().style.cursor = feature ? "pointer" : "";
-      setTooltip({
-        longitude: event.lngLat.lng,
-        latitude: event.lngLat.lat,
-        properties: feature.properties as { [key: string]: any },
-      });
+      map.getCanvas().style.cursor = "pointer";
 
-      // don't use hover effect for countries, it is too distracting
+      // HACK: because hotspots need to show title independent
+      // of what kind of area is displaying
+      const properties = feature.properties;
+      const title =
+        (properties?.type as PERMITTED_AREA_TYPES_KEYS) === "hotspots"
+          ? `${properties.title} ${dictionary?.map_ui?.hotspot ? `- ${dictionary?.map_ui?.hotspot}` : ""}`
+          : state.selectedAreaType?.renderTitle(properties);
+      const status = state.selectedAreaType?.renderStatus(properties);
+      const country = properties?.country;
+
+      // update popup position and content directly, no zero renders
+      popupRef.current
+        .setLngLat(event.lngLat)
+        .setHTML(
+          `<div>
+          <div class="map-tooltip-title">${title}</div>
+          ${status ? `<div>${status}</div>` : ""}
+          ${state.selectedAreaType?.showCountry ? `<div>${country}</div>` : ""}
+        </div>`,
+        )
+        .addTo(map);
+
       if (selectedAreaTypeKey === "countries") return;
+      if (hoveredFeatureRef.current === feature.id) return;
 
-      // remove hover state from previous feature
-      if (hoveredFeatureRef.current) {
+      if (hoveredFeatureRef.current != null) {
         map.setFeatureState(
-          {
-            source: "areas",
-            id: hoveredFeatureRef.current,
-          },
+          { source: "areas", id: hoveredFeatureRef.current },
           { hover: false },
         );
       }
-
-      // set hover state on current feature
-      if (feature.id) {
+      if (feature.id != null) {
         hoveredFeatureRef.current = feature.id;
         map.setFeatureState(
-          {
-            source: "areas",
-            id: feature.id,
-          },
+          { source: "areas", id: feature.id },
           { hover: true },
         );
       }
     },
-    [isMobile, selectedAreaTypeKey],
+    [
+      dictionary?.map_ui?.hotspot,
+      isMobile,
+      selectedAreaTypeKey,
+      state.selectedAreaType,
+    ],
   );
 
   const handleMouseLeaveMap = useCallback(() => {
-    setTooltip(null);
-    if (!hoveredFeatureRef.current || !mapRef.current) return;
-
+    popupRef.current?.remove();
+    if (hoveredFeatureRef.current == null || !mapRef.current) return;
     mapRef.current.setFeatureState(
-      {
-        source: "areas",
-        id: hoveredFeatureRef.current,
-      },
+      { source: "areas", id: hoveredFeatureRef.current },
       { hover: false },
     );
-
-    hoveredFeatureRef.current = undefined; // reset the ref after clearing hover state
+    hoveredFeatureRef.current = undefined;
   }, []);
 
   const handleClick = useCallback(
@@ -268,6 +279,13 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
     },
     [dispatch],
   );
+
+  // clean up on unmount
+  useEffect(() => {
+    return () => {
+      popupRef.current?.remove();
+    };
+  }, []);
 
   useEffect(() => {
     // zoom to selected area on change
@@ -359,6 +377,14 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         onLoad={() => {
           setMapPositionFromURL();
 
+          // popup
+          popupRef.current = new Popup({
+            closeButton: false,
+            closeOnClick: false,
+            className: "map-tooltip",
+            offset: 10,
+          });
+
           // geocoder
           if (!mapRef.current) return;
           const geocoder = new MapboxGeocoder({
@@ -401,7 +427,6 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeaveMap}
         onIdle={reorderLayers}
-        onSourceData={reorderLayers}
         interactiveLayerIds={[
           "areas-layer-fill",
           // NOTE: hiding hotspots on Feb 2026
@@ -623,11 +648,6 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
             }}
           />
         </Source>
-
-        {/* ================== POPUP =================== */}
-        {tooltip && !isMobile && (
-          <MapPopup tooltip={tooltip} dictionary={dictionary} />
-        )}
 
         {!isMobile && !isEmbed && (
           <ScaleControl
