@@ -41,6 +41,7 @@ import useWindowSize from "@/hooks/useWindowSize";
 import Link from "next/link";
 import Image from "next/image";
 import Logo from "@/app/[lang]/components/Nav/logo.svg";
+import useGeocoderClickOutside from "@/hooks/useClickOutsideGeocoder";
 
 interface MainMapProps {
   dictionary: { [key: string]: any };
@@ -81,6 +82,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
   const hoveredFeatureRef = useRef<string | number | undefined>(undefined);
   const orderedLayerSetRef = useRef<string>("");
   const popupRef = useRef<mapboxgl.Popup | null>(null);
+  const geocoderContainerRef = useRef<HTMLDivElement | null>(null);
 
   const {
     miningData,
@@ -335,6 +337,13 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
     };
   }, []);
 
+  // click outside handler for geocoder
+  useGeocoderClickOutside(
+    isGeocoderHidden,
+    geocoderContainerRef,
+    setIsGeocoderHidden,
+  );
+
   // in case we're in an iframe embed, this sends a post message to the parent window,
   // for the mining calculator
   const miningLocations = selectedAreaData?.properties?.locations;
@@ -403,6 +412,9 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           geocoderContainer.style.top = "calc(var(--top-navbar-height) + 10px)";
           geocoderContainer.style.right = "10px";
           geocoderContainer.style.zIndex = "1000";
+
+          // store ref to the container
+          geocoderContainerRef.current = geocoderContainer;
 
           const mapContainer = document.querySelector(".main-map");
           if (mapContainer) {
