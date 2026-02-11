@@ -6,6 +6,7 @@ import { CopyOutlined, ShareAltOutlined } from "@ant-design/icons";
 interface MapShareButtonProps {
   latitude: undefined | number;
   longitude: undefined | number;
+  dictionary: { [key: string]: any };
 }
 
 const copyToClipboard = async (text: string): Promise<void> => {
@@ -16,7 +17,11 @@ const copyToClipboard = async (text: string): Promise<void> => {
   }
 };
 
-const MapShareButton = ({ latitude, longitude }: MapShareButtonProps) => {
+const MapShareButton = ({
+  latitude,
+  longitude,
+  dictionary,
+}: MapShareButtonProps) => {
   const [open, setOpen] = useState(false);
 
   const handleToggleMenu = () => {
@@ -33,7 +38,7 @@ const MapShareButton = ({ latitude, longitude }: MapShareButtonProps) => {
   const popoverContent = (
     <div>
       <div className={style.latLngTable}>
-        <div className={style.title}>Map center</div>
+        <div className={style.title}>{dictionary?.map_ui?.map_center}</div>
         <div className={style.latLngRow}>
           <div className={style.label}>Lat:</div>
           <div className={style.number}>{latitude?.toFixed(4)}</div>
@@ -44,7 +49,7 @@ const MapShareButton = ({ latitude, longitude }: MapShareButtonProps) => {
         </div>
       </div>
       <Button onClick={handleCopyUrl}>
-        <CopyOutlined style={{ fontSize: "16px" }} /> Copy URL
+        <CopyOutlined style={{ fontSize: "16px" }} /> {dictionary?.map_ui?.copy_link}
       </Button>
     </div>
   );

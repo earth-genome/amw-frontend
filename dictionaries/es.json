@@ -62,6 +62,8 @@
     "squareKmAbbrev": "km²",
     "imperialAbbrev": "acres",
     "type_of_mining": "Tipo de minería",
+    "map_center": "Centro del mapa",
+    "copy_link": "Copiar enlace",
     "period_start": "Visualizar desde",
     "period_end": "Hasta",
     "period_end_tooltip": "Las imágenes satelitales muestran el período de tiempo más reciente seleccionado."

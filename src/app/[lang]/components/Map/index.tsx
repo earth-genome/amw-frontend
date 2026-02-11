@@ -676,7 +676,11 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
             <NavigationControl
               position={isEmbed ? "bottom-left" : "top-right"}
             />
-            <MapShareButton latitude={latitude} longitude={longitude} />
+            <MapShareButton
+              latitude={latitude}
+              longitude={longitude}
+              dictionary={dictionary}
+            />
           </>
         )}
       </Map>
