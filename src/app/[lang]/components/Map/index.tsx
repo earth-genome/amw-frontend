@@ -44,6 +44,7 @@ import Image from "next/image";
 import Logo from "@/app/[lang]/components/Nav/logo.svg";
 import useGeocoderClickOutside from "@/hooks/useClickOutsideGeocoder";
 import { addDrawToMap } from "@/app/[lang]/components/Map/draw";
+import MapShareButton from "@/app/[lang]/components/MapShareButton";
 
 interface MainMapProps {
   dictionary: { [key: string]: any };
@@ -105,6 +106,8 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
   const orderedLayerSetRef = useRef<string>("");
   const popupRef = useRef<mapboxgl.Popup | null>(null);
   const geocoderContainerRef = useRef<HTMLDivElement | null>(null);
+  const [latitude, setLatitude] = useState<undefined | number>(undefined);
+  const [longitude, setLongitude] = useState<undefined | number>(undefined);
 
   const {
     miningData,
@@ -140,6 +143,9 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
     const center = mapRef.current.getCenter();
     const lng = center?.lng;
     const lat = center?.lat;
+
+    setLatitude(lat);
+    setLongitude(lng);
 
     if (!zoom || !lng || !lat) return;
 
@@ -478,10 +484,6 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           // "hotspots-fill",
         ]}
       >
-        {!isMobile && (
-          <NavigationControl position={isEmbed ? "bottom-left" : "top-right"} />
-        )}
-
         {/* ================== SENTINEL2 SOURCES =================== */}
         {MINING_LAYERS.map(
           ({ yearQuarter, satelliteEndpoint, satelliteDates }) => (
@@ -695,6 +697,10 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
             unit={areaUnits === "imperial" ? "imperial" : "metric"}
           />
         )}
+
+        {!isMobile && (
+          <NavigationControl position={isEmbed ? "bottom-left" : "top-right"} />
+        )}
       </Map>
 
       {/* @ts-ignore */}
@@ -724,6 +730,14 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
               <GeocoderIcon />
             </button>
           </div>
+        )}
+
+        {!isMobile && !isEmbed && (
+          <MapShareButton
+            latitude={latitude}
+            longitude={longitude}
+            dictionary={dictionary}
+          />
         )}
 
         {!isEmbed && (

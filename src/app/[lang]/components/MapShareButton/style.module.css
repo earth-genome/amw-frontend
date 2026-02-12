@@ -1,0 +1,47 @@
+.mapShareButton {
+  position: absolute;
+  top: calc(var(--top-navbar-height) + 165px);
+  right: 10px;
+  z-index: 1000;
+  height: 36px;
+  width: 29px;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  justify-items: center;
+  border-radius: 4px;
+  background-color: #fff;
+  border: none;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
+
+.latLngTable {
+  margin-bottom: 8px;
+}
+
+.latLngRow {
+  display: flex;
+  align-items: center;
+}
+
+.title {
+  font-weight: 500;
+  border-bottom: 1px solid white;
+  padding-bottom: 2px;
+  margin-bottom: 4px;
+}
+
+.label {
+  font-weight: 700;
+  font-family: "Courier New", Courier, monospace;
+}
+
+.number {
+  font-family: "Courier New", Courier, monospace;
+  font-weight: 700;
+  font-size: 14px;
+  text-align: right;
+  margin-left: 8px;
+}
