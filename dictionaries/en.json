@@ -62,6 +62,10 @@
     "squareKmAbbrev": "km²",
     "imperialAbbrev": "acres",
     "type_of_mining": "Type of mining",
+    "map_center": "Map center",
+    "copy_link": "Copy link",
+    "copy_error": "There was an error copying the link. Try again",
+    "copy_success": "Copied link", 
     "period_start": "Display from",
     "period_end": "To",
     "period_end_tooltip": "Satellite imagery displays the most recent time period selected."
