@@ -2,7 +2,7 @@ import { scaleSequential } from "d3-scale";
 import { interpolateRgbBasis } from "d3-interpolate";
 import { HOTSPOTS_GEOJSON_URL } from "@/cms/hotspots";
 
-const DATA_UPDATED_AT = "20260124";
+const DATA_UPDATED_AT = "20260212";
 const DATA_BASE_URL =
   // "/website";
   `${process.env.NEXT_PUBLIC_DATA_URL}/${DATA_UPDATED_AT}`;
