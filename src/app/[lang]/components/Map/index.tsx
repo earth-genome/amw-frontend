@@ -703,7 +703,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           </div>
         )}
 
-        {!isMobile && (
+        {!isMobile && !isEmbed && (
           <MapShareButton
             latitude={latitude}
             longitude={longitude}
