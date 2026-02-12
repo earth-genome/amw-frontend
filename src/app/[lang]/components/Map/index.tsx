@@ -672,16 +672,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         )}
 
         {!isMobile && (
-          <>
-            <NavigationControl
-              position={isEmbed ? "bottom-left" : "top-right"}
-            />
-            <MapShareButton
-              latitude={latitude}
-              longitude={longitude}
-              dictionary={dictionary}
-            />
-          </>
+          <NavigationControl position={isEmbed ? "bottom-left" : "top-right"} />
         )}
       </Map>
 
@@ -712,6 +703,14 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
               <GeocoderIcon />
             </button>
           </div>
+        )}
+
+        {!isMobile && (
+          <MapShareButton
+            latitude={latitude}
+            longitude={longitude}
+            dictionary={dictionary}
+          />
         )}
 
         {!isEmbed && (

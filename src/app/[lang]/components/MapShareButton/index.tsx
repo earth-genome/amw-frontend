@@ -9,10 +9,14 @@ interface MapShareButtonProps {
   dictionary: { [key: string]: any };
 }
 
-const copyToClipboard = async (text: string): Promise<void> => {
+const copyToClipboard = async (
+  text: string,
+  errorText: string,
+): Promise<void> => {
   try {
     await navigator.clipboard.writeText(text);
   } catch (err) {
+    message.error(errorText);
     console.error("Failed to copy: ", err);
   }
 };
@@ -30,8 +34,8 @@ const MapShareButton = ({
 
   const handleCopyUrl = async () => {
     const url = window.location.href;
-    copyToClipboard(url).then(() => {
-      message.success("URL copied");
+    copyToClipboard(url, dictionary?.map_ui?.copy_error).then(() => {
+      message.success(dictionary?.map_ui?.copy_success);
     });
   };
 
@@ -49,7 +53,8 @@ const MapShareButton = ({
         </div>
       </div>
       <Button onClick={handleCopyUrl}>
-        <CopyOutlined style={{ fontSize: "16px" }} /> {dictionary?.map_ui?.copy_link}
+        <CopyOutlined style={{ fontSize: 16 }} />{" "}
+        {dictionary?.map_ui?.copy_link}
       </Button>
     </div>
   );
@@ -74,7 +79,7 @@ const MapShareButton = ({
         placement="left"
       >
         <button className={style.mapShareButton} onClick={handleToggleMenu}>
-          <ShareAltOutlined style={{ fontSize: "16px" }} />
+          <ShareAltOutlined style={{ fontSize: 18 }} />
         </button>
       </Popover>
     </ConfigProvider>

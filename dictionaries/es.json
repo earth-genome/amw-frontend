@@ -64,6 +64,8 @@
     "type_of_mining": "Tipo de minería",
     "map_center": "Centro del mapa",
     "copy_link": "Copiar enlace",
+    "copy_error": "Hubo un error al copiar el enlace. Inténtalo de nuevo",
+    "copy_success": "Enlace copiado",
     "period_start": "Visualizar desde",
     "period_end": "Hasta",
     "period_end_tooltip": "Las imágenes satelitales muestran el período de tiempo más reciente seleccionado."

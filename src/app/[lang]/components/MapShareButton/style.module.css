@@ -1,6 +1,6 @@
 .mapShareButton {
   position: absolute;
-  top: calc(var(--top-navbar-height) + 135px);
+  top: calc(var(--top-navbar-height) + 165px);
   right: 10px;
   z-index: 1000;
   height: 36px;
