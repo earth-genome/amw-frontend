@@ -358,8 +358,6 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
     window.parent.postMessage({ locations: miningLocations }, "*");
   }, [miningLocations, isEmbed]);
 
-  console.log("render");
-
   return (
     <div className="main-map">
       <Map
