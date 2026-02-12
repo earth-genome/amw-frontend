@@ -16,6 +16,7 @@
     "@ant-design/nextjs-registry": "^1.0.0",
     "@formatjs/intl-localematcher": "^0.5.4",
     "@hotjar/browser": "^1.0.9",
+    "@mapbox/mapbox-gl-draw": "^1.5.1",
     "@mapbox/mapbox-gl-geocoder": "^5.0.3",
     "@sentry/nextjs": "^10",
     "@turf/turf": "^7.2.0",
@@ -50,6 +51,7 @@
   },
   "devDependencies": {
     "@types/js-cookie": "^3.0.6",
+    "@types/mapbox__mapbox-gl-draw": "^1.4.9",
     "@types/mapbox__mapbox-gl-geocoder": "^5.0.0",
     "@types/negotiator": "^0.6.3",
     "@types/node": "^20",
