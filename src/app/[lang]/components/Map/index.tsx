@@ -427,6 +427,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           setMapPositionFromURL();
 
           // popup
+          // @ts-ignore
           popupRef.current = new Popup({
             closeButton: false,
             closeOnClick: false,
