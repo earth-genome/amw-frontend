@@ -21,7 +21,9 @@ import { convertBoundsToGeoJSON, GeoJSONType } from "./helpers";
 import LegendWrapper from "@/app/[lang]/components/Map/LegendWrapper";
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
-import * as turf from "@turf/turf";
+import { bbox as turfBbox } from "@turf/turf";
+import MapboxDraw from "@mapbox/mapbox-gl-draw";
+import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 import {
   ENTIRE_AMAZON_AREA_ID,
   generateSatelliteTiles,
@@ -42,7 +44,9 @@ import Link from "next/link";
 import Image from "next/image";
 import Logo from "@/app/[lang]/components/Nav/logo.svg";
 import useGeocoderClickOutside from "@/hooks/useClickOutsideGeocoder";
+import { addDrawToMap } from "@/app/[lang]/components/Map/draw";
 import MapShareButton from "@/app/[lang]/components/MapShareButton";
+import MapMeasurements from "@/app/[lang]/components/Map/MapMeasurements";
 
 interface MainMapProps {
   dictionary: { [key: string]: any };
@@ -57,6 +61,22 @@ const SATELLITE_LAYERS = {
   yearly: "mapbox://styles/earthrise/clvwchqxi06gh01pe1huv70id",
   hiRes: "mapbox://styles/earthrise/cmdxgrceq014x01s22jfm5muv", // Mapbox satellite
 };
+const DRAWING_LAYERS = [
+  "gl-draw-polygon-fill.cold",
+  "gl-draw-lines.cold",
+  "gl-draw-point-outer.cold",
+  "gl-draw-point-inner.cold",
+  "gl-draw-vertex-outer.cold",
+  "gl-draw-vertex-inner.cold",
+  "gl-draw-midpoint.cold",
+  "gl-draw-polygon-fill.hot",
+  "gl-draw-lines.hot",
+  "gl-draw-point-outer.hot",
+  "gl-draw-point-inner.hot",
+  "gl-draw-vertex-outer.hot",
+  "gl-draw-vertex-inner.hot",
+  "gl-draw-midpoint.hot",
+];
 const LAYER_ORDER = [
   // bottom to top
   ...LAYER_YEARS.map((d) => `sentinel-layer-${d}`),
@@ -72,6 +92,7 @@ const LAYER_ORDER = [
   // "hotspots-circle",
   // "hotspots-dot",
   // "hotspots-labels",
+  ...DRAWING_LAYERS,
 ];
 
 const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
@@ -80,6 +101,10 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
   const mapRef = useRef<MapRef>(null);
   const [bounds, setBounds] = useState<GeoJSONType | undefined>(undefined);
   const [isGeocoderHidden, setIsGeocoderHidden] = useState(true);
+  const isDrawingRef = useRef<boolean>(false);
+  const drawRef = useRef<MapboxDraw | null>(null);
+  const [areaMeasure, setAreaMeasure] = useState<number>(0);
+  const [lineMeasure, setLineMeasure] = useState<number>(0);
   const hoveredFeatureRef = useRef<string | number | undefined>(undefined);
   const orderedLayerSetRef = useRef<string>("");
   const popupRef = useRef<mapboxgl.Popup | null>(null);
@@ -99,6 +124,8 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
     activeYearEnd,
     isEmbed,
   } = state;
+
+  const hasMeasurement = areaMeasure > 0 || lineMeasure > 0;
 
   const setMapPositionFromURL = useCallback(() => {
     const searchParams = new URLSearchParams(window.location.search);
@@ -178,9 +205,9 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
     if (orderedLayerSetRef.current === layerSetKey) return;
 
     // place each layer on the top, in order
-    for (let i = 1; i < LAYER_ORDER.length; i++) {
+    for (let i = 1; i < existingLayers.length; i++) {
       try {
-        map.moveLayer(LAYER_ORDER[i]);
+        map.moveLayer(existingLayers[i]);
       } catch (e) {
         console.error(e);
       }
@@ -197,9 +224,16 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
       const feature = event.features?.[0];
       const map = event.target;
 
-      if (!feature?.properties) {
+      // ignore if user is drawing or no feature
+      if (isDrawingRef?.current || hasMeasurement || !feature?.properties) {
         map.getCanvas().style.cursor = "";
         popupRef.current.remove();
+        if (hoveredFeatureRef.current != null) {
+          map.setFeatureState(
+            { source: "areas", id: hoveredFeatureRef.current },
+            { hover: false },
+          );
+        }
         return;
       }
 
@@ -225,6 +259,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           ${state.selectedAreaType?.showCountry ? `<div>${country}</div>` : ""}
         </div>`,
         )
+        // @ts-ignore
         .addTo(map);
 
       if (selectedAreaTypeKey === "countries") return;
@@ -246,6 +281,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
     },
     [
       dictionary?.map_ui?.hotspot,
+      hasMeasurement,
       isMobile,
       selectedAreaTypeKey,
       state.selectedAreaType,
@@ -272,6 +308,9 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
       );
       if (clickedOnExcludedLayer) return;
 
+      // ignore if user is drawing
+      if (isDrawingRef?.current || hasMeasurement) return;
+
       const featuresFiltered = features.filter(
         (d) =>
           // ignore entire amazon layer as it covers everything
@@ -285,7 +324,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
       if (!id) return;
       dispatch({ type: "SET_SELECTED_AREA_BY_ID", selectedAreaId: id });
     },
-    [dispatch],
+    [dispatch, hasMeasurement],
   );
 
   // clean up on unmount
@@ -299,12 +338,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
     // zoom to selected area on change
     if (!selectedAreaData || !mapRef.current) return;
 
-    const bbox = turf.bbox(selectedAreaData) as [
-      number,
-      number,
-      number,
-      number,
-    ];
+    const bbox = turfBbox(selectedAreaData) as [number, number, number, number];
 
     mapRef.current.fitBounds(bbox, {
       padding: { top: 70, bottom: isMobile ? 300 : 70, left: 20, right: 20 },
@@ -393,6 +427,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           setMapPositionFromURL();
 
           // popup
+          // @ts-ignore
           popupRef.current = new Popup({
             closeButton: false,
             closeOnClick: false,
@@ -439,6 +474,13 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
               padding: { top: 20, bottom: 20, left: 20, right: 20 },
               duration: 2000,
             });
+          });
+
+          drawRef.current = addDrawToMap({
+            setAreaMeasure,
+            setLineMeasure,
+            mapRef: mapRef?.current,
+            isDrawingRef,
           });
         }}
         onClick={handleClick}
@@ -611,7 +653,6 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           <Layer
             id={"mines-layer"}
             // NOTE: hiding hotspots on Feb 2026
-            // beforeId={!isEmbed ? getBeforeId("hotspots-fill") : undefined}
             source={"mines"}
             type="line"
             filter={
@@ -731,11 +772,25 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           />
         )}
 
-        {selectedArea && !isEmbed && (
+        {selectedArea && !isEmbed && !hasMeasurement && (
           <AreaSummary
             dictionary={dictionary}
             maxYear={LAYER_YEARS[LAYER_YEARS.length - 1]}
             yearsColors={yearsColors}
+          />
+        )}
+
+        {hasMeasurement && (
+          <MapMeasurements
+            areaMeasure={areaMeasure}
+            lineMeasure={lineMeasure}
+            dictionary={dictionary}
+            onClose={() => {
+              drawRef.current?.deleteAll();
+              setAreaMeasure(0);
+              setLineMeasure(0);
+              isDrawingRef.current = false;
+            }}
           />
         )}
 

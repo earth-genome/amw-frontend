@@ -73,6 +73,19 @@
   margin: 60px 10px 0 0;
 }
 
+.draw-controls {
+  margin: 0 !important;
+  position: fixed;
+  top: 88px;
+  right: 55px;
+}
+
+@media (max-width: 600px) {
+  .draw-controls {
+    display: none;
+  }
+}
+
 .geocoder-hidden {
   visibility: hidden;
 }
