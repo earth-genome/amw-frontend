@@ -7,8 +7,8 @@ import { MapRef } from "react-map-gl";
 import { MutableRefObject } from "react";
 
 interface addDrawToMapProps {
-  setAreaMeasure: (_value: number | undefined) => void;
-  setLineMeasure: (_value: number | undefined) => void;
+  setAreaMeasure: (_value: number) => void;
+  setLineMeasure: (_value: number) => void;
   mapRef: MapRef;
   isDrawingRef: MutableRefObject<boolean>;
 }
@@ -37,8 +37,8 @@ export const addDrawToMap = ({
   clearAllButton.title = "Clear all";
   clearAllButton.addEventListener("click", () => {
     draw.deleteAll();
-    setAreaMeasure(undefined);
-    setLineMeasure(undefined);
+    setAreaMeasure(0);
+    setLineMeasure(0);
     isDrawingRef.current = false;
   });
 
@@ -93,8 +93,8 @@ export const addDrawToMap = ({
       setAreaMeasure(Math.round(totalArea * 100) / 100);
       setLineMeasure(Math.round(totalLength * 100) / 100);
     } else {
-      setAreaMeasure(undefined);
-      setLineMeasure(undefined);
+      setAreaMeasure(0);
+      setLineMeasure(0);
     }
   }
 };

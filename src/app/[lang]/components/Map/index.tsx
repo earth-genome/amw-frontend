@@ -45,6 +45,7 @@ import Logo from "@/app/[lang]/components/Nav/logo.svg";
 import useGeocoderClickOutside from "@/hooks/useClickOutsideGeocoder";
 import { addDrawToMap } from "@/app/[lang]/components/Map/draw";
 import MapShareButton from "@/app/[lang]/components/MapShareButton";
+import MapMeasurements from "@/app/[lang]/components/Map/MapMeasurements";
 
 interface MainMapProps {
   dictionary: { [key: string]: any };
@@ -100,8 +101,8 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
   const [bounds, setBounds] = useState<GeoJSONType | undefined>(undefined);
   const [isGeocoderHidden, setIsGeocoderHidden] = useState(true);
   const isDrawingRef = useRef<boolean>(false);
-  const [areaMeasure, setAreaMeasure] = useState<number | undefined>(undefined);
-  const [lineMeasure, setLineMeasure] = useState<number | undefined>(undefined);
+  const [areaMeasure, setAreaMeasure] = useState<number>(0);
+  const [lineMeasure, setLineMeasure] = useState<number>(0);
   const hoveredFeatureRef = useRef<string | number | undefined>(undefined);
   const orderedLayerSetRef = useRef<string>("");
   const popupRef = useRef<mapboxgl.Popup | null>(null);
@@ -109,6 +110,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
   const [latitude, setLatitude] = useState<undefined | number>(undefined);
   const [longitude, setLongitude] = useState<undefined | number>(undefined);
 
+  const hasMeasurement = areaMeasure > 0 || lineMeasure > 0;
   const {
     miningData,
     areasData,
@@ -760,11 +762,19 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           />
         )}
 
-        {selectedArea && !isEmbed && (
+        {selectedArea && !isEmbed && !hasMeasurement && (
           <AreaSummary
             dictionary={dictionary}
             maxYear={LAYER_YEARS[LAYER_YEARS.length - 1]}
             yearsColors={yearsColors}
+          />
+        )}
+
+        {hasMeasurement && (
+          <MapMeasurements
+            areaMeasure={areaMeasure}
+            lineMeasure={lineMeasure}
+            dictionary={dictionary}
           />
         )}
 

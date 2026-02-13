@@ -1,0 +1,10 @@
+.card {
+  position: fixed;
+  right: 20px;
+  bottom: 50px;
+  width: 200px;
+  z-index: 500;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+}
