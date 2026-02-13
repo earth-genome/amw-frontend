@@ -259,6 +259,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           ${state.selectedAreaType?.showCountry ? `<div>${country}</div>` : ""}
         </div>`,
         )
+        // @ts-ignore
         .addTo(map);
 
       if (selectedAreaTypeKey === "countries") return;
