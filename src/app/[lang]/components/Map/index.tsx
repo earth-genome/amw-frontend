@@ -22,6 +22,7 @@ import LegendWrapper from "@/app/[lang]/components/Map/LegendWrapper";
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import { bbox as turfBbox } from "@turf/turf";
+import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 import {
   ENTIRE_AMAZON_AREA_ID,
@@ -101,6 +102,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
   const [bounds, setBounds] = useState<GeoJSONType | undefined>(undefined);
   const [isGeocoderHidden, setIsGeocoderHidden] = useState(true);
   const isDrawingRef = useRef<boolean>(false);
+  const drawRef = useRef<MapboxDraw | null>(null);
   const [areaMeasure, setAreaMeasure] = useState<number>(0);
   const [lineMeasure, setLineMeasure] = useState<number>(0);
   const hoveredFeatureRef = useRef<string | number | undefined>(undefined);
@@ -110,7 +112,6 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
   const [latitude, setLatitude] = useState<undefined | number>(undefined);
   const [longitude, setLongitude] = useState<undefined | number>(undefined);
 
-  const hasMeasurement = areaMeasure > 0 || lineMeasure > 0;
   const {
     miningData,
     areasData,
@@ -123,6 +124,8 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
     activeYearEnd,
     isEmbed,
   } = state;
+
+  const hasMeasurement = areaMeasure > 0 || lineMeasure > 0;
 
   const setMapPositionFromURL = useCallback(() => {
     const searchParams = new URLSearchParams(window.location.search);
@@ -221,9 +224,16 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
       const feature = event.features?.[0];
       const map = event.target;
 
-      if (!feature?.properties) {
+      // ignore if user is drawing or no feature
+      if (isDrawingRef?.current || hasMeasurement || !feature?.properties) {
         map.getCanvas().style.cursor = "";
         popupRef.current.remove();
+        if (hoveredFeatureRef.current != null) {
+          map.setFeatureState(
+            { source: "areas", id: hoveredFeatureRef.current },
+            { hover: false },
+          );
+        }
         return;
       }
 
@@ -270,6 +280,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
     },
     [
       dictionary?.map_ui?.hotspot,
+      hasMeasurement,
       isMobile,
       selectedAreaTypeKey,
       state.selectedAreaType,
@@ -297,7 +308,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
       if (clickedOnExcludedLayer) return;
 
       // ignore if user is drawing
-      if (isDrawingRef?.current) return;
+      if (isDrawingRef?.current || hasMeasurement) return;
 
       const featuresFiltered = features.filter(
         (d) =>
@@ -312,7 +323,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
       if (!id) return;
       dispatch({ type: "SET_SELECTED_AREA_BY_ID", selectedAreaId: id });
     },
-    [dispatch],
+    [dispatch, hasMeasurement],
   );
 
   // clean up on unmount
@@ -379,9 +390,6 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
     if (!isEmbed || !miningLocations?.length) return;
     window.parent.postMessage({ locations: miningLocations }, "*");
   }, [miningLocations, isEmbed]);
-
-  // FIXME: display area
-  console.log(areaMeasure, lineMeasure, isDrawingRef);
 
   return (
     <div className="main-map">
@@ -466,7 +474,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
             });
           });
 
-          addDrawToMap({
+          drawRef.current = addDrawToMap({
             setAreaMeasure,
             setLineMeasure,
             mapRef: mapRef?.current,
@@ -775,6 +783,12 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
             areaMeasure={areaMeasure}
             lineMeasure={lineMeasure}
             dictionary={dictionary}
+            onClose={() => {
+              drawRef.current?.deleteAll();
+              setAreaMeasure(0);
+              setLineMeasure(0);
+              isDrawingRef.current = false;
+            }}
           />
         )}
 

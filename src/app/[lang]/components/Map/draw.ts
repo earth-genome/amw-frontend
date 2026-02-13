@@ -18,7 +18,7 @@ export const addDrawToMap = ({
   setLineMeasure,
   mapRef,
   isDrawingRef,
-}: addDrawToMapProps) => {
+}: addDrawToMapProps): MapboxDraw => {
   const draw = new MapboxDraw({
     displayControlsDefault: false,
     controls: {
@@ -50,32 +50,42 @@ export const addDrawToMap = ({
     drawControls.classList.add("draw-controls");
   }
 
-  // Track drawing state
+  // Track drawing state — when leaving a drawing mode, defer the reset
+  // so that handleClick (which fires in the same event loop tick) still
+  // sees isDrawingRef as true and can bail out for the final click.
   mapRef.on("draw.modechange", (e: DrawModeChangeEvent) => {
     const mode = e.mode;
-    isDrawingRef.current =
-      mode === "draw_polygon" || mode === "draw_line_string";
+    const isDrawing = mode === "draw_polygon" || mode === "draw_line_string";
+    if (isDrawing) {
+      isDrawingRef.current = true;
+    } else {
+      setTimeout(() => {
+        isDrawingRef.current = false;
+      }, 0);
+    }
   });
 
   mapRef.on("draw.create", updateMeasurements);
   mapRef.on("draw.delete", updateMeasurements);
   mapRef.on("draw.update", updateMeasurements);
 
+  return draw;
+
   function updateMeasurements(e: DrawEvent) {
     const data = draw.getAll();
 
-    // console.log(data);
-
-    // Drawing is complete when create event fires
+    // Drawing is complete when create event fires — defer the reset
+    // so handleClick still sees isDrawingRef as true for this click
     if (e.type === "draw.create") {
-      isDrawingRef.current = false;
+      setTimeout(() => {
+        isDrawingRef.current = false;
+      }, 0);
     }
 
     if (data.features.length > 0) {
       let totalArea = 0;
       let totalLength = 0;
 
-      // TODO: fix units
       data.features.forEach((feature) => {
         if (
           feature.geometry.type === "Polygon" ||
