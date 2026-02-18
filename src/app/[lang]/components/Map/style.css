@@ -115,7 +115,7 @@
   z-index: 1000;
   display: block;
 }
-@media (max-width: 900px) {
+@media (max-width: 1000px) {
   .amw-logo {
     left: 10px;
     top: 40px;
@@ -125,10 +125,16 @@
   width: 170px;
   height: 100px;
 }
-@media (max-width: 900px) {
+@media (max-width: 1000px) {
   .amw-logo img {
-    width: 70px;
+    width: 90px;
     height: 60px;
+  }
+}
+@media (max-width: 600px) {
+  .amw-logo img {
+    width: 80px;
+    height: 50px;
   }
 }
 

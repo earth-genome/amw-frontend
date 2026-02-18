@@ -20,10 +20,13 @@
   padding: 6px;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 1000px) {
   .mini-map-wrapper {
     display: none;
   }
+}
+
+@media (max-width: 600px) {
   .legend-wrapper {
     bottom: 20px;
     right: 32px;
