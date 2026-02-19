@@ -63,7 +63,6 @@
 .barSegment {
   height: 100%;
   transition: width 0.3s ease, opacity 0.3s ease;
-  cursor: pointer;
 }
 
 .value {

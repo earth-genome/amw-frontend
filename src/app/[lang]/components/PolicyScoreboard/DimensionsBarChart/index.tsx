@@ -6,16 +6,17 @@ import StackedBarChart from "@/app/[lang]/components/PolicyScoreboard/StackedBar
 import type {
   ByDimension,
   DimensionCountryScore,
-} from "@/app/[lang]/(map)/(content)/policy-scoreboard/types";
+} from "@/app/[lang]/(map)/(content)/amazon-mining-policy-scoreboard/types";
 import {
   getPolicyDimensionLocalized,
   POLICY_DIMENSIONS,
-} from "@/app/[lang]/(map)/(content)/policy-scoreboard/policy-dimensions";
+} from "@/app/[lang]/(map)/(content)/amazon-mining-policy-scoreboard/policy-dimensions";
 import { format } from "d3";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import styles from "./style.module.css";
 import { PERMITTED_LANGUAGES } from "@/utils/content";
+import { ROUTES } from "@/constants/routes";
 
 interface DimensionsBarChartProps {
   byDimension: ByDimension[];
@@ -83,7 +84,7 @@ const DimensionsBarChart = ({
                   )}
                 </span>
                 <Link
-                  href={`/${lang}/policy-scoreboard/dimension/${getDimensionSlug(dimensionName)}`}
+                  href={`/${lang}/${ROUTES["policy-scoreboard"].url}/dimension/${getDimensionSlug(dimensionName)}`}
                   className={styles.dimensionLink}
                 >
                   {t?.details}

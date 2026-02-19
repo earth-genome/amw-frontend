@@ -4,14 +4,13 @@ import {
   PERMITTED_LANGUAGES,
 } from "@/utils/content";
 import { apiFetcher } from "@/cms/client";
-import Overlay from "@/app/[lang]/components/Overlay";
 import {
   POLICY_SCOREBOARD_URL,
   PolicyScoreboardResponse,
 } from "@/cms/policy-scoreboard";
 import { getDictionary } from "@/get-dictionary";
 import PolicyScoreboard from "@/app/[lang]/components/PolicyScoreboard";
-import { getPolicyData } from "@/app/[lang]/(map)/(content)/policy-scoreboard/policy-scoreboard-data";
+import { getPolicyData } from "@/app/[lang]/(map)/(content)/amazon-mining-policy-scoreboard/policy-scoreboard-data";
 
 // Force dynamic rendering
 export const dynamic = "force-dynamic";
@@ -53,7 +52,7 @@ const Page: NextPage<PageProps> = async ({ params: { lang } }) => {
     await getPolicyData(lang);
 
   return (
-    <Overlay>
+    <div>
       {/* {title && <h1>{title}</h1>} */}
       {/* {body && <div dangerouslySetInnerHTML={getMarkdownText(body)} />} */}
       <h1>{dictionary?.policy_scoreboard?.title}</h1>
@@ -70,7 +69,7 @@ const Page: NextPage<PageProps> = async ({ params: { lang } }) => {
         countries={countryNames}
         dictionary={dictionary}
       />
-    </Overlay>
+    </div>
   );
 };
 

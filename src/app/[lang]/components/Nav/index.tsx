@@ -9,6 +9,7 @@ import React, { Fragment, ReactNode, useEffect, useRef, useState } from "react";
 import "./style.css";
 import { LOCALES } from "@/utils/content";
 import ExternalLink from "@/app/[lang]/components/Icons/ExternalLink";
+import { ROUTES } from "@/constants/routes";
 
 interface NavProps {
   children?: ReactNode;
@@ -43,7 +44,7 @@ const Nav: React.FC<NavProps> = ({ children, dictionary }) => {
       label: dictionary.menu.methods_and_code,
     },
     {
-      href: `/${locale}/policy-scoreboard`,
+      href: `/${locale}/${ROUTES["policy-scoreboard"].url}`,
       label: dictionary.menu.policy_scoreboard,
     },
     { href: `/${locale}/faq`, label: dictionary.menu.faq },
@@ -61,7 +62,7 @@ const Nav: React.FC<NavProps> = ({ children, dictionary }) => {
             duration: 0.8,
             stagger: 0.07,
             ease: "back.out(1.4)",
-          }
+          },
         );
       } else {
         gsap.fromTo(
@@ -72,7 +73,7 @@ const Nav: React.FC<NavProps> = ({ children, dictionary }) => {
             duration: 0.7,
             stagger: 0.06,
             ease: "back.in(1.4)",
-          }
+          },
         );
       }
     }
@@ -165,7 +166,7 @@ const Nav: React.FC<NavProps> = ({ children, dictionary }) => {
       </a>
 
       {showMenu && (
-        <Overlay opacity={1}>
+        <Overlay>
           <div className="main-menu">
             <div>
               <ul

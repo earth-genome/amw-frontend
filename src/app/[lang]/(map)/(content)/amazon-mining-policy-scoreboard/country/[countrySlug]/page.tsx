@@ -1,14 +1,14 @@
 import {
   POLICY_COUNTRIES,
   PERMITTED_POLICY_COUNTRY_SLUGS,
-} from "@/app/[lang]/(map)/(content)/policy-scoreboard/policy-countries";
+} from "@/app/[lang]/(map)/(content)/amazon-mining-policy-scoreboard/policy-countries";
 import { getDictionary } from "@/get-dictionary";
 import { PERMITTED_LANGUAGES } from "@/utils/content";
-import Overlay from "@/app/[lang]/components/Overlay";
 import { NextPage } from "next";
 import Link from "next/link";
-import { getPolicyData } from "@/app/[lang]/(map)/(content)/policy-scoreboard/policy-scoreboard-data";
+import { getPolicyData } from "@/app/[lang]/(map)/(content)/amazon-mining-policy-scoreboard/policy-scoreboard-data";
 import CountryDetails from "@/app/[lang]/components/PolicyScoreboard/CountryDetails";
+import { ROUTES } from "@/constants/routes";
 
 // Force dynamic rendering
 export const dynamic = "force-dynamic";
@@ -32,9 +32,9 @@ const Page: NextPage<PageProps> = async ({ params: { lang, countrySlug } }) => {
   const countryEnglishName = country?.name_en ?? countrySlug;
 
   return (
-    <Overlay>
+    <div>
       <Link
-        href={`/${lang}/policy-scoreboard`}
+        href={`/${lang}/${ROUTES["policy-scoreboard"].url}`}
         style={{ color: "#fff", fontSize: 16 }}
       >
         {dictionary?.policy_scoreboard?.back_to_scoreboard ??
@@ -49,7 +49,7 @@ const Page: NextPage<PageProps> = async ({ params: { lang, countrySlug } }) => {
         countryEnglishName={countryEnglishName}
         dictionary={dictionary}
       />
-    </Overlay>
+    </div>
   );
 };
 

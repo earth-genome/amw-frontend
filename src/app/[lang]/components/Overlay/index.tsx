@@ -3,15 +3,11 @@ import "./style.css";
 
 interface OverlayProps {
   children?: ReactNode;
-  opacity?: number;
 }
 
-const Overlay: React.FC<OverlayProps> = (props) => {
-  const { children } = props;
+const Overlay = ({ children }: OverlayProps) => {
   return (
-    <div
-      className="overlay"
-    >
+    <div className="overlay">
       <div className="content">{children}</div>
     </div>
   );

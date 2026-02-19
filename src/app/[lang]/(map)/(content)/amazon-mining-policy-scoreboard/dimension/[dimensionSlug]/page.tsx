@@ -1,15 +1,15 @@
 import {
   POLICY_DIMENSIONS,
   PolicyDimensionSlug,
-} from "@/app/[lang]/(map)/(content)/policy-scoreboard/policy-dimensions";
-import type { DimensionName } from "@/app/[lang]/(map)/(content)/policy-scoreboard/types";
+} from "@/app/[lang]/(map)/(content)/amazon-mining-policy-scoreboard/policy-dimensions";
+import type { DimensionName } from "@/app/[lang]/(map)/(content)/amazon-mining-policy-scoreboard/types";
 import { getDictionary } from "@/get-dictionary";
 import { PERMITTED_LANGUAGES } from "@/utils/content";
-import Overlay from "@/app/[lang]/components/Overlay";
 import { NextPage } from "next";
 import Link from "next/link";
-import { getPolicyData } from "@/app/[lang]/(map)/(content)/policy-scoreboard/policy-scoreboard-data";
+import { getPolicyData } from "@/app/[lang]/(map)/(content)/amazon-mining-policy-scoreboard/policy-scoreboard-data";
 import DimensionDetails from "@/app/[lang]/components/PolicyScoreboard/DimensionDetails";
+import { ROUTES } from "@/constants/routes";
 
 // Force dynamic rendering
 export const dynamic = "force-dynamic";
@@ -34,9 +34,9 @@ const Page: NextPage<PageProps> = async ({
   const dimensionKey = dimension?.key as DimensionName;
 
   return (
-    <Overlay>
+    <div>
       <Link
-        href={`/${lang}/policy-scoreboard`}
+        href={`/${lang}/${ROUTES["policy-scoreboard"].url}`}
         style={{ color: "#fff", fontSize: 16 }}
       >
         {dictionary?.policy_scoreboard?.back_to_scoreboard ??
@@ -51,7 +51,7 @@ const Page: NextPage<PageProps> = async ({
         countries={countryNames}
         dictionary={dictionary}
       />
-    </Overlay>
+    </div>
   );
 };
 

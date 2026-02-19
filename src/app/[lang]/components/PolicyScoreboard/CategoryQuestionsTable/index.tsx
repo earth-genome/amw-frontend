@@ -4,9 +4,9 @@ import { useState } from "react";
 import type {
   PolicyScoreboardRow,
   DimensionName,
-} from "@/app/[lang]/(map)/(content)/policy-scoreboard/types";
+} from "@/app/[lang]/(map)/(content)/amazon-mining-policy-scoreboard/types";
 import { DIMENSION_COLORS } from "@/app/[lang]/components/PolicyScoreboard";
-import { getPolicyCategoryLocalized } from "@/app/[lang]/(map)/(content)/policy-scoreboard/policy-categories";
+import { getPolicyCategoryLocalized } from "@/app/[lang]/(map)/(content)/amazon-mining-policy-scoreboard/policy-categories";
 import { useParams } from "next/navigation";
 import { PERMITTED_LANGUAGES } from "@/utils/content";
 import styles from "./style.module.css";

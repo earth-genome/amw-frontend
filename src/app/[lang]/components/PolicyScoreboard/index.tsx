@@ -7,7 +7,7 @@ import type {
   ByDimension,
   ByCountry,
   DimensionName,
-} from "@/app/[lang]/(map)/(content)/policy-scoreboard/types";
+} from "@/app/[lang]/(map)/(content)/amazon-mining-policy-scoreboard/types";
 import styles from "./style.module.css";
 
 export const DIMENSION_COLORS: Record<DimensionName, string> = {

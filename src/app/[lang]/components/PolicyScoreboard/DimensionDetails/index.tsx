@@ -5,16 +5,16 @@ import type {
   ByDimension,
   CategoryCountryScore,
   DimensionName,
-} from "@/app/[lang]/(map)/(content)/policy-scoreboard/types";
+} from "@/app/[lang]/(map)/(content)/amazon-mining-policy-scoreboard/types";
 import { DIMENSION_COLORS } from "@/app/[lang]/components/PolicyScoreboard";
 import StackedBarChart from "@/app/[lang]/components/PolicyScoreboard/StackedBarChart";
 import { format } from "d3";
 import styles from "./style.module.css";
 import DimensionsBarChart from "../DimensionsBarChart";
-import { getPolicyCategoryLocalized } from "@/app/[lang]/(map)/(content)/policy-scoreboard/policy-categories";
+import { getPolicyCategoryLocalized } from "@/app/[lang]/(map)/(content)/amazon-mining-policy-scoreboard/policy-categories";
 import { useParams } from "next/navigation";
 import { PERMITTED_LANGUAGES } from "@/utils/content";
-import { getPolicyDimensionDescriptionLocalized } from "@/app/[lang]/(map)/(content)/policy-scoreboard/policy-dimensions";
+import { getPolicyDimensionDescriptionLocalized } from "@/app/[lang]/(map)/(content)/amazon-mining-policy-scoreboard/policy-dimensions";
 
 interface DimensionDetailsProps {
   dimensionKey: DimensionName;

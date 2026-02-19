@@ -5,7 +5,7 @@ import type {
   ByDimension,
   DimensionName,
   PolicyScoreboardRow,
-} from "@/app/[lang]/(map)/(content)/policy-scoreboard/types";
+} from "@/app/[lang]/(map)/(content)/amazon-mining-policy-scoreboard/types";
 import {
   DIMENSION_COLORS,
   MAX_VALUE_DIMENSION,
@@ -17,8 +17,8 @@ import styles from "./style.module.css";
 import {
   getPolicyDimensionDescriptionLocalized,
   getPolicyDimensionLocalized,
-} from "@/app/[lang]/(map)/(content)/policy-scoreboard/policy-dimensions";
-import { getPolicyCategoryLocalized } from "@/app/[lang]/(map)/(content)/policy-scoreboard/policy-categories";
+} from "@/app/[lang]/(map)/(content)/amazon-mining-policy-scoreboard/policy-dimensions";
+import { getPolicyCategoryLocalized } from "@/app/[lang]/(map)/(content)/amazon-mining-policy-scoreboard/policy-categories";
 import { useParams } from "next/navigation";
 import { PERMITTED_LANGUAGES } from "@/utils/content";
 

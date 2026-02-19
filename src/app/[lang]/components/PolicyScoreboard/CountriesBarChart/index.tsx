@@ -1,14 +1,15 @@
 import { DIMENSION_COLORS } from "@/app/[lang]/components/PolicyScoreboard";
 import StackedBarChart from "@/app/[lang]/components/PolicyScoreboard/StackedBarChart";
-import { POLICY_COUNTRIES } from "@/app/[lang]/(map)/(content)/policy-scoreboard/policy-countries";
+import { POLICY_COUNTRIES } from "@/app/[lang]/(map)/(content)/amazon-mining-policy-scoreboard/policy-countries";
 import type {
   ByDimension,
   DimensionName,
-} from "@/app/[lang]/(map)/(content)/policy-scoreboard/types";
+} from "@/app/[lang]/(map)/(content)/amazon-mining-policy-scoreboard/types";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { getPolicyDimensionLocalized } from "@/app/[lang]/(map)/(content)/policy-scoreboard/policy-dimensions";
+import { getPolicyDimensionLocalized } from "@/app/[lang]/(map)/(content)/amazon-mining-policy-scoreboard/policy-dimensions";
 import { PERMITTED_LANGUAGES } from "@/utils/content";
+import { ROUTES } from "@/constants/routes";
 
 const MAX_VALUE = 15;
 
@@ -50,7 +51,7 @@ const CountriesBarChart = ({
         <>
           <div>{country}</div>
           <Link
-            href={`/${lang}/policy-scoreboard/country/${getCountrySlug(country)}`}
+            href={`/${lang}/${ROUTES["policy-scoreboard"].url}/country/${getCountrySlug(country)}`}
             style={{ color: "#fff", fontWeight: 400, fontSize: 16 }}
           >
             {t?.details}
