@@ -69,6 +69,7 @@ export const formatNumber = (
 
 const haToSquareKm = (n: number) => n * 0.01;
 const haToAcre = (n: number) => n * 2.471054;
+export const squareMeterToHa = (n: number) => n * 0.0001;
 
 export const displayAreaInUnits = (
   areaHa: number | undefined,
