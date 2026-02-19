@@ -8,6 +8,7 @@ import AreaSummaryTooltip from "@/app/[lang]/components/AreaSummary/AreaSummaryT
 import ExternalLink from "@/app/[lang]/components/Icons/ExternalLink";
 import { useContext } from "react";
 import { Context } from "@/lib/Store";
+import { formatLayerYear } from "@/utils/content";
 
 export type IllegalityAreaData = {
   admin_illegality_max: number;
@@ -25,6 +26,7 @@ interface AreaSummaryDetailsProps {
   hideMiningCalculator: boolean;
   description?: string;
   yearsColors: string[];
+  maxYear: number;
 }
 
 const AreaSummaryDetails = ({
@@ -37,6 +39,7 @@ const AreaSummaryDetails = ({
   description,
   illegalityAreas,
   yearsColors,
+  maxYear,
 }: AreaSummaryDetailsProps) => {
   // eslint-disable-next-line no-unused-vars
   const [state, dispatch] = useContext(Context)!;
@@ -46,34 +49,26 @@ const AreaSummaryDetails = ({
   const economicCostText = calculatorIsLoading
     ? `${dictionary?.map_ui?.loading}...`
     : economicCost
-    ? `${economicCost} ${dictionary?.map_ui?.economic_cost_currency}`
-    : "N/A";
+      ? `${economicCost} ${dictionary?.map_ui?.economic_cost_currency}`
+      : "N/A";
 
-  const EconomicCostTooltip = () =>
-    !calculatorUrl ? null : (
-      <AreaSummaryTooltip
-        content={
-          <div>
-            <p>{dictionary?.map_ui?.economic_cost_calculator_intro}</p>
-          </div>
-        }
-      />
-    );
+  const EconomicCostTooltip = () => (
+    <AreaSummaryTooltip
+      content={
+        <div>
+          <p>
+            {dictionary?.map_ui?.economic_cost_calculator_intro}{" "}
+            {formatLayerYear(maxYear)}{", "}
+            {dictionary?.map_ui?.economic_cost_calculator_ending}
+          </p>
+        </div>
+      }
+    />
+  );
 
   const EconomicCostLink = () =>
     !calculatorUrl ? null : (
       <AreaSummaryTooltip
-        icon={
-          <Link
-            href={calculatorUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ marginLeft: -6 }}
-            title={dictionary?.map_ui?.detailed_analysis_link}
-          >
-            <ExternalLink />
-          </Link>
-        }
         content={
           <div>
             <p>
@@ -82,13 +77,25 @@ const AreaSummaryDetails = ({
             </p>
           </div>
         }
-      />
+      >
+        <Link
+          href={calculatorUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={style.moreDetails}
+          title={dictionary?.map_ui?.detailed_analysis_link}
+        >
+          <span>
+            {dictionary?.map_ui?.more_details} <ExternalLink height={10} />
+          </span>
+        </Link>
+      </AreaSummaryTooltip>
     );
 
   return (
     <div className={style.wrapper}>
       {selectedAreaTimeseriesData?.length ? (
-        <>
+        <div>
           <div className={style.label}>
             {dictionary?.map_ui?.area_over_time} (
             {dictionary?.map_ui?.[`${areaUnits}Abbrev`]})
@@ -99,28 +106,29 @@ const AreaSummaryDetails = ({
             yearsColors={yearsColors}
             chartHeight={90}
           />
-        </>
+        </div>
       ) : null}
 
       {!hideMiningCalculator && (
-        <>
+        <div>
           <div className={style.label}>
             <div>
-              {/* {dictionary?.map_ui?.economic_cost} ({maxYear}) */}
-              {dictionary?.map_ui?.economic_cost}
+              {dictionary?.map_ui?.economic_cost} {formatLayerYear(maxYear)}
             </div>
-            <div>{economicCost && <EconomicCostTooltip />}</div>
+            <div>
+              <EconomicCostTooltip />
+            </div>
           </div>
           <div className={style.figure}>
             <div className={style.figureText}>
               {economicCostText} {calculatorUrl && <EconomicCostLink />}
             </div>
           </div>
-        </>
+        </div>
       )}
 
       {illegalityAreas?.length ? (
-        <>
+        <div>
           <div className={style.label}>
             <div>{dictionary?.map_ui?.presumption_of_illegality}</div>
             <div>
@@ -149,7 +157,7 @@ const AreaSummaryDetails = ({
                 ],
             }))}
           />
-        </>
+        </div>
       ) : null}
 
       {description ? (

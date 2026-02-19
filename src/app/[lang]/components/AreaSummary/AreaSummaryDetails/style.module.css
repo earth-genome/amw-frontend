@@ -8,6 +8,7 @@
   color: var(--green-dark);
   max-height: 40vh;
   overflow-y: auto;
+  row-gap: 4px;
 }
 
 @media (max-width: 600px) {
@@ -39,11 +40,15 @@
   justify-content: space-between;
   align-items: center;
   font-weight: 700;
-  font-size: 24px;
+  font-size: 26px;
 }
 
 .figureText {
   text-transform: capitalize;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 24px;
 }
 
 @media (max-width: 600px) {
@@ -55,4 +60,15 @@
 .paragraph {
   line-height: 130%;
   font-weight: 400;
+}
+
+.moreDetails {
+  font-size: 13px;
+  color: var(--green-dark);
+  font-weight: 500;
+  text-decoration: none !important;
+  text-transform: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }

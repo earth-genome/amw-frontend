@@ -681,7 +681,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         <Link
           href="/"
           className="amw-logo"
-          style={{ top: isEmbed ? 10 : undefined }}
+          style={{ top: isEmbed ? 15 : undefined }}
         >
           <Image src={Logo} alt="Logo" />
         </Link>

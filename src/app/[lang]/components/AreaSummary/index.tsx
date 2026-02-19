@@ -81,8 +81,7 @@ const AreaSummary: React.FC<AreaProps> = ({
     <div className={style.areaCard}>
       <div className={style.areaTitle}>
         <div>
-          {/* <div className={style.areaYear}>{formatLayerYear(year)}</div> */}
-          <div className={style.areaYear}>{formatLayerYear(maxYear)}</div>
+          {/* <div className={style.areaYear}>{formatLayerYear(maxYear)}</div> */}
           {areaTitle && <div className={style.areaTitleText}>{areaTitle}</div>}
           {selectedAreaType && areaId !== ENTIRE_AMAZON_AREA_ID ? (
             <div className={style.areaType}>
@@ -105,8 +104,7 @@ const AreaSummary: React.FC<AreaProps> = ({
       </div>
       <div className={style.areaBody}>
         <div>
-          {/* {dictionary.coverage.total_area_affected} ({activeYear}) */}
-          {dictionary.coverage.total_area_affected}
+          {dictionary.coverage.total_area_affected} {formatLayerYear(maxYear)}
         </div>
         <div className={style.areaKm}>
           {affectedAreaHa !== null && affectedAreaHa !== undefined
@@ -142,7 +140,7 @@ const AreaSummary: React.FC<AreaProps> = ({
                 d.mining_affected_area_pct > 0,
             )}
             yearsColors={yearsColors}
-            // maxYear={maxYear}
+            maxYear={maxYear}
           />
         </div>
       )}

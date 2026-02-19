@@ -39,15 +39,17 @@
     "protected_area": "Protected area",
     "hotspots": "Hotspots",
     "hotspot": "Hotspot",
-    "economic_cost": "Cumulative economic cost in the area",
+    "economic_cost": "Total socio-environmental cost until",
     "economic_cost_currency": "USD",
     "unknown": "Unknown",
     "area_status": "Area status",
     "select_area_placeholder": "Select an area...",
     "area_over_time": "Area over time",
-    "economic_cost_calculator_intro": "Economic cost is estimated using the Mining Impacts Calculator.",
+    "economic_cost_calculator_intro": "The accumulated socio-environmental cost of the selected area until",
+    "economic_cost_calculator_ending": "estimated using the Mining Impacts Calculator.",
     "see_detailed_analysis": "See the",
     "detailed_analysis_link": "detailed analysis here",
+    "more_details": "More details",
     "hide_more_insights": "Hide more insights",
     "see_more_insights": "See more insights",
     "description": "Description",
@@ -66,7 +68,7 @@
     "copy_link": "Copy link",
     "copy_error": "There was an error copying the link. Try again",
     "copy_success": "Copied link", 
-    "period_start": "Display from",
+    "period_start": "Display map from",
     "period_end": "To",
     "period_end_tooltip": "Satellite imagery displays the most recent time period selected."
   },
@@ -92,7 +94,7 @@
     "recent_mining_activity": "More recent mining activity"
   },
   "coverage": {
-    "total_area_affected": "Total area affected by mining",
+    "total_area_affected": "Total area affected by mining until",
     "or": "or",
     "million_acres": "million acres"
   },
