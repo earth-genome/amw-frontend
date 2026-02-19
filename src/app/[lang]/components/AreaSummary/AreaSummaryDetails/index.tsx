@@ -56,7 +56,11 @@ const AreaSummaryDetails = ({
     <AreaSummaryTooltip
       content={
         <div>
-          <p>{dictionary?.map_ui?.economic_cost_calculator_intro}</p>
+          <p>
+            {dictionary?.map_ui?.economic_cost_calculator_intro}{" "}
+            {formatLayerYear(maxYear)}{", "}
+            {dictionary?.map_ui?.economic_cost_calculator_ending}
+          </p>
         </div>
       }
     />
@@ -81,7 +85,9 @@ const AreaSummaryDetails = ({
           className={style.moreDetails}
           title={dictionary?.map_ui?.detailed_analysis_link}
         >
-          <span>{dictionary?.map_ui?.more_details}</span> <ExternalLink />
+          <span>
+            {dictionary?.map_ui?.more_details} <ExternalLink height={10} />
+          </span>
         </Link>
       </AreaSummaryTooltip>
     );
