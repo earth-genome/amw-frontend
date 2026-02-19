@@ -178,9 +178,9 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
     if (orderedLayerSetRef.current === layerSetKey) return;
 
     // place each layer on the top, in order
-    for (let i = 1; i < LAYER_ORDER.length; i++) {
+    for (let i = 1; i < existingLayers.length; i++) {
       try {
-        map.moveLayer(LAYER_ORDER[i]);
+        map.moveLayer(existingLayers[i]);
       } catch (e) {
         console.error(e);
       }
