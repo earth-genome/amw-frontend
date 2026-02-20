@@ -126,6 +126,8 @@
     "country_dimension_score_desc_4": ". It represents a weighted combination of the category scores below.",
     "assessment_categories": "Assessment categories",
     "categories_details": "Categories details",
-    "categories_details_desc": "Each category is scored using the criteria outlined below."
+    "categories_details_desc": "Each category is scored using the criteria outlined below.",
+    "attribution_intro": "This platform and analysis is led by",
+    "download_report": "Download report in PDF format"
   }
 }

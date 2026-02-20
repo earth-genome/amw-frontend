@@ -1,8 +1,5 @@
 import { NextPage } from "next";
-import {
-  // getMarkdownText,
-  PERMITTED_LANGUAGES,
-} from "@/utils/content";
+import { getMarkdownText, PERMITTED_LANGUAGES } from "@/utils/content";
 import { apiFetcher } from "@/cms/client";
 import {
   POLICY_SCOREBOARD_URL,
@@ -11,6 +8,9 @@ import {
 import { getDictionary } from "@/get-dictionary";
 import PolicyScoreboard from "@/app/[lang]/components/PolicyScoreboard";
 import { getPolicyData } from "@/app/[lang]/(map)/(content)/amazon-mining-policy-scoreboard/policy-scoreboard-data";
+import Logo from "@/app/[lang]/components/Nav/logo.svg";
+import Image from "next/image";
+import Link from "next/link";
 
 // Force dynamic rendering
 export const dynamic = "force-dynamic";
@@ -35,16 +35,16 @@ export async function generateMetadata({ params: { lang } }: PageProps) {
 }
 
 const Page: NextPage<PageProps> = async ({ params: { lang } }) => {
-  // const response = await apiFetcher<PolicyScoreboardResponse>(
-  //   POLICY_SCOREBOARD_URL,
-  //   {
-  //     locale: lang,
-  //   },
-  // );
+  const response = await apiFetcher<PolicyScoreboardResponse>(
+    POLICY_SCOREBOARD_URL,
+    {
+      locale: lang,
+    },
+  );
 
-  // const {
-  //   data: { title, body },
-  // } = response;
+  const {
+    data: { title, body },
+  } = response;
 
   const dictionary = await getDictionary(lang);
 
@@ -53,14 +53,21 @@ const Page: NextPage<PageProps> = async ({ params: { lang } }) => {
 
   return (
     <div>
-      {/* {title && <h1>{title}</h1>} */}
-      {/* {body && <div dangerouslySetInnerHTML={getMarkdownText(body)} />} */}
-      <h1>{dictionary?.policy_scoreboard?.title}</h1>
-      <p>
-        <strong>
-          {dictionary?.policy_scoreboard?.intro}
-        </strong>
-      </p>
+      <Link href="/">
+        <Image
+          src={Logo}
+          alt="Logo"
+          width={114}
+          height={68}
+          style={{
+            margin: 0,
+            width: 114,
+          }}
+        />
+      </Link>
+
+      {title && <h1>{title}</h1>}
+      {body && <div dangerouslySetInnerHTML={getMarkdownText(body)} />}
       <PolicyScoreboard
         data={scoreboardData}
         byCategory={byCategory}

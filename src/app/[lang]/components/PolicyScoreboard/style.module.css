@@ -2,3 +2,8 @@
     border-bottom-color: #fff !important;
     margin-top: 48px;
 }
+
+.footerSection {
+    margin-top: 48px;
+    border-top: 3px solid #fff;
+}

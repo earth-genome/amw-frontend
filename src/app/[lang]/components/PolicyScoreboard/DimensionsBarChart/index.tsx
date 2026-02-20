@@ -11,23 +11,26 @@ import {
   getPolicyDimensionLocalized,
   POLICY_DIMENSIONS,
 } from "@/app/[lang]/(map)/(content)/amazon-mining-policy-scoreboard/policy-dimensions";
+import { POLICY_COUNTRIES } from "@/app/[lang]/(map)/(content)/amazon-mining-policy-scoreboard/policy-countries";
 import { format } from "d3";
 import { useParams } from "next/navigation";
-import Link from "next/link";
 import styles from "./style.module.css";
 import { PERMITTED_LANGUAGES } from "@/utils/content";
-import { ROUTES } from "@/constants/routes";
 
 interface DimensionsBarChartProps {
   byDimension: ByDimension[];
   hideTitle?: boolean;
   dictionary?: { [key: string]: any };
+  onDimensionClick?: (_dimensionSlug: string) => void;
+  onCountryClick?: (_countrySlug: string, _dimensionSlug: string) => void;
 }
 
 const DimensionsBarChart = ({
   byDimension,
   hideTitle,
   dictionary,
+  onDimensionClick,
+  onCountryClick,
 }: DimensionsBarChartProps) => {
   const { lang } = useParams();
   const t = dictionary?.policy_scoreboard;
@@ -35,6 +38,16 @@ const DimensionsBarChart = ({
   const getDimensionSlug = (dimensionName: string) => {
     const dimension = POLICY_DIMENSIONS.find((d) => d.key === dimensionName);
     return dimension?.slug ?? "";
+  };
+
+  const getCountrySlug = (localizedName: string): string => {
+    const country = POLICY_COUNTRIES.find(
+      (c) =>
+        c.name_en === localizedName ||
+        c.name_es === localizedName ||
+        c.name_pt === localizedName,
+    );
+    return country?.slug || localizedName.toLowerCase();
   };
 
   const dimensionsItems = byDimension.map((dim) => {
@@ -48,6 +61,14 @@ const DimensionsBarChart = ({
         label: (
           <>
             <div>{country}</div>
+            {onCountryClick && (
+              <button
+                className={styles.dimensionLink}
+                onClick={() => onCountryClick(getCountrySlug(country), getDimensionSlug(dim.Dimension))}
+              >
+                {t?.details}
+              </button>
+            )}
           </>
         ),
         segments: [
@@ -83,12 +104,14 @@ const DimensionsBarChart = ({
                     lang as PERMITTED_LANGUAGES,
                   )}
                 </span>
-                <Link
-                  href={`/${lang}/${ROUTES["policy-scoreboard"].url}/dimension/${getDimensionSlug(dimensionName)}`}
+                <button
                   className={styles.dimensionLink}
+                  onClick={() =>
+                    onDimensionClick?.(getDimensionSlug(dimensionName))
+                  }
                 >
                   {t?.details}
-                </Link>
+                </button>
               </div>
             )}
             <StackedBarChart

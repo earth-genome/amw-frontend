@@ -7,15 +7,9 @@
   height: 100vh;
   color: #fff;
   overflow-y: auto;
+  background: var(--green-dark) url("/images/overlay-bg.png") no-repeat top
+    center;
   background-size: cover;
-  opacity: 0.99;
-  background-color: var(--green-dark);
-}
-.overlay::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: url('/images/overlay-bg.png') no-repeat top center;
   opacity: 0.99;
 }
 .overlay .content {

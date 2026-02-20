@@ -23,8 +23,9 @@
 .overlay .content {
   position: absolute;
   width: 100%;
-  padding: 30px 30px 200px 30px;
-  max-width: 600px;
+  padding: 30px 30px 90px 30px;
+  max-width: 650px;
+  box-sizing: border-box;
 }
 .overlay .content h1 {
   font-size: 50px;

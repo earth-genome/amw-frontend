@@ -5,11 +5,10 @@ import type {
   ByDimension,
   DimensionName,
 } from "@/app/[lang]/(map)/(content)/amazon-mining-policy-scoreboard/types";
-import Link from "next/link";
 import { useParams } from "next/navigation";
 import { getPolicyDimensionLocalized } from "@/app/[lang]/(map)/(content)/amazon-mining-policy-scoreboard/policy-dimensions";
 import { PERMITTED_LANGUAGES } from "@/utils/content";
-import { ROUTES } from "@/constants/routes";
+import styles from "./style.module.css";
 
 const MAX_VALUE = 15;
 
@@ -17,12 +16,14 @@ interface CountriesBarChartProps {
   byDimension: ByDimension[];
   countries: string[];
   dictionary: { [key: string]: any };
+  onCountryClick?: (_countrySlug: string) => void;
 }
 
 const CountriesBarChart = ({
   byDimension,
   countries,
   dictionary,
+  onCountryClick,
 }: CountriesBarChartProps) => {
   const { lang } = useParams();
   const t = dictionary?.policy_scoreboard;
@@ -50,12 +51,12 @@ const CountriesBarChart = ({
       label: (
         <>
           <div>{country}</div>
-          <Link
-            href={`/${lang}/${ROUTES["policy-scoreboard"].url}/country/${getCountrySlug(country)}`}
-            style={{ color: "#fff", fontWeight: 400, fontSize: 16 }}
+          <button
+            className={styles.detailsButton}
+            onClick={() => onCountryClick?.(getCountrySlug(country))}
           >
             {t?.details}
-          </Link>
+          </button>
         </>
       ),
       segments: byDimension.map((dim) => ({

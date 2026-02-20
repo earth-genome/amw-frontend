@@ -14,10 +14,16 @@
 }
 
 .dimensionLink {
+  background: none;
+  border: none;
   font-size: 16px;
   font-weight: 400;
   color: #fff;
-  margin-right: 80px;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: none;
+  font-size: 14px;
+  white-space: nowrap;
 }
 
 .dimensionLink:hover {

@@ -23,6 +23,7 @@ interface DimensionDetailsProps {
   byCategory: ByCategory[];
   countries: string[];
   dictionary: { [key: string]: any };
+  onCountryClick?: (_countrySlug: string, _dimensionSlug: string) => void;
 }
 
 const DimensionDetails = ({
@@ -32,6 +33,7 @@ const DimensionDetails = ({
   byCategory,
   countries,
   dictionary,
+  onCountryClick,
 }: DimensionDetailsProps) => {
   const { lang } = useParams();
   const t = dictionary?.policy_scoreboard;
@@ -98,6 +100,8 @@ const DimensionDetails = ({
         <DimensionsBarChart
           byDimension={byDimension.filter((d) => d.Dimension === dimensionKey)}
           hideTitle
+          dictionary={dictionary}
+          onCountryClick={onCountryClick}
         />
       </div>
 
@@ -106,14 +110,16 @@ const DimensionDetails = ({
           {dimensionName} - {t?.categories}
         </h2>
         {categoryCharts.map((chart) => (
-          <div key={chart.categoryLabel} className={styles.categorySection}>
+          <div key={chart.categoryLabel}>
             <h3 className={styles.categoryTitle}>{chart.categoryLabel}</h3>
-            <StackedBarChart
-              items={chart.items}
-              maxValue={1}
-              showLegend={false}
-              compact
-            />
+            <div className={styles.categorySection}>
+              <StackedBarChart
+                items={chart.items}
+                maxValue={1}
+                showLegend={false}
+                compact
+              />
+            </div>
           </div>
         ))}
       </div>

@@ -126,6 +126,8 @@
     "country_dimension_score_desc_4": ". Representa una combinación ponderada de las puntuaciones de las categorías a continuación.",
     "assessment_categories": "Categorías de evaluación",
     "categories_details": "Detalles de categorías",
-    "categories_details_desc": "Cada categoría se puntúa utilizando los criterios descritos a continuación."
+    "categories_details_desc": "Cada categoría se puntúa utilizando los criterios descritos a continuación.",
+    "attribution_intro": "Esta plataforma y análisis es liderada por",
+    "download_report": "Descargar informe en formato PDF"
   }
 }

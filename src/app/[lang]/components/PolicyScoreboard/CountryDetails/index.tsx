@@ -17,9 +17,11 @@ import styles from "./style.module.css";
 import {
   getPolicyDimensionDescriptionLocalized,
   getPolicyDimensionLocalized,
+  POLICY_DIMENSIONS,
 } from "@/app/[lang]/(map)/(content)/amazon-mining-policy-scoreboard/policy-dimensions";
 import { getPolicyCategoryLocalized } from "@/app/[lang]/(map)/(content)/amazon-mining-policy-scoreboard/policy-categories";
 import { useParams } from "next/navigation";
+import { useEffect } from "react";
 import { PERMITTED_LANGUAGES } from "@/utils/content";
 
 interface CountryDetailsProps {
@@ -29,6 +31,7 @@ interface CountryDetailsProps {
   scoreboardData: PolicyScoreboardRow[];
   countryEnglishName: string;
   dictionary: { [key: string]: any };
+  scrollToDimensionSlug?: string;
 }
 
 const MAX_VALUE = 15;
@@ -40,8 +43,27 @@ const CountryDetails = ({
   scoreboardData,
   countryEnglishName,
   dictionary,
+  scrollToDimensionSlug,
 }: CountryDetailsProps) => {
   const { lang } = useParams();
+
+  const getDimensionSlug = (dimensionKey: string) =>
+    POLICY_DIMENSIONS.find((d) => d.key === dimensionKey)?.slug ?? "";
+
+  useEffect(() => {
+    if (scrollToDimensionSlug) {
+      // Wait for the panel slide-in transition (0.3s) to finish
+      const timeout = setTimeout(() => {
+        const el = document.getElementById(
+          `dimension-${scrollToDimensionSlug}`,
+        );
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 350);
+      return () => clearTimeout(timeout);
+    }
+  }, [scrollToDimensionSlug]);
 
   const t = dictionary?.policy_scoreboard;
   // Calculate overall country score
@@ -93,7 +115,7 @@ const CountryDetails = ({
             {countryName}
             {t?.country_overall_score_desc_1}
             <strong>
-              {getCountryTotal()}
+              {getCountryTotal().toFixed(2)}
               {t?.country_overall_score_desc_2}
               {MAX_VALUE}
             </strong>
@@ -184,7 +206,11 @@ const CountryDetails = ({
           );
 
           return (
-            <div key={dimension} className={styles.dimensionSection}>
+            <div
+              key={dimension}
+              id={`dimension-${getDimensionSlug(dimension)}`}
+              className={styles.dimensionSection}
+            >
               <div>
                 <div className={styles.dimensionSectionTitle}>
                   {dimensionLocalized}
@@ -212,10 +238,10 @@ const CountryDetails = ({
                 ))}
               </div>
               <div>
+                <div className={styles.categoryChartsTitle}>
+                  {dimensionLocalized} - {t?.assessment_categories}
+                </div>
                 <div className={styles.categoryCharts}>
-                  <div className={styles.categoryChartsTitle}>
-                    {dimensionLocalized} - {t?.assessment_categories}
-                  </div>
                   <StackedBarChart
                     items={categoryItems}
                     maxValue={1}
