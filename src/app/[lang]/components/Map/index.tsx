@@ -43,6 +43,7 @@ import Image from "next/image";
 import Logo from "@/app/[lang]/components/Nav/logo.svg";
 import useGeocoderClickOutside from "@/hooks/useClickOutsideGeocoder";
 import MapShareButton from "@/app/[lang]/components/MapShareButton";
+import { filterForMiningCalculator } from "@/utils/miningCalculator";
 
 interface MainMapProps {
   dictionary: { [key: string]: any };
@@ -354,8 +355,10 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
   // for the mining calculator
   const miningLocations = selectedAreaData?.properties?.locations;
   useEffect(() => {
-    if (!isEmbed || !miningLocations?.length) return;
-    window.parent.postMessage({ locations: miningLocations }, "*");
+    if (!isEmbed) return;
+    const miningLocationsFiltered =
+      filterForMiningCalculator(miningLocations);
+    window.parent.postMessage({ locations: miningLocationsFiltered }, "*");
   }, [miningLocations, isEmbed]);
 
   return (

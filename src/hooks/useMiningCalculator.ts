@@ -1,6 +1,7 @@
+import { filterForMiningCalculator } from "@/utils/miningCalculator";
 import useSWR from "swr";
 
-interface MiningLocation {
+export interface MiningLocation {
   country: string;
   regionId: number;
   affectedArea: number;
@@ -17,7 +18,7 @@ interface MiningCalculatorResponse {
 
 const fetcher = async (
   url: string,
-  locations: MiningLocation[]
+  locations: MiningLocation[],
 ): Promise<MiningCalculatorResponse> => {
   const response = await fetch(url, {
     method: "POST",
@@ -52,12 +53,10 @@ interface UseMiningCalculatorReturn {
 }
 
 export const useMiningCalculator = (
-  miningLocations: MiningLocation[] | null
+  miningLocations: MiningLocation[] | null,
 ): UseMiningCalculatorReturn => {
-  // calculator doesn't include Venezuela and French Guyana
-  const miningLocationsFiltered = miningLocations?.filter(
-    (d) => !["VE", "GF"].includes(d.country)
-  );
+  const miningLocationsFiltered =
+    filterForMiningCalculator(miningLocations);
   const { data, error, isLoading, mutate } = useSWR<
     MiningCalculatorResponse,
     Error
@@ -66,7 +65,7 @@ export const useMiningCalculator = (
       ? ["/api/mining-calculator", miningLocationsFiltered]
       : null,
     ([url, locations]: [string, MiningLocation[]]) => fetcher(url, locations),
-    swrConfig
+    swrConfig,
   );
 
   return {
