@@ -7,10 +7,10 @@
     "about_amw": "Acerca",
     "results": "Resultados",
     "map": "Mapa",
-    "about": "Sobre el Proyecto",
+    "about": "Sobre el proyecto",
     "case_studies": "Estudios de caso",
-    "methods_and_code": "Métodos y Código",
-    "policy_scoreboard": "Rastreador de Políticas",
+    "data_code_and_methods": "Datos, código y métodos",
+    "policy_scoreboard": "Rastreador de políticas",
     "faq": "FAQ",
     "contact": "Contacto"
   },
@@ -39,14 +39,16 @@
     "protected_area": "Área protegida",
     "hotspots": "Puntos críticos",
     "hotspot": "Punto crítico",
-    "economic_cost": "Costo económico acumulado en el área",
+    "economic_cost": "Coste socioambiental acumulado en el área hasta",
     "economic_cost_currency": "USD",
     "unknown": "Desconocido",
     "area_status": "Estado del área",
     "select_area_placeholder": "Selecciona un área...",
-    "economic_cost_calculator_intro": "El costo económico se estima utilizando la Calculadora de Impactos Mineros.",
+    "economic_cost_calculator_intro": "El costo socioambiental acumulado del área seleccionada hasta",
+    "economic_cost_calculator_ending": "estimado mediante la Calculadora de Impactos Mineros.",
     "see_detailed_analysis": "Ver el",
     "detailed_analysis_link": "análisis detallado aquí",
+    "more_details": "Más detalles",
     "area_over_time": "Área a lo largo del tiempo",
     "hide_more_insights": "Ocultar más información",
     "see_more_insights": "Ver más información",
@@ -61,7 +63,14 @@
     "hectaresAbbrev": "hectáreas",
     "squareKmAbbrev": "km²",
     "imperialAbbrev": "acres",
-    "type_of_mining": "Tipo de minería"
+    "type_of_mining": "Tipo de minería",
+    "map_center": "Centro del mapa",
+    "copy_link": "Copiar enlace",
+    "copy_error": "Hubo un error al copiar el enlace. Inténtalo de nuevo",
+    "copy_success": "Enlace copiado",
+    "period_start": "Ver mapa de",
+    "period_end": "Hasta",
+    "period_end_tooltip": "Las imágenes satelitales muestran el período de tiempo más reciente seleccionado."
   },
   "types_of_mining": {
     "hotspot": "Punto crítico",
@@ -85,7 +94,7 @@
     "recent_mining_activity": "Minería más reciente"
   },
   "coverage": {
-    "total_area_affected": "Área total afectada por la minería",
+    "total_area_affected": "Área total afectada por la minería hasta",
     "or": "o",
     "million_acres": "millones de acres"
   },

@@ -45,3 +45,6 @@ public/website/
 
 # csv
 .~lock.*
+
+# Sentry Config File
+.env.sentry-build-plugin

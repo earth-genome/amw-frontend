@@ -40,8 +40,8 @@ const Nav: React.FC<NavProps> = ({ children, dictionary }) => {
     // { href: `/${locale}/results`, label: dictionary.menu.results },
     { href: `/${locale}/case-studies`, label: dictionary.menu.case_studies },
     {
-      href: `/${locale}/methods-and-code`,
-      label: dictionary.menu.methods_and_code,
+      href: `/${locale}/data-code-and-methods`,
+      label: dictionary.menu.data_code_and_methods,
     },
     {
       href: `/${locale}/${ROUTES["policy-scoreboard"].url}`,
@@ -166,7 +166,7 @@ const Nav: React.FC<NavProps> = ({ children, dictionary }) => {
       </a>
 
       {showMenu && (
-        <Overlay>
+        <Overlay maxWidth={800} widthPct={"100%"}>
           <div className="main-menu">
             <div>
               <ul

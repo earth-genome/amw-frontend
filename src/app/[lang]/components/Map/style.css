@@ -115,7 +115,7 @@
   z-index: 1000;
   display: block;
 }
-@media (max-width: 900px) {
+@media (max-width: 1000px) {
   .amw-logo {
     left: 10px;
     top: 40px;
@@ -125,9 +125,57 @@
   width: 170px;
   height: 100px;
 }
-@media (max-width: 900px) {
+@media (max-width: 1000px) {
   .amw-logo img {
-    width: 70px;
+    width: 90px;
     height: 60px;
   }
+}
+@media (max-width: 600px) {
+  .amw-logo img {
+    width: 80px;
+    height: 50px;
+  }
+}
+
+.mapboxgl-popup-content {
+  font-family: "Urbanist", sans-serif;
+  font-size: 14px;
+  background: #fff;
+  color: var(--green-dark);
+  font-weight: 500;
+  border-radius: 5px;
+  position: relative;
+}
+.mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip {
+  border-top-color: #fff;
+}
+.mapboxgl-popup-anchor-top .mapboxgl-popup-tip {
+  border-bottom-color: #fff;
+}
+.mapboxgl-popup-anchor-right .mapboxgl-popup-tip {
+  border-left-color: #fff;
+}
+.mapboxgl-popup-anchor-left .mapboxgl-popup-tip {
+  border-right-color: #fff;
+}
+.mapboxgl-popup-tip {
+  border: 14px solid transparent;
+}
+.mapboxgl-popup-close-button {
+  color: #fff;
+}
+
+.map-tooltip,
+.map-tooltip .mapboxgl-popup-content,
+.map-tooltip .mapboxgl-popup-tip {
+  pointer-events: none !important;
+  font-size: 14px;
+  color: var(--green-dark);
+}
+
+.map-tooltip-title {
+  font-weight: 700;
+  font-size: 18px;
+  margin-bottom: 2px;
 }

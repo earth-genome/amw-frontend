@@ -1,12 +1,16 @@
 interface QuestionMarkProps {
   fill?: string;
+  size?: number;
 }
 
-const QuestionMark = ({ fill = "var(--green-dark)" }: QuestionMarkProps) => {
+const QuestionMark = ({
+  fill = "var(--green-dark)",
+  size = 16,
+}: QuestionMarkProps) => {
   return (
     <svg
-      width="16"
-      height="16"
+      width={size}
+      height={size}
       viewBox="0 0 20 20"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"

@@ -13,6 +13,7 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import MapWrapper from "@/app/[lang]/components/Map/Wrapper";
 import { PERMITTED_LANGUAGES } from "@/utils/content";
 import type { Viewport } from "next";
+import Hotjar from "@/app/[lang]/components/Hotjar/hotjar";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -52,6 +53,7 @@ export default async function RootLayout({
     <html lang={params.lang}>
       <AntdRegistry>
         <GoogleAnalytics />
+        <Hotjar />
         <MenuProvider>
           <body>
             <Nav dictionary={dictionary} />

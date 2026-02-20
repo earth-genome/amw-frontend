@@ -11,6 +11,7 @@ import { AreaSelectOption } from "@/app/[lang]/components/AreaSelect";
 import {
   AREA_TYPES,
   AreaType,
+  LAYER_YEARS,
   PERMITTED_AREA_TYPES_KEYS,
 } from "@/constants/map";
 import { useQueryParams } from "@/hooks/useQueryParams";
@@ -43,6 +44,8 @@ export interface IState {
   selectedAreaType: AreaType | undefined;
   areaUnits: PERMITTED_AREA_UNITS;
   hoveredYear: number | undefined;
+  activeYearStart: string;
+  activeYearEnd: string;
   isEmbed: boolean;
 }
 
@@ -81,6 +84,14 @@ export type ActionType =
   | {
       type: "SET_HOVERED_YEAR";
       hoveredYear: number | undefined;
+    }
+  | {
+      type: "SET_ACTIVE_YEAR_START";
+      activeYearStart: string;
+    }
+  | {
+      type: "SET_ACTIVE_YEAR_END";
+      activeYearEnd: string;
     };
 
 export const Context = createContext<
@@ -121,6 +132,8 @@ const Store = ({
     selectedAreaType: defaultAreaType,
     areaUnits: AREA_UNITS_OPTIONS[0].value as PERMITTED_AREA_UNITS,
     hoveredYear: undefined,
+    activeYearStart: String(Math.min(...LAYER_YEARS)),
+    activeYearEnd: String(Math.max(...LAYER_YEARS)),
     isEmbed: isEmbed,
   };
 

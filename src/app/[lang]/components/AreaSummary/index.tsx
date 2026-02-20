@@ -12,8 +12,6 @@ import AreaSummaryDetails, {
   IllegalityAreaData,
 } from "@/app/[lang]/components/AreaSummary/AreaSummaryDetails";
 import { CloseCircleFilled } from "@ant-design/icons";
-import * as turf from "@turf/turf";
-import calculateMiningAreaInBbox from "@/utils/calculateMiningAreaInBbox";
 import useMiningCalculator from "@/hooks/useMiningCalculator";
 import {
   ECONOMIC_COST_SIGNIFICANT_DIGITS,
@@ -39,16 +37,13 @@ const AreaSummary: React.FC<AreaProps> = ({
     areaUnits,
     selectedAreaTimeseriesData,
     selectedAreaTypeKey,
-    miningData,
     lang,
   } = state;
   const areaProperties = selectedAreaData?.properties || {};
   const showMoreInsights = true;
   // don't use mining calculator for countries because it is not reliable for such large areas,
-  // also don't show for hotspots because we don't calculate economic cost for these on the fly
   const hideMiningCalculator =
-    !selectedAreaTypeKey ||
-    ["countries", "hotspots"].includes(selectedAreaTypeKey);
+    !selectedAreaTypeKey || selectedAreaTypeKey === "countries";
 
   const {
     calculatorData,
@@ -59,42 +54,21 @@ const AreaSummary: React.FC<AreaProps> = ({
     hideMiningCalculator ? [] : selectedAreaData?.properties?.locations,
   );
 
-  const [affectedAreaHa, economicCost, hotspotsTimeseries] = useMemo(() => {
-    if (selectedAreaTypeKey === "hotspots" && selectedAreaData) {
-      // if hotspots, calculate mining affected area on the fly
-      const bbox = turf.bbox(selectedAreaData) as [
-        number,
-        number,
-        number,
-        number,
-      ];
-      const { areaMinesHa, areaMinesHaPerYearArray } =
-        calculateMiningAreaInBbox(bbox, miningData) ?? {};
-      return [areaMinesHa, null, areaMinesHaPerYearArray];
-    } else {
-      // else use the data that is pre-calculated in the timeseries,
-      // and mining calculator data that is fetched on the fly
+  const [affectedAreaHa, economicCost] = useMemo(() => {
+    // use the data that is pre-calculated in the timeseries,
+    // and mining calculator data that is fetched on the fly
 
-      const latestYearAffectedArea = selectedAreaTimeseriesData?.find(
-        (d) => d.admin_year === maxYear,
-      )?.intersected_area_ha_cumulative;
-      return [latestYearAffectedArea, calculatorData?.totalImpact, null];
-    }
-  }, [
-    calculatorData?.totalImpact,
-    maxYear,
-    miningData,
-    selectedAreaData,
-    selectedAreaTimeseriesData,
-    selectedAreaTypeKey,
-  ]);
+    const latestYearAffectedArea = selectedAreaTimeseriesData?.find(
+      (d) => d.admin_year === maxYear,
+    )?.intersected_area_ha_cumulative;
+    return [latestYearAffectedArea, calculatorData?.totalImpact];
+  }, [calculatorData?.totalImpact, maxYear, selectedAreaTimeseriesData]);
 
   const {
     country,
     id: areaId,
     description,
     illegality_areas: illegalityAreas,
-    // hotspotType,
   } = areaProperties;
   const { showCountry, renderTitle, renderStatus } = selectedAreaType || {};
   const areaTitle = renderTitle && renderTitle(areaProperties);
@@ -107,8 +81,7 @@ const AreaSummary: React.FC<AreaProps> = ({
     <div className={style.areaCard}>
       <div className={style.areaTitle}>
         <div>
-          {/* <div className={style.areaYear}>{formatLayerYear(year)}</div> */}
-          <div className={style.areaYear}>{formatLayerYear(maxYear)}</div>
+          {/* <div className={style.areaYear}>{formatLayerYear(maxYear)}</div> */}
           {areaTitle && <div className={style.areaTitleText}>{areaTitle}</div>}
           {selectedAreaType && areaId !== ENTIRE_AMAZON_AREA_ID ? (
             <div className={style.areaType}>
@@ -131,8 +104,7 @@ const AreaSummary: React.FC<AreaProps> = ({
       </div>
       <div className={style.areaBody}>
         <div>
-          {/* {dictionary.coverage.total_area_affected} ({activeYear}) */}
-          {dictionary.coverage.total_area_affected}
+          {dictionary.coverage.total_area_affected} {formatLayerYear(maxYear)}
         </div>
         <div className={style.areaKm}>
           {affectedAreaHa !== null && affectedAreaHa !== undefined
@@ -159,12 +131,7 @@ const AreaSummary: React.FC<AreaProps> = ({
             }
             calculatorIsLoading={calculatorIsLoading}
             calculatorUrl={calculatorUrl}
-            // @ts-ignore
-            selectedAreaTimeseriesData={
-              selectedAreaTypeKey === "hotspots"
-                ? hotspotsTimeseries
-                : selectedAreaTimeseriesData
-            }
+            selectedAreaTimeseriesData={selectedAreaTimeseriesData}
             description={description}
             dictionary={dictionary}
             illegalityAreas={illegalityAreas?.filter(
@@ -173,8 +140,7 @@ const AreaSummary: React.FC<AreaProps> = ({
                 d.mining_affected_area_pct > 0,
             )}
             yearsColors={yearsColors}
-            // maxYear={maxYear}
-            // hotspotType={hotspotType}
+            maxYear={maxYear}
           />
         </div>
       )}

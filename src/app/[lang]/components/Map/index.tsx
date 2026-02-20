@@ -7,7 +7,7 @@ import React, {
   useContext,
   useEffect,
 } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import Map, {
   Layer,
   Source,
@@ -31,17 +31,18 @@ import {
   MINING_LAYERS,
   PERMITTED_AREA_TYPES_KEYS,
 } from "@/constants/map";
-import { Expression } from "mapbox-gl";
+import { Expression, Popup } from "mapbox-gl";
 import AreaSelect from "@/app/[lang]/components/AreaSelect";
 import { Context } from "@/lib/Store";
 import GeocoderIcon from "@/app/[lang]/components/Icons/GeocoderIcon";
-import MapPopup, { TooltipInfo } from "@/app/[lang]/components/Map/MapPopup";
-import Hotspots from "@/app/[lang]/components/Map/Hotspots";
+// import Hotspots from "@/app/[lang]/components/Map/Hotspots";
 // import calculateMiningAreaInBbox from "@/utils/calculateMiningAreaInBbox";
 import useWindowSize from "@/hooks/useWindowSize";
 import Link from "next/link";
 import Image from "next/image";
 import Logo from "@/app/[lang]/components/Nav/logo.svg";
+import useGeocoderClickOutside from "@/hooks/useClickOutsideGeocoder";
+import MapShareButton from "@/app/[lang]/components/MapShareButton";
 
 interface MainMapProps {
   dictionary: { [key: string]: any };
@@ -56,20 +57,35 @@ const SATELLITE_LAYERS = {
   yearly: "mapbox://styles/earthrise/clvwchqxi06gh01pe1huv70id",
   hiRes: "mapbox://styles/earthrise/cmdxgrceq014x01s22jfm5muv", // Mapbox satellite
 };
+const LAYER_ORDER = [
+  // bottom to top
+  ...LAYER_YEARS.map((d) => `sentinel-layer-${d}`),
+  "hole-layer",
+  "country-boundaries",
+  "areas-layer",
+  "areas-layer-fill",
+  "mines-layer",
+  "selected-area-layer",
+  "selected-area-layer-fill",
+  // "hotspots-fill",
+  // "hotspots-outline",
+  // "hotspots-circle",
+  // "hotspots-dot",
+  // "hotspots-labels",
+];
 
 const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
   const [state, dispatch] = useContext(Context)!;
   const pathname = usePathname();
-  const router = useRouter();
   const mapRef = useRef<MapRef>(null);
   const [bounds, setBounds] = useState<GeoJSONType | undefined>(undefined);
-  const [activeYear, setActiveYear] = useState(
-    String(Math.max(...LAYER_YEARS)),
-  );
-  const maxYear = Math.max(...LAYER_YEARS);
   const [isGeocoderHidden, setIsGeocoderHidden] = useState(true);
-  const [tooltip, setTooltip] = useState<TooltipInfo | null>(null);
   const hoveredFeatureRef = useRef<string | number | undefined>(undefined);
+  const orderedLayerSetRef = useRef<string>("");
+  const popupRef = useRef<mapboxgl.Popup | null>(null);
+  const geocoderContainerRef = useRef<HTMLDivElement | null>(null);
+  const [latitude, setLatitude] = useState<undefined | number>(undefined);
+  const [longitude, setLongitude] = useState<undefined | number>(undefined);
 
   const {
     miningData,
@@ -79,6 +95,8 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
     selectedAreaTypeKey,
     areaUnits,
     hoveredYear,
+    activeYearStart,
+    activeYearEnd,
     isEmbed,
   } = state;
 
@@ -104,6 +122,9 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
     const lng = center?.lng;
     const lat = center?.lat;
 
+    setLatitude(lat);
+    setLongitude(lng);
+
     if (!zoom || !lng || !lat) return;
 
     const params = new URLSearchParams(window.location.search);
@@ -111,8 +132,8 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
     params.set("lng", lng.toFixed(2));
     params.set("lat", lat.toFixed(2));
 
-    router.replace(`${pathname}?${params.toString()}`);
-  }, [pathname, router]);
+    window.history.replaceState({}, "", `${pathname}?${params.toString()}`);
+  }, [pathname]);
 
   // const getCurrentBounds = useCallback(() => {
   //   if (!mapRef.current) return;
@@ -142,68 +163,103 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
   const windowSize = useWindowSize();
   const isMobile = windowSize?.width && windowSize.width <= 600;
 
+  const reorderLayers = useCallback(() => {
+    // this ensures layer order
+    const map = mapRef.current?.getMap();
+    if (!map || !map.isStyleLoaded()) return;
+
+    const existingLayers = LAYER_ORDER.filter((id) => map.getLayer(id));
+    if (existingLayers?.length < 2) return;
+
+    // key representing current layer set
+    const layerSetKey = existingLayers.join(",");
+
+    // skip if we've already ordered this exact set
+    if (orderedLayerSetRef.current === layerSetKey) return;
+
+    // place each layer on the top, in order
+    for (let i = 1; i < existingLayers.length; i++) {
+      try {
+        map.moveLayer(existingLayers[i]);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    // save layer set
+    orderedLayerSetRef.current = layerSetKey;
+  }, []);
+
   const handleMouseMove = useCallback(
     (event: MapMouseEvent) => {
-      if (isMobile) return; // ignore hover effect on mobile
-      const { features } = event;
+      if (isMobile || !mapRef.current || !popupRef.current) return;
+
+      const feature = event.features?.[0];
       const map = event.target;
-      // always show hotspots first if present
-      const hotspots = features?.filter(
-        (d) => d?.properties?.type === "hotspots",
-      );
-      const feature = hotspots?.[0] ?? features?.[0];
 
-      if (!feature?.properties) return;
+      if (!feature?.properties) {
+        map.getCanvas().style.cursor = "";
+        popupRef.current.remove();
+        return;
+      }
 
-      event.target.getCanvas().style.cursor = feature ? "pointer" : "";
-      setTooltip({
-        longitude: event.lngLat.lng,
-        latitude: event.lngLat.lat,
-        properties: feature.properties as { [key: string]: any },
-      });
+      map.getCanvas().style.cursor = "pointer";
 
-      // don't use hover effect for countries, it is too distracting
+      // HACK: because hotspots need to show title independent
+      // of what kind of area is displaying
+      const properties = feature.properties;
+      const title =
+        (properties?.type as PERMITTED_AREA_TYPES_KEYS) === "hotspots"
+          ? `${properties.title} ${dictionary?.map_ui?.hotspot ? `- ${dictionary?.map_ui?.hotspot}` : ""}`
+          : state.selectedAreaType?.renderTitle(properties);
+      const status = state.selectedAreaType?.renderStatus(properties);
+      const country = properties?.country;
+
+      // update popup position and content directly, no zero renders
+      popupRef.current
+        .setLngLat(event.lngLat)
+        .setHTML(
+          `<div>
+          <div class="map-tooltip-title">${title}</div>
+          ${status ? `<div>${status}</div>` : ""}
+          ${state.selectedAreaType?.showCountry ? `<div>${country}</div>` : ""}
+        </div>`,
+        )
+        .addTo(map);
+
       if (selectedAreaTypeKey === "countries") return;
+      if (hoveredFeatureRef.current === feature.id) return;
 
-      // remove hover state from previous feature
-      if (hoveredFeatureRef.current) {
+      if (hoveredFeatureRef.current != null) {
         map.setFeatureState(
-          {
-            source: "areas",
-            id: hoveredFeatureRef.current,
-          },
+          { source: "areas", id: hoveredFeatureRef.current },
           { hover: false },
         );
       }
-
-      // set hover state on current feature
-      if (feature.id) {
+      if (feature.id != null) {
         hoveredFeatureRef.current = feature.id;
         map.setFeatureState(
-          {
-            source: "areas",
-            id: feature.id,
-          },
+          { source: "areas", id: feature.id },
           { hover: true },
         );
       }
     },
-    [isMobile, selectedAreaTypeKey],
+    [
+      dictionary?.map_ui?.hotspot,
+      isMobile,
+      selectedAreaTypeKey,
+      state.selectedAreaType,
+    ],
   );
 
   const handleMouseLeaveMap = useCallback(() => {
-    setTooltip(null);
-    if (!hoveredFeatureRef.current || !mapRef.current) return;
-
+    popupRef.current?.remove();
+    if (hoveredFeatureRef.current == null || !mapRef.current) return;
     mapRef.current.setFeatureState(
-      {
-        source: "areas",
-        id: hoveredFeatureRef.current,
-      },
+      { source: "areas", id: hoveredFeatureRef.current },
       { hover: false },
     );
-
-    hoveredFeatureRef.current = undefined; // reset the ref after clearing hover state
+    hoveredFeatureRef.current = undefined;
   }, []);
 
   const handleClick = useCallback(
@@ -220,33 +276,24 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         (d) =>
           // ignore entire amazon layer as it covers everything
           d?.properties?.id !== ENTIRE_AMAZON_AREA_ID &&
-          // ignore these two parts of the hotspots layers as they have too big click targets
-          !["hotspots-labels", "hotspots-circle"].includes(d?.layer?.id ?? ""),
+          // ignore layers except the areas one
+          d?.layer?.id === "areas-layer-fill",
       );
       const feature = featuresFiltered[0];
       const id = feature?.properties?.id;
-      const type = feature?.properties?.type as PERMITTED_AREA_TYPES_KEYS;
 
       if (!id) return;
-
-      if (type === "hotspots") {
-        dispatch({
-          type: "SET_SELECTED_AREA_TYPE_BY_KEY",
-          selectedAreaTypeKey: "hotspots",
-        });
-        // because this will trigger a change in area type, we need to wait
-        // for the data to load, so we set it as pending
-        dispatch({
-          type: "SET_PENDING_SELECTED_AREA_ID",
-          pendingSelectedAreaId: id,
-        });
-        return;
-      }
-
       dispatch({ type: "SET_SELECTED_AREA_BY_ID", selectedAreaId: id });
     },
     [dispatch],
   );
+
+  // clean up on unmount
+  useEffect(() => {
+    return () => {
+      popupRef.current?.remove();
+    };
+  }, []);
 
   useEffect(() => {
     // zoom to selected area on change
@@ -296,6 +343,13 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
     };
   }, []);
 
+  // click outside handler for geocoder
+  useGeocoderClickOutside(
+    isGeocoderHidden,
+    geocoderContainerRef,
+    setIsGeocoderHidden,
+  );
+
   // in case we're in an iframe embed, this sends a post message to the parent window,
   // for the mining calculator
   const miningLocations = selectedAreaData?.properties?.locations;
@@ -303,10 +357,6 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
     if (!isEmbed || !miningLocations?.length) return;
     window.parent.postMessage({ locations: miningLocations }, "*");
   }, [miningLocations, isEmbed]);
-
-  const getBeforeId = (targetLayerId: string) =>
-    // make sure the layer exists to avoid errors
-    mapRef.current?.getLayer(targetLayerId) ? targetLayerId : undefined;
 
   return (
     <div className="main-map">
@@ -326,20 +376,6 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           width: "100hw",
         }}
         mapStyle={SATELLITE_LAYERS["yearly"]}
-        // onIdle={() => {
-        //   if (!mapRef.current) return;
-        //   if (mapRef.current.getZoom() <= 11) return; // don't run if too zoomed out
-
-        //   let bbox = getCurrentBounds();
-        //   if (!bbox) return;
-        //   // FIXME: we're not using the mining areas yet
-        //   const miningArea = calculateMiningAreaInBbox(
-        //     bbox,
-        //     activeYear,
-        //     miningData
-        //   );
-        //   // console.log("using viewport, mining area in ha", miningArea);
-        // }}
         onMoveEnd={() => {
           updateURLParamsMapPosition();
 
@@ -355,6 +391,14 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         }}
         onLoad={() => {
           setMapPositionFromURL();
+
+          // popup
+          popupRef.current = new Popup({
+            closeButton: false,
+            closeOnClick: false,
+            className: "map-tooltip",
+            offset: 10,
+          });
 
           // geocoder
           if (!mapRef.current) return;
@@ -374,6 +418,9 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           geocoderContainer.style.top = "calc(var(--top-navbar-height) + 10px)";
           geocoderContainer.style.right = "10px";
           geocoderContainer.style.zIndex = "1000";
+
+          // store ref to the container
+          geocoderContainerRef.current = geocoderContainer;
 
           const mapContainer = document.querySelector(".main-map");
           if (mapContainer) {
@@ -397,18 +444,16 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         onClick={handleClick}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeaveMap}
+        onIdle={reorderLayers}
         interactiveLayerIds={[
           "areas-layer-fill",
-          "hotspots-dot",
-          "hotspots-outline",
-          "hotspots-polygon",
-          "hotspots-fill",
+          // NOTE: hiding hotspots on Feb 2026
+          // "hotspots-dot",
+          // "hotspots-outline",
+          // "hotspots-circle",
+          // "hotspots-fill",
         ]}
       >
-        {!isMobile && (
-          <NavigationControl position={isEmbed ? "bottom-left" : "top-right"} />
-        )}
-
         {/* ================== SENTINEL2 SOURCES =================== */}
         {MINING_LAYERS.map(
           ({ yearQuarter, satelliteEndpoint, satelliteDates }) => (
@@ -430,9 +475,8 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
             type="raster"
             source={`sentinel-${d}`}
             layout={{
-              visibility: activeYear === String(d) ? "visible" : "none",
+              visibility: activeYearEnd === String(d) ? "visible" : "none",
             }}
-            beforeId={getBeforeId("hole-layer")}
           />
         ))}
 
@@ -493,31 +537,26 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           <>
             <Layer
               id={"areas-layer"}
-              beforeId={getBeforeId("mines-layer")}
               source={"areas"}
               type="line"
               paint={{
                 "line-color": "#ccc",
                 "line-opacity": 1,
-                "line-width":
-                  selectedAreaTypeKey === "hotspots"
-                    ? 0
-                    : [
-                        "interpolate",
-                        ["exponential", 2],
-                        ["zoom"],
-                        0,
-                        1,
-                        10,
-                        1,
-                        14,
-                        2.5,
-                      ],
+                "line-width": [
+                  "interpolate",
+                  ["exponential", 2],
+                  ["zoom"],
+                  0,
+                  1,
+                  10,
+                  1,
+                  14,
+                  2.5,
+                ],
               }}
             />
             <Layer
               id={"areas-layer-fill"}
-              beforeId={getBeforeId("areas-layer")}
               source={"areas"}
               type="fill"
               paint={{
@@ -537,7 +576,6 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           <>
             <Layer
               id={"selected-area-layer-fill"}
-              beforeId={getBeforeId("areas-layer")}
               source={"selected-area"}
               type="fill"
               paint={{
@@ -548,7 +586,6 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
             />
             <Layer
               id={"selected-area-layer"}
-              beforeId={getBeforeId("selected-area-layer-fill")}
               source={"selected-area"}
               type="line"
               paint={{
@@ -573,14 +610,19 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         {miningData && (
           <Layer
             id={"mines-layer"}
-            beforeId={!isEmbed ? getBeforeId("hotspots-fill") : undefined}
+            // NOTE: hiding hotspots on Feb 2026
+            // beforeId={!isEmbed ? getBeforeId("hotspots-fill") : undefined}
             source={"mines"}
             type="line"
-            filter={[
-              hoveredYear ? "==" : "<=",
-              ["get", "year"],
-              hoveredYear ? hoveredYear : Number(activeYear),
-            ]}
+            filter={
+              hoveredYear
+                ? ["==", ["get", "year"], hoveredYear]
+                : [
+                    "all",
+                    [">=", ["get", "year"], Number(activeYearStart)],
+                    ["<=", ["get", "year"], Number(activeYearEnd)],
+                  ]
+            }
             paint={{
               "line-color": mineLayerColors,
               "line-opacity": 1,
@@ -598,41 +640,37 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
             }}
           />
         )}
-        {/* ================== LABELS =================== */}
-        <Layer
-          id="country-labels"
-          type="symbol"
-          source="amazon-cover-water"
-          source-layer="place_label"
-          filter={[
-            "all",
-            [
-              "<=",
-              ["string", ["get", "class"]],
-              "settlement, settlement_subdivision",
-            ],
-          ]}
-          minzoom={6}
-          layout={{
-            "text-field": ["coalesce", ["get", "name_en"], ["get", "name"]],
-          }}
-          paint={{
-            "text-color": "#ffffff",
-          }}
-        />
 
+        {/* NOTE: hiding hotspots on Feb 2026 */}
         {/* wait for mines to load so that hotspots are layered on top of mines */}
-        {miningData && !isEmbed && <Hotspots />}
+        {/* {miningData && !isEmbed && <Hotspots />} */}
 
-        {/* ================== POPUP =================== */}
-        {tooltip && !isMobile && (
-          <MapPopup tooltip={tooltip} dictionary={dictionary} />
-        )}
+        {/* ============ COUNTRY BOUNDARIES ============== */}
+        <Source
+          id="country-boundaries-source"
+          type="vector"
+          url="mapbox://mapbox.country-boundaries-v1"
+        >
+          <Layer
+            id="country-boundaries"
+            type="line"
+            source-layer="country_boundaries"
+            paint={{
+              "line-color": "hsl(0, 0%, 48%)",
+              "line-opacity": 1,
+              "line-width": 0.3,
+            }}
+          />
+        </Source>
 
         {!isMobile && !isEmbed && (
           <ScaleControl
             unit={areaUnits === "imperial" ? "imperial" : "metric"}
           />
+        )}
+
+        {!isMobile && (
+          <NavigationControl position={isEmbed ? "bottom-left" : "top-right"} />
         )}
       </Map>
 
@@ -643,7 +681,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         <Link
           href="/"
           className="amw-logo"
-          style={{ top: isEmbed ? 10 : undefined }}
+          style={{ top: isEmbed ? 15 : undefined }}
         >
           <Image src={Logo} alt="Logo" />
         </Link>
@@ -665,6 +703,14 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           </div>
         )}
 
+        {!isMobile && !isEmbed && (
+          <MapShareButton
+            latitude={latitude}
+            longitude={longitude}
+            dictionary={dictionary}
+          />
+        )}
+
         {!isEmbed && (
           <LegendWrapper
             showMinimap={true}
@@ -673,8 +719,14 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
             }
             bounds={bounds}
             years={LAYER_YEARS}
-            activeYear={activeYear}
-            setActiveYear={setActiveYear}
+            activeYearStart={activeYearStart}
+            activeYearEnd={activeYearEnd}
+            setActiveYearStart={(v) =>
+              dispatch({ type: "SET_ACTIVE_YEAR_START", activeYearStart: v })
+            }
+            setActiveYearEnd={(v) =>
+              dispatch({ type: "SET_ACTIVE_YEAR_END", activeYearEnd: v })
+            }
             dictionary={dictionary}
           />
         )}
@@ -682,7 +734,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         {selectedArea && !isEmbed && (
           <AreaSummary
             dictionary={dictionary}
-            maxYear={maxYear}
+            maxYear={LAYER_YEARS[LAYER_YEARS.length - 1]}
             yearsColors={yearsColors}
           />
         )}
