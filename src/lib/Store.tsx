@@ -6,7 +6,6 @@ import {
   MiningData,
 } from "@/types/types";
 import Reducer from "@/lib/Reducer";
-import { SingleValue } from "react-select";
 import { AreaSelectOption } from "@/app/[lang]/components/AreaSelect";
 import {
   AREA_TYPES,
@@ -36,7 +35,7 @@ export interface IState {
   areasTimeseriesData: AreasTimeseriesData | undefined;
   areasTimeseriesDataIsLoading: boolean;
   areasOptions: AreaSelectOption[] | undefined;
-  selectedArea: SingleValue<AreaSelectOption> | undefined;
+  selectedArea: AreaSelectOption | undefined;
   selectedAreaData: AreaData | undefined;
   selectedAreaTimeseriesData: AreasTimeseriesData | undefined;
   pendingSelectedAreaId: string | undefined;

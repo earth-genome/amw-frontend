@@ -579,7 +579,6 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
                 "fill-opacity": [
                   "case",
                   ["boolean", ["feature-state", "hover"], false],
-                  // FIX: hover is broken
                   0.2, // hovered
                   0, // not hovered
                 ],
