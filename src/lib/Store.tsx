@@ -37,7 +37,7 @@ export interface IState {
   areasTimeseriesDataIsLoading: boolean;
   areasOptions: AreaSelectOption[] | undefined;
   selectedArea: SingleValue<AreaSelectOption> | undefined;
-  selectedAreaData: AreaData;
+  selectedAreaData: AreaData | undefined;
   selectedAreaTimeseriesData: AreasTimeseriesData | undefined;
   pendingSelectedAreaId: string | undefined;
   selectedAreaTypeKey: PERMITTED_AREA_TYPES_KEYS | undefined;

@@ -53,7 +53,7 @@ interface UseMiningCalculatorReturn {
 }
 
 export const useMiningCalculator = (
-  miningLocations: MiningLocation[] | null,
+  miningLocations: MiningLocation[] | undefined,
 ): UseMiningCalculatorReturn => {
   const miningLocationsFiltered =
     filterForMiningCalculator(miningLocations);

@@ -2,10 +2,13 @@ import { scaleSequential } from "d3-scale";
 import { interpolateRgbBasis } from "d3-interpolate";
 import { HOTSPOTS_GEOJSON_URL } from "@/cms/hotspots";
 
-const DATA_UPDATED_AT = "20260212";
+const DATA_UPDATED_AT = "20260224";
 const DATA_BASE_URL =
   // "/website";
   `${process.env.NEXT_PUBLIC_DATA_URL}/${DATA_UPDATED_AT}`;
+const TILES_BASE_URL =
+  // "/website";
+  `${process.env.NEXT_PUBLIC_TILES_URL}/amw/${DATA_UPDATED_AT}`;
 
 if (!DATA_BASE_URL) {
   throw new Error(
@@ -133,6 +136,8 @@ export interface AreaType {
   dictionaryKey: string;
   dictionaryKeySingular: string;
   url: string;
+  tilesUrl: string;
+  tilesLayer: string;
   timeseriesUrl: string;
   isDefault?: boolean;
   renderLabel: (_properties: Record<string, any>) => string;
@@ -148,7 +153,9 @@ export const AREA_TYPES = [
     dictionaryKey: "countries",
     dictionaryKeyDescription: undefined,
     dictionaryKeySingular: "country",
-    url: `${DATA_BASE_URL}/data/boundaries/national_admin/out/national_admin_impacts.json`,
+    url: `${DATA_BASE_URL}/data/boundaries/national_admin/out/national_admin_impacts_unfiltered_dict.json`,
+    tilesUrl: `${TILES_BASE_URL}/national_admin_impacts_unfiltered/{z}/{x}/{y}.pbf`,
+    tilesLayer: `national_admin_impacts_unfiltered`,
     timeseriesUrl: `${DATA_BASE_URL}/data/boundaries/national_admin/out/national_admin_yearly.json`,
     isDefault: true,
     renderLabel: (properties: Record<string, any>) => properties.country,
@@ -164,7 +171,9 @@ export const AREA_TYPES = [
     dictionaryKey: "subnational_jurisdictions",
     dictionaryKeyDescription: undefined,
     dictionaryKeySingular: "subnational_jurisdiction",
-    url: `${DATA_BASE_URL}/data/boundaries/subnational_admin/out/admin_areas_display_impacts_unfiltered.json`,
+    url: `${DATA_BASE_URL}/data/boundaries/subnational_admin/out/admin_areas_display_impacts_unfiltered_dict.json`,
+    tilesUrl: `${TILES_BASE_URL}/admin_areas_display_impacts_unfiltered/{z}/{x}/{y}.pbf`,
+    tilesLayer: `admin_areas_display_impacts_unfiltered`,
     timeseriesUrl: `${DATA_BASE_URL}/data/boundaries/subnational_admin/out/admin_areas_display_yearly.json`,
     isDefault: true,
     renderLabel: (properties: Record<string, any>) =>
@@ -184,7 +193,9 @@ export const AREA_TYPES = [
     dictionaryKey: "indigenous_territories",
     dictionaryKeyDescription: "indigenous_territories_description",
     dictionaryKeySingular: "indigenous_territory",
-    url: `${DATA_BASE_URL}/data/boundaries/protected_areas_and_indigenous_territories/out/indigenous_territories_impacts.json`,
+    url: `${DATA_BASE_URL}/data/boundaries/protected_areas_and_indigenous_territories/out/indigenous_territories_impacts_unfiltered_dict.json`,
+    tilesUrl: `${TILES_BASE_URL}/indigenous_territories_impacts_unfiltered/{z}/{x}/{y}.pbf`,
+    tilesLayer: `indigenous_territories_impacts_unfiltered`,
     timeseriesUrl: `${DATA_BASE_URL}/data/boundaries/protected_areas_and_indigenous_territories/out/indigenous_territories_yearly.json`,
     isDefault: false,
     renderLabel: (properties: Record<string, any>) =>
@@ -204,7 +215,9 @@ export const AREA_TYPES = [
     dictionaryKey: "protected_areas",
     dictionaryKeyDescription: "protected_areas_description",
     dictionaryKeySingular: "protected_area",
-    url: `${DATA_BASE_URL}/data/boundaries/protected_areas_and_indigenous_territories/out/protected_areas_impacts.json`,
+    url: `${DATA_BASE_URL}/data/boundaries/protected_areas_and_indigenous_territories/out/protected_areas_impacts_unfiltered_dict.json`,
+    tilesUrl: `${TILES_BASE_URL}/protected_areas_impacts_unfiltered/{z}/{x}/{y}.pbf`,
+    tilesLayer: `protected_areas_impacts_unfiltered`,
     timeseriesUrl: `${DATA_BASE_URL}/data/boundaries/protected_areas_and_indigenous_territories/out/protected_areas_yearly.json`,
     isDefault: false,
     renderLabel: (properties: Record<string, any>) =>
@@ -225,7 +238,8 @@ export const AREA_TYPES = [
     dictionaryKeyDescription: undefined,
     dictionaryKeySingular: "hotspot",
     url: HOTSPOTS_GEOJSON_URL,
-    // FIXME:
+    tilesUrl: "",
+    tilesLayer: "",
     timeseriesUrl: "",
     isDefault: false,
     renderLabel: (properties: Record<string, any>) => properties.title,

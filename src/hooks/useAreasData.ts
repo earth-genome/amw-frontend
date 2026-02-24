@@ -36,7 +36,7 @@ const useAreasData = ({ state, dispatch, lang }: Props) => {
       ? `${areasDataUrl}?locale=${lang}`
       : areasDataUrl,
     fetcher,
-    swrConfig
+    swrConfig,
   );
 
   useEffect(() => {
@@ -50,14 +50,11 @@ const useAreasData = ({ state, dispatch, lang }: Props) => {
       return;
     }
 
-    const areasDataFiltered = {
-      type: "FeatureCollection",
-      features: areasData?.features?.filter(
-        (d) =>
-          // HACK: filter out two specific areas, Raposa Serra do Sol IT and Apolobamba PA
-          d.properties.id !== "BOAP-0405_0" && d.properties.id !== "BR37901_0"
-      ),
-    };
+    const areasDataFiltered = areasData?.filter(
+      (d) =>
+        // HACK: filter out two specific areas, Raposa Serra do Sol IT and Apolobamba PA
+        d.id !== "BOAP-0405_0" && d.id !== "BR37901_0",
+    );
 
     dispatch({
       type: "SET_AREAS_DATA",

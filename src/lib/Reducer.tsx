@@ -1,6 +1,6 @@
 import { AREA_TYPES, ENTIRE_AMAZON_AREA_ID } from "@/constants/map";
 import { ActionType, IState } from "@/lib/Store";
-import { GeoJSONFeature } from "@/types/types";
+import { AreaData } from "@/types/types";
 
 export const getAreaType = (key: string) =>
   AREA_TYPES.find((d) => key === d.key);
@@ -29,9 +29,8 @@ const Reducer = (state: IState, action: ActionType): IState => {
         areasData: action.areasData,
         areasDataIsLoading: action.areasDataIsLoading,
         areasDataError: action.areasDataError,
-        areasOptions: action.areasData?.features
-          ?.filter((d: GeoJSONFeature) => d.properties?.id !== undefined)
-          ?.map((d: GeoJSONFeature) => d.properties)
+        areasOptions: action.areasData
+          ?.filter((d: AreaData) => d?.id !== undefined)
           ?.map((d) => ({
             value: d.id,
             // label is used for searching
@@ -84,8 +83,8 @@ const Reducer = (state: IState, action: ActionType): IState => {
         selectedArea: state.areasOptions?.find(
           (d) => d?.value === action.selectedAreaId
         ),
-        selectedAreaData: state.areasData?.features?.find(
-          (d) => d?.properties?.id === action.selectedAreaId
+        selectedAreaData: state.areasData?.find(
+          (d) => d?.id === action.selectedAreaId
         ),
         selectedAreaTimeseriesData: state.areasTimeseriesData?.filter(
           (d) => d?.id === action.selectedAreaId
