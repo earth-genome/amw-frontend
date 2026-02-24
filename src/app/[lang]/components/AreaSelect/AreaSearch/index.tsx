@@ -25,7 +25,14 @@ const AreaSearch = ({
       areasOptions?.map((opt: AreaSelectOption) => ({
         value: opt.value,
         label: (
-          <div style={{ padding: "4px 0", color: "inherit" }}>
+          <div
+            style={{
+              padding: "4px 0",
+              color: "inherit",
+              whiteSpace: "normal",
+              wordBreak: "break-word",
+            }}
+          >
             <div
               style={{
                 fontWeight: 700,
