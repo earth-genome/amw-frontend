@@ -32,10 +32,10 @@
     "subnational_jurisdictions": "Jurisdicciones subnacionales",
     "subnational_jurisdiction": "Jurisdicción subnacional",
     "indigenous_territories": "Territorios indígenas",
-    "indigenous_territories_description": "Solo areas con minería detectada",
+    "indigenous_territories_description": "El mapa solo muestra áreas con minería detectada",
     "indigenous_territory": "Territorio indígena",
     "protected_areas": "Áreas protegidas",
-    "protected_areas_description": "Solo areas con minería detectada",
+    "protected_areas_description": "El mapa solo muestra áreas con minería detectada",
     "protected_area": "Área protegida",
     "hotspots": "Puntos críticos",
     "hotspot": "Punto crítico",
@@ -70,7 +70,9 @@
     "copy_success": "Enlace copiado",
     "period_start": "Ver mapa de",
     "period_end": "Hasta",
-    "period_end_tooltip": "Las imágenes satelitales muestran el período de tiempo más reciente seleccionado."
+    "period_end_tooltip": "Las imágenes satelitales muestran el período de tiempo más reciente seleccionado.",
+    "total_area_affected": "Área total afectada por la minería hasta",
+    "no_mining": "No se detectó minería"
   },
   "types_of_mining": {
     "hotspot": "Punto crítico",
@@ -92,11 +94,6 @@
   "map_legend": {
     "old_mining_activity": "Minería más antigua",
     "recent_mining_activity": "Minería más reciente"
-  },
-  "coverage": {
-    "total_area_affected": "Área total afectada por la minería hasta",
-    "or": "o",
-    "million_acres": "millones de acres"
   },
   "how_to_use": {
     "title": "Cómo usar",

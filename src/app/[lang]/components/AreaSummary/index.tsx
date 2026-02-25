@@ -104,7 +104,7 @@ const AreaSummary: React.FC<AreaProps> = ({
       <div
         className={style.areaBody}
         style={
-          // if there is no affected area, we won't show the card below, 
+          // if there is no affected area, we won't show the card below,
           // so we need the bottom radius here
           !affectedAreaHa
             ? {
@@ -115,7 +115,7 @@ const AreaSummary: React.FC<AreaProps> = ({
         }
       >
         <div>
-          {dictionary.coverage.total_area_affected} {formatLayerYear(maxYear)}
+          {dictionary.map_ui.total_area_affected} {formatLayerYear(maxYear)}
         </div>
         <div className={style.areaKm}>
           {affectedAreaHa !== null && affectedAreaHa !== undefined
@@ -124,7 +124,7 @@ const AreaSummary: React.FC<AreaProps> = ({
                 lang,
                 getAreaSignificantDigits(affectedAreaHa),
               )} ${dictionary?.map_ui?.[`${areaUnits}Abbrev`] ?? ""}`
-            : "N/A"}
+            : dictionary.map_ui.no_mining}
         </div>
       </div>
       {/* we don't show economic cost nor illegality if there are no mining impacts */}
