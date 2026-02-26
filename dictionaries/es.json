@@ -72,7 +72,8 @@
     "period_end": "Hasta",
     "period_end_tooltip": "Las imágenes satelitales muestran el período de tiempo más reciente seleccionado.",
     "total_area_affected": "Área total afectada por la minería hasta",
-    "no_mining": "No se detectó minería"
+    "no_mining": "No se detectó minería",
+    "no_results_found": "No se encontraron resultados"
   },
   "types_of_mining": {
     "hotspot": "Punto crítico",

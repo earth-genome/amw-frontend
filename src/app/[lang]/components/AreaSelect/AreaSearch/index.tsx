@@ -162,7 +162,7 @@ const AreaSearch = ({
                 textAlign: "center",
               }}
             >
-              No options found
+              {dictionary?.map_ui?.no_results_found}
             </div>
           }
         />

@@ -67,12 +67,13 @@
     "map_center": "Map center",
     "copy_link": "Copy link",
     "copy_error": "There was an error copying the link. Try again",
-    "copy_success": "Copied link", 
+    "copy_success": "Copied link",
     "period_start": "Display map from",
     "period_end": "To",
     "period_end_tooltip": "Satellite imagery displays the most recent time period selected.",
     "total_area_affected": "Total area affected by mining until",
-    "no_mining": "No mining detected"
+    "no_mining": "No mining detected",
+    "no_results_found": "No results found"
   },
   "types_of_mining": {
     "hotspot": "Hotspot",

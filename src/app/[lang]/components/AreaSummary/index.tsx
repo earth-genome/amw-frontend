@@ -60,6 +60,7 @@ const AreaSummary: React.FC<AreaProps> = ({
     )?.intersected_area_ha_cumulative;
     return [latestYearAffectedArea, calculatorData?.totalImpact];
   }, [calculatorData?.totalImpact, maxYear, selectedAreaTimeseriesData]);
+  const hasAffectedArea = affectedAreaHa != null;
 
   const {
     country,
@@ -106,7 +107,7 @@ const AreaSummary: React.FC<AreaProps> = ({
         style={
           // if there is no affected area, we won't show the card below,
           // so we need the bottom radius here
-          !affectedAreaHa
+          !hasAffectedArea
             ? {
                 borderBottomLeftRadius: 12,
                 borderBottomRightRadius: 12,
@@ -118,7 +119,7 @@ const AreaSummary: React.FC<AreaProps> = ({
           {dictionary.map_ui.total_area_affected} {formatLayerYear(maxYear)}
         </div>
         <div className={style.areaKm}>
-          {affectedAreaHa !== null && affectedAreaHa !== undefined
+          {hasAffectedArea
             ? `${formatNumber(
                 displayAreaInUnits(affectedAreaHa, areaUnits),
                 lang,
@@ -128,7 +129,7 @@ const AreaSummary: React.FC<AreaProps> = ({
         </div>
       </div>
       {/* we don't show economic cost nor illegality if there are no mining impacts */}
-      {affectedAreaHa && (
+      {hasAffectedArea && (
         <div>
           <AreaSummaryDetails
             hideMiningCalculator={hideMiningCalculator}
