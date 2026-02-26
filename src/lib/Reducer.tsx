@@ -1,9 +1,8 @@
 import { AREA_TYPES, ENTIRE_AMAZON_AREA_ID } from "@/constants/map";
 import { ActionType, IState } from "@/lib/Store";
-import { GeoJSONFeature } from "@/types/types";
+import { AreaData } from "@/types/types";
 
-export const getAreaType = (key: string) =>
-  AREA_TYPES.find((d) => key === d.key);
+const getAreaType = (key: string) => AREA_TYPES.find((d) => key === d.key);
 
 const Reducer = (state: IState, action: ActionType): IState => {
   switch (action.type) {
@@ -17,21 +16,14 @@ const Reducer = (state: IState, action: ActionType): IState => {
         ...state,
         isQueryChecked: action.isQueryChecked,
       };
-    case "SET_MINING_DATA":
-      return {
-        ...state,
-        miningData: action.miningData,
-        miningDataIsLoading: action.miningDataIsLoading,
-      };
     case "SET_AREAS_DATA":
       return {
         ...state,
         areasData: action.areasData,
         areasDataIsLoading: action.areasDataIsLoading,
         areasDataError: action.areasDataError,
-        areasOptions: action.areasData?.features
-          ?.filter((d: GeoJSONFeature) => d.properties?.id !== undefined)
-          ?.map((d: GeoJSONFeature) => d.properties)
+        areasOptions: action.areasData
+          ?.filter((d: AreaData) => d?.id !== undefined)
           ?.map((d) => ({
             value: d.id,
             // label is used for searching
@@ -75,20 +67,20 @@ const Reducer = (state: IState, action: ActionType): IState => {
         areasTimeseriesData: action.areasTimeseriesData,
         areasTimeseriesDataIsLoading: action.areasTimeseriesDataIsLoading,
         selectedAreaTimeseriesData: action.areasTimeseriesData?.filter(
-          (d) => d?.id === state.selectedArea?.value
+          (d) => d?.id === state.selectedArea?.value,
         ),
       };
     case "SET_SELECTED_AREA_BY_ID":
       return {
         ...state,
         selectedArea: state.areasOptions?.find(
-          (d) => d?.value === action.selectedAreaId
+          (d) => d?.value === action.selectedAreaId,
         ),
-        selectedAreaData: state.areasData?.features?.find(
-          (d) => d?.properties?.id === action.selectedAreaId
+        selectedAreaData: state.areasData?.find(
+          (d) => d?.id === action.selectedAreaId,
         ),
         selectedAreaTimeseriesData: state.areasTimeseriesData?.filter(
-          (d) => d?.id === action.selectedAreaId
+          (d) => d?.id === action.selectedAreaId,
         ),
       };
     case "SET_PENDING_SELECTED_AREA_ID":

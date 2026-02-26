@@ -52,8 +52,8 @@ interface UseMiningCalculatorReturn {
   mutate: () => void;
 }
 
-export const useMiningCalculator = (
-  miningLocations: MiningLocation[] | null,
+const useMiningCalculator = (
+  miningLocations: MiningLocation[] | undefined,
 ): UseMiningCalculatorReturn => {
   const miningLocationsFiltered =
     filterForMiningCalculator(miningLocations);

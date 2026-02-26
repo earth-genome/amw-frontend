@@ -2,6 +2,10 @@ import { LAYER_YEARS } from "@/constants/map";
 import { MiningData } from "@/types/types";
 import * as turf from "@turf/turf";
 
+// NOTE: this was used to calculate mining areas within the hotstpots bbox, when used to
+// display hotspots AND we fetched miningData as a geojson. Now mining layers comes as a
+// vector tile layer, so if we want to bring back this functionality in the future this logic
+// will need to be adapted to use vector tiles instead of a geojson.
 const calculateMiningAreaInBbox = (
   bbox: [number, number, number, number],
   miningData: MiningData | undefined

@@ -1,7 +1,6 @@
 "use client";
 import React, { useContext, useMemo } from "react";
 import style from "./style.module.css";
-// import Eye from "@/app/[lang]/components/Icons/Eye";
 import { Context } from "@/lib/Store";
 import {
   displayAreaInUnits,
@@ -39,8 +38,6 @@ const AreaSummary: React.FC<AreaProps> = ({
     selectedAreaTypeKey,
     lang,
   } = state;
-  const areaProperties = selectedAreaData?.properties || {};
-  const showMoreInsights = true;
   // don't use mining calculator for countries because it is not reliable for such large areas,
   const hideMiningCalculator =
     !selectedAreaTypeKey || selectedAreaTypeKey === "countries";
@@ -51,7 +48,7 @@ const AreaSummary: React.FC<AreaProps> = ({
     calculatorIsLoading,
     // calculatorError,
   } = useMiningCalculator(
-    hideMiningCalculator ? [] : selectedAreaData?.properties?.locations,
+    hideMiningCalculator ? [] : selectedAreaData?.locations,
   );
 
   const [affectedAreaHa, economicCost] = useMemo(() => {
@@ -63,16 +60,19 @@ const AreaSummary: React.FC<AreaProps> = ({
     )?.intersected_area_ha_cumulative;
     return [latestYearAffectedArea, calculatorData?.totalImpact];
   }, [calculatorData?.totalImpact, maxYear, selectedAreaTimeseriesData]);
+  const hasAffectedArea = affectedAreaHa != null;
 
   const {
     country,
     id: areaId,
-    description,
+    // description,
     illegality_areas: illegalityAreas,
-  } = areaProperties;
+  } = selectedAreaData ?? {};
   const { showCountry, renderTitle, renderStatus } = selectedAreaType || {};
-  const areaTitle = renderTitle && renderTitle(areaProperties);
-  const areaStatus = renderStatus && renderStatus(areaProperties);
+  const areaTitle =
+    selectedAreaData && renderTitle && renderTitle(selectedAreaData);
+  const areaStatus =
+    selectedAreaData && renderStatus && renderStatus(selectedAreaData);
 
   const handleClose = () =>
     dispatch({ type: "SET_SELECTED_AREA_BY_ID", selectedAreaId: undefined });
@@ -102,21 +102,34 @@ const AreaSummary: React.FC<AreaProps> = ({
           </div>
         </div>
       </div>
-      <div className={style.areaBody}>
+      <div
+        className={style.areaBody}
+        style={
+          // if there is no affected area, we won't show the card below,
+          // so we need the bottom radius here
+          !hasAffectedArea
+            ? {
+                borderBottomLeftRadius: 12,
+                borderBottomRightRadius: 12,
+              }
+            : {}
+        }
+      >
         <div>
-          {dictionary.coverage.total_area_affected} {formatLayerYear(maxYear)}
+          {dictionary.map_ui.total_area_affected} {formatLayerYear(maxYear)}
         </div>
         <div className={style.areaKm}>
-          {affectedAreaHa !== null && affectedAreaHa !== undefined
+          {hasAffectedArea
             ? `${formatNumber(
                 displayAreaInUnits(affectedAreaHa, areaUnits),
                 lang,
                 getAreaSignificantDigits(affectedAreaHa),
               )} ${dictionary?.map_ui?.[`${areaUnits}Abbrev`] ?? ""}`
-            : "N/A"}
+            : dictionary.map_ui.no_mining}
         </div>
       </div>
-      {showMoreInsights && (
+      {/* we don't show economic cost nor illegality if there are no mining impacts */}
+      {hasAffectedArea && (
         <div>
           <AreaSummaryDetails
             hideMiningCalculator={hideMiningCalculator}
@@ -132,7 +145,7 @@ const AreaSummary: React.FC<AreaProps> = ({
             calculatorIsLoading={calculatorIsLoading}
             calculatorUrl={calculatorUrl}
             selectedAreaTimeseriesData={selectedAreaTimeseriesData}
-            description={description}
+            // description={description}
             dictionary={dictionary}
             illegalityAreas={illegalityAreas?.filter(
               (d: IllegalityAreaData) =>
@@ -144,19 +157,6 @@ const AreaSummary: React.FC<AreaProps> = ({
           />
         </div>
       )}
-      {/* <div className={style.areaFooter}>
-        <div className={style.areaFooterText}>
-          <button
-            className={style.showMoreButton}
-            onClick={toggleShowMoreInsights}
-          >
-            {!showMoreInsights
-              ? dictionary.map_ui.see_more_insights
-              : dictionary.map_ui.hide_more_insights}
-            <Eye hide={showMoreInsights} />
-          </button>
-        </div>
-      </div> */}
     </div>
   );
 };

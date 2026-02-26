@@ -42,9 +42,12 @@ yarn dev
 
 ## Adding new mining data
 
-After uploading the mining data to S3 from the [mining-detector](https://github.com/earthrise-media/mining-detector/) repo, you will need to add a new layer to `MINING_LAYERS`, in `src/constants/map.ts`. Remember to set the values:
+After uploading the mining data to S3 from the [mining-detector](https://github.com/earthrise-media/mining-detector/) repo, you will need to change the `DATA_UPDATED_AT` variable in `src/constants/map.ts` to the same one you're setting as the data updated date in the mining-detector scripts.
+
+Then, add a new layer to `MINING_LAYERS`, in `src/constants/map.ts`. Remember to set the values:
 
 - `yearQuarter`: in YYYYQQ format, e.g. 202504 is 2025-Q4, 202200 means the entire year of 2022, no quarter
 - `satelliteEndpoint`: the endpoint for the satellite imagery
 - `satelliteDates`: the dates part of the satellite imagery url, in the format: `YYYY-MM-DD/YYYY-MM-DD` (start date/end date)
-- `dataUrl`: the url to the geojson containing the mining detection data
+
+The `MINING_VECTOR_TILES_LAYER` and `MINING_VECTOR_TILES_URL` variables should stay the same, and they should point to the same .pmtiles file on S3, now updated.

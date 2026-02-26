@@ -32,10 +32,10 @@
     "subnational_jurisdictions": "Subnational jurisdictions",
     "subnational_jurisdiction": "Subnational jurisdiction",
     "indigenous_territories": "Indigenous territories",
-    "indigenous_territories_description": "Only areas with mining detected",
+    "indigenous_territories_description": "The map only displays areas with mining detected",
     "indigenous_territory": "Indigenous territory",
     "protected_areas": "Protected areas",
-    "protected_areas_description": "Only areas with mining detected",
+    "protected_areas_description": "The map only displays areas with mining detected",
     "protected_area": "Protected area",
     "hotspots": "Hotspots",
     "hotspot": "Hotspot",
@@ -67,10 +67,13 @@
     "map_center": "Map center",
     "copy_link": "Copy link",
     "copy_error": "There was an error copying the link. Try again",
-    "copy_success": "Copied link", 
+    "copy_success": "Copied link",
     "period_start": "Display map from",
     "period_end": "To",
-    "period_end_tooltip": "Satellite imagery displays the most recent time period selected."
+    "period_end_tooltip": "Satellite imagery displays the most recent time period selected.",
+    "total_area_affected": "Total area affected by mining until",
+    "no_mining": "No mining detected",
+    "no_results_found": "No results found"
   },
   "types_of_mining": {
     "hotspot": "Hotspot",
@@ -92,11 +95,6 @@
   "map_legend": {
     "old_mining_activity": "Older mining activity",
     "recent_mining_activity": "More recent mining activity"
-  },
-  "coverage": {
-    "total_area_affected": "Total area affected by mining until",
-    "or": "or",
-    "million_acres": "million acres"
   },
   "how_to_use": {
     "title": "How to use",
