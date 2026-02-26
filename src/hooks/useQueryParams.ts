@@ -2,13 +2,23 @@ import { useEffect } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { IState } from "@/lib/Store";
 import { slugify } from "@/utils/slugify";
-import { ENTIRE_AMAZON_AREA_ID, LAYER_YEARS } from "@/constants/map";
+import {
+  AREA_TYPES,
+  ENTIRE_AMAZON_AREA_ID,
+  LAYER_YEARS,
+} from "@/constants/map";
 
 interface Props {
   state: IState;
   dispatch: React.Dispatch<any>;
   ignore: boolean;
 }
+
+const getDefaultAreaTypeKey = () =>
+  AREA_TYPES.find((at) => at.isDefault)?.key ?? AREA_TYPES[0].key;
+
+const isValidAreaTypeKey = (key: string | null): key is string =>
+  !!key && AREA_TYPES.some((at) => at.key === key);
 
 export const useQueryParams = ({ state, dispatch, ignore }: Props) => {
   const router = useRouter();
@@ -99,16 +109,20 @@ export const useQueryParams = ({ state, dispatch, ignore }: Props) => {
   useEffect(() => {
     if (ignore) return;
 
-    const areaTypeKey = searchParams.get("areaType");
-    const pendingAreaId = searchParams.get("areaId");
+    const areaTypeKeyParam = searchParams.get("areaType");
+    const resolvedAreaTypeKey = isValidAreaTypeKey(areaTypeKeyParam)
+      ? areaTypeKeyParam
+      : getDefaultAreaTypeKey();
 
     // only dispatch if we have URL params and they're different from current state
-    if (areaTypeKey && areaTypeKey !== state.selectedAreaTypeKey) {
+    if (resolvedAreaTypeKey !== state.selectedAreaTypeKey) {
       dispatch({
         type: "SET_SELECTED_AREA_TYPE_BY_KEY",
-        selectedAreaTypeKey: areaTypeKey,
+        selectedAreaTypeKey: resolvedAreaTypeKey,
       });
     }
+
+    const pendingAreaId = searchParams.get("areaId");
 
     if (pendingAreaId && pendingAreaId !== state.selectedArea?.value) {
       dispatch({
@@ -137,7 +151,7 @@ export const useQueryParams = ({ state, dispatch, ignore }: Props) => {
     if (
       !pendingAreaId &&
       !state.selectedArea?.value &&
-      state.selectedAreaTypeKey === "countries" &&
+      resolvedAreaTypeKey === "countries" &&
       !state.isEmbed
     ) {
       dispatch({
