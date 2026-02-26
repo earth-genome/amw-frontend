@@ -52,7 +52,7 @@ interface UseMiningCalculatorReturn {
   mutate: () => void;
 }
 
-export const useMiningCalculator = (
+const useMiningCalculator = (
   miningLocations: MiningLocation[] | undefined,
 ): UseMiningCalculatorReturn => {
   const miningLocationsFiltered =

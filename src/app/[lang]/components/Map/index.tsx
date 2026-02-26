@@ -28,6 +28,8 @@ import {
   LAYER_YEARS,
   MAP_MISSING_DATA_COLOR,
   MINING_LAYERS,
+  MINING_VECTOR_TILES_LAYER,
+  MINING_VECTOR_TILES_URL,
   PERMITTED_AREA_TYPES_KEYS,
 } from "@/constants/map";
 import { Expression, Popup } from "mapbox-gl";
@@ -88,7 +90,6 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
   const [longitude, setLongitude] = useState<undefined | number>(undefined);
 
   const {
-    miningData,
     selectedAreaData,
     selectedArea,
     selectedAreaTypeKey,
@@ -621,52 +622,47 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           )}
 
         {/* ================== MINE SOURCES =================== */}
-        {miningData && (
-          <Source
-            id={"mines"}
-            type="geojson"
-            tolerance={0.05}
-            data={miningData}
-          />
-        )}
+        <Source
+          id={"mines-vector-tiles"}
+          type="vector"
+          tiles={[MINING_VECTOR_TILES_URL]}
+          minZoom={0}
+          maxzoom={14}
+        />
         {/* ================== MINE LAYER =================== */}
-        {miningData && (
-          <Layer
-            id={"mines-layer"}
-            // NOTE: hiding hotspots on Feb 2026
-            // beforeId={!isEmbed ? getBeforeId("hotspots-fill") : undefined}
-            source={"mines"}
-            type="line"
-            filter={
-              hoveredYear
-                ? ["==", ["get", "year"], hoveredYear]
-                : [
-                    "all",
-                    [">=", ["get", "year"], Number(activeYearStart)],
-                    ["<=", ["get", "year"], Number(activeYearEnd)],
-                  ]
-            }
-            paint={{
-              "line-color": mineLayerColors,
-              "line-opacity": 1,
-              "line-width": [
-                "interpolate",
-                ["exponential", 2],
-                ["zoom"],
-                0,
-                1,
-                10,
-                1,
-                14,
-                2.5,
-              ],
-            }}
-          />
-        )}
+        <Layer
+          id={"mines-layer"}
+          source={"mines-vector-tiles"}
+          source-layer={MINING_VECTOR_TILES_LAYER}
+          type="line"
+          filter={
+            hoveredYear
+              ? ["==", ["get", "year"], hoveredYear]
+              : [
+                  "all",
+                  [">=", ["get", "year"], Number(activeYearStart)],
+                  ["<=", ["get", "year"], Number(activeYearEnd)],
+                ]
+          }
+          paint={{
+            "line-color": mineLayerColors,
+            "line-opacity": 1,
+            "line-width": [
+              "interpolate",
+              ["exponential", 2],
+              ["zoom"],
+              0,
+              1,
+              10,
+              1,
+              14,
+              2.5,
+            ],
+          }}
+        />
 
         {/* NOTE: hiding hotspots on Feb 2026 */}
-        {/* wait for mines to load so that hotspots are layered on top of mines */}
-        {/* {miningData && !isEmbed && <Hotspots />} */}
+        {/* {!isEmbed && <Hotspots />} */}
 
         {/* ============ COUNTRY BOUNDARIES ============== */}
         <Source
