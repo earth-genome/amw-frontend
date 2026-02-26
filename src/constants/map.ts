@@ -272,3 +272,7 @@ export const getAreaSignificantDigits = (number: number) => {
 export const ECONOMIC_COST_SIGNIFICANT_DIGITS = 2;
 
 export const ENTIRE_AMAZON_AREA_ID = "AMAZ";
+
+// HACK: hide two specific areas, Raposa Serra do Sol IT and Apolobamba PA, because of data issues
+// as reported by ACA
+export const AREA_IDS_TO_HIDE = ["BOAP-0405_0", "BR37901_0"];

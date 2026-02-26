@@ -22,6 +22,7 @@ import LegendWrapper from "@/app/[lang]/components/Map/LegendWrapper";
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import {
+  AREA_IDS_TO_HIDE,
   ENTIRE_AMAZON_AREA_ID,
   generateSatelliteTiles,
   getColorsForYears,
@@ -74,6 +75,13 @@ const LAYER_ORDER = [
   // "hotspots-circle",
   // "hotspots-dot",
   // "hotspots-labels",
+];
+
+// only show areas with impacts
+const AREAS_LAYER_FILTER = [
+  "all",
+  [">", ["coalesce", ["get", "mining_affected_area_ha"], 0], 0],
+  ["!", ["in", ["get", "id"], ["literal", AREA_IDS_TO_HIDE]]],
 ];
 
 const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
@@ -540,12 +548,8 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
               key={`areas-layer-${selectedAreaType.tilesLayer}`}
               source={"areas-vector-tiles"}
               source-layer={selectedAreaType.tilesLayer}
-              // only show areas with impacts:
-              filter={[
-                ">",
-                ["coalesce", ["get", "mining_affected_area_ha"], 0],
-                0,
-              ]}
+              // @ts-expect-error
+              filter={AREAS_LAYER_FILTER}
               type="line"
               paint={{
                 "line-color": "#ccc",
@@ -568,12 +572,8 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
               key={`areas-layer-fill-${selectedAreaType.tilesLayer}`}
               source={"areas-vector-tiles"}
               source-layer={selectedAreaType.tilesLayer}
-              // only show areas with impacts:
-              filter={[
-                ">",
-                ["coalesce", ["get", "mining_affected_area_ha"], 0],
-                0,
-              ]}
+              // @ts-expect-error
+              filter={AREAS_LAYER_FILTER}
               type="fill"
               paint={{
                 "fill-color": "#22B573",

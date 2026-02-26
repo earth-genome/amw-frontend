@@ -1,3 +1,4 @@
+import { AREA_IDS_TO_HIDE } from "@/constants/map";
 import { IState } from "@/lib/Store";
 import { AreasData } from "@/types/types";
 import { PERMITTED_LANGUAGES } from "@/utils/content";
@@ -53,7 +54,7 @@ const useAreasData = ({ state, dispatch, lang }: Props) => {
     const areasDataFiltered = areasData?.filter(
       (d) =>
         // HACK: filter out two specific areas, Raposa Serra do Sol IT and Apolobamba PA
-        d.id !== "BOAP-0405_0" && d.id !== "BR37901_0",
+        !AREA_IDS_TO_HIDE.includes(d.id),
     );
 
     dispatch({
