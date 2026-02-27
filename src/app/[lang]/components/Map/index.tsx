@@ -143,20 +143,6 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
     window.history.replaceState({}, "", `${pathname}?${params.toString()}`);
   }, [pathname]);
 
-  // const getCurrentBounds = useCallback(() => {
-  //   if (!mapRef.current) return;
-  //   const currentBounds = mapRef.current.getBounds();
-  //   if (!currentBounds) return;
-
-  //   const bbox = [
-  //     currentBounds.getWest(),
-  //     currentBounds.getSouth(),
-  //     currentBounds.getEast(),
-  //     currentBounds.getNorth(),
-  //   ] as [number, number, number, number];
-  //   return bbox;
-  // }, []);
-
   const yearsColors = getColorsForYears(LAYER_YEARS);
 
   const mineLayerColors = [
