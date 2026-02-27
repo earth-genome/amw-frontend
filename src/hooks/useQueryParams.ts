@@ -164,7 +164,7 @@ export const useQueryParams = ({ state, dispatch, ignore }: Props) => {
     if (
       !pendingAreaId &&
       !state.selectedArea?.value &&
-      areaTypeKeyParam === "countries" &&
+      state.selectedAreaTypeKey === "countries" &&
       !state.isEmbed
     ) {
       dispatch({
