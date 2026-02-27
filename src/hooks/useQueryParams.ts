@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { IState } from "@/lib/Store";
+import { getDefaultAreaType, IState } from "@/lib/Store";
 import { slugify } from "@/utils/slugify";
 import {
   AREA_TYPES,
@@ -14,10 +14,7 @@ interface Props {
   ignore: boolean;
 }
 
-const getDefaultAreaTypeKey = () =>
-  AREA_TYPES.find((at) => at.isDefault)?.key ?? AREA_TYPES[0].key;
-
-const isValidAreaTypeKey = (key: string | null): key is string =>
+const getIsValidAreaTypeKey = (key: string | null): key is string =>
   !!key && AREA_TYPES.some((at) => at.key === key);
 
 export const useQueryParams = ({ state, dispatch, ignore }: Props) => {
@@ -110,15 +107,31 @@ export const useQueryParams = ({ state, dispatch, ignore }: Props) => {
     if (ignore) return;
 
     const areaTypeKeyParam = searchParams.get("areaType");
-    const resolvedAreaTypeKey = isValidAreaTypeKey(areaTypeKeyParam)
-      ? areaTypeKeyParam
-      : getDefaultAreaTypeKey();
+    const isValidAreaTypeKey = getIsValidAreaTypeKey(areaTypeKeyParam);
 
-    // only dispatch if we have URL params and they're different from current state
-    if (resolvedAreaTypeKey !== state.selectedAreaTypeKey) {
+    if (!isValidAreaTypeKey) {
+      // if invalid area type, clear query, set defaults, and return early
+      router.replace(pathname);
       dispatch({
         type: "SET_SELECTED_AREA_TYPE_BY_KEY",
-        selectedAreaTypeKey: resolvedAreaTypeKey,
+        selectedAreaTypeKey: getDefaultAreaType()?.key,
+      });
+      dispatch({
+        type: "SET_PENDING_SELECTED_AREA_ID",
+        pendingSelectedAreaId: ENTIRE_AMAZON_AREA_ID,
+      });
+      dispatch({
+        type: "SET_IS_QUERY_CHECKED",
+        isQueryChecked: true,
+      });
+      return;
+    }
+
+    // only dispatch if we have URL params and they're different from current state
+    if (areaTypeKeyParam !== state.selectedAreaTypeKey) {
+      dispatch({
+        type: "SET_SELECTED_AREA_TYPE_BY_KEY",
+        selectedAreaTypeKey: areaTypeKeyParam,
       });
     }
 
@@ -151,7 +164,7 @@ export const useQueryParams = ({ state, dispatch, ignore }: Props) => {
     if (
       !pendingAreaId &&
       !state.selectedArea?.value &&
-      resolvedAreaTypeKey === "countries" &&
+      areaTypeKeyParam === "countries" &&
       !state.isEmbed
     ) {
       dispatch({
