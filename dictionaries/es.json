@@ -106,5 +106,35 @@
   },
   "newsletter": {
     "title": "Suscríbete para actualizaciones"
+  },
+  "policy_scoreboard": {
+    "country_rankings": "Ranking de Países",
+    "assessment_dimensions": "Dimensiones de Evaluación",
+    "details": "Detalles →",
+    "back_to_scoreboard": "← Volver al Rastreador de Políticas",
+    "country_assessment_score": "Puntuación de Evaluación del País",
+    "overall_score": "Puntuación General",
+    "country_comparison": "Comparación de Países",
+    "categories": "Categorías",
+    "criteria": "criterios",
+    "score": "Puntuación",
+    "sources": "Fuentes",
+    "title": "Rastreador de Políticas",
+    "intro": "Evaluación integral de los marcos regulatorios y mecanismos de aplicación para la minería artesanal y de pequeña escala de oro en ocho países amazónicos.",
+    "country_rankings_desc": "Los países son evaluados en tres dimensiones clave, cada una con un valor máximo de cinco puntos, para un puntaje total posible de 15.",
+    "assessment_dimensions_desc": "Cada dimensión de evaluación está compuesta por múltiples categorías y criterios. Visite la página de detalles de cada dimensión para ver cómo se calcula la puntuación.",
+    "country_overall_score_desc_1": " tiene una puntuación general de ",
+    "country_overall_score_desc_2": " de ",
+    "country_overall_score_desc_3": ". Representa la suma de sus puntuaciones en las tres dimensiones que se detallan a continuación.",
+    "dimensions_intro": "A continuación encontrará las evaluaciones de categorías que componen cada dimensión. Cada dimensión se puntúa de 0 a 5, basándose en una combinación ponderada de las puntuaciones de sus categorías.",
+    "country_dimension_score_desc_1": " tiene una puntuación en la dimensión ",
+    "country_dimension_score_desc_2": " de ",
+    "country_dimension_score_desc_3": " de ",
+    "country_dimension_score_desc_4": ". Representa una combinación ponderada de las puntuaciones de las categorías a continuación.",
+    "assessment_categories": "Categorías de evaluación",
+    "categories_details": "Detalles de categorías",
+    "categories_details_desc": "Cada categoría se puntúa utilizando los criterios descritos a continuación.",
+    "attribution_intro": "Esta plataforma y análisis es liderada por",
+    "download_report": "Descargar informe en formato PDF"
   }
 }

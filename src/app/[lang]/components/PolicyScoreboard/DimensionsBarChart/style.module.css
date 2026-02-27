@@ -1,0 +1,31 @@
+.dimensionSections {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+.dimensionTitle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.dimensionLink {
+  background: none;
+  border: none;
+  font-size: 16px;
+  font-weight: 400;
+  color: #fff;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: none;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.dimensionLink:hover {
+  text-decoration: underline;
+}

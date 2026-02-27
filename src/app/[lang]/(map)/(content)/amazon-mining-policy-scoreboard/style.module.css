@@ -1,0 +1,51 @@
+.overlay {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 28px;
+  z-index: 900;
+  width: 100%;
+  height: 100vh;
+  color: #fff;
+  overflow-y: auto;
+  background-size: cover;
+  opacity: 0.99;
+  background-color: var(--green-dark);
+}
+.overlay::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("/images/overlay-bg.png") no-repeat top center;
+  mix-blend-mode: lighten;
+  opacity: 0.3;
+}
+.overlay .content {
+  position: absolute;
+  width: 100%;
+  padding: 30px 30px 90px 30px;
+  max-width: 650px;
+  box-sizing: border-box;
+}
+.overlay .content h1 {
+  font-size: 50px;
+}
+.overlay .content p {
+  line-height: 1.6;
+  font-size: 17px;
+}
+.overlay .content h2 {
+  border-bottom: 3px solid #22b573;
+  font-size: 16px;
+  padding-bottom: 10px;
+}
+.overlay .content p a {
+  text-decoration: none;
+}
+.overlay .content p a:hover {
+  text-decoration: underline;
+}
+.overlay .content img {
+  width: 120%;
+  margin-left: -20%;
+}

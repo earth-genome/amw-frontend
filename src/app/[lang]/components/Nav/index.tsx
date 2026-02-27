@@ -9,6 +9,7 @@ import React, { Fragment, ReactNode, useEffect, useRef, useState } from "react";
 import "./style.css";
 import { LOCALES } from "@/utils/content";
 import ExternalLink from "@/app/[lang]/components/Icons/ExternalLink";
+import { ROUTES } from "@/constants/routes";
 
 interface NavProps {
   children?: ReactNode;
@@ -43,7 +44,7 @@ const Nav: React.FC<NavProps> = ({ children, dictionary }) => {
       label: dictionary.menu.data_code_and_methods,
     },
     {
-      href: `/${locale}/policy-scoreboard`,
+      href: `/${locale}/${ROUTES["policy-scoreboard"].url}`,
       label: dictionary.menu.policy_scoreboard,
     },
     { href: `/${locale}/faq`, label: dictionary.menu.faq },
