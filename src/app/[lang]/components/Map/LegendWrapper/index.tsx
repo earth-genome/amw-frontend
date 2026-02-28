@@ -15,10 +15,8 @@ const LegendWrapper = ({
   showMinimapBounds,
   bounds,
   years,
-  activeYearStart,
-  activeYearEnd,
-  setActiveYearStart,
-  setActiveYearEnd,
+  activeYear,
+  setActiveYear,
   dictionary,
 }: LegendWrapperProps) => {
   return (
@@ -38,10 +36,8 @@ const LegendWrapper = ({
         <div className="legend-card">
           <Legend
             years={years}
-            activeYearStart={activeYearStart}
-            activeYearEnd={activeYearEnd}
-            setActiveYearStart={setActiveYearStart}
-            setActiveYearEnd={setActiveYearEnd}
+            activeYear={activeYear}
+            setActiveYear={setActiveYear}
             dictionary={dictionary}
           />
         </div>

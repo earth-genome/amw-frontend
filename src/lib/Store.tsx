@@ -35,8 +35,7 @@ export interface IState {
   selectedAreaType: AreaType | undefined;
   areaUnits: PERMITTED_AREA_UNITS;
   hoveredYear: number | undefined;
-  activeYearStart: string;
-  activeYearEnd: string;
+  activeYear: string;
   isEmbed: boolean;
 }
 
@@ -72,12 +71,8 @@ export type ActionType =
       hoveredYear: number | undefined;
     }
   | {
-      type: "SET_ACTIVE_YEAR_START";
-      activeYearStart: string;
-    }
-  | {
-      type: "SET_ACTIVE_YEAR_END";
-      activeYearEnd: string;
+      type: "SET_ACTIVE_YEAR";
+      activeYear: string;
     };
 
 export const Context = createContext<
@@ -119,8 +114,7 @@ const Store = ({
     selectedAreaType: defaultAreaType,
     areaUnits: AREA_UNITS_OPTIONS[0].value as PERMITTED_AREA_UNITS,
     hoveredYear: undefined,
-    activeYearStart: String(Math.min(...LAYER_YEARS)),
-    activeYearEnd: String(Math.max(...LAYER_YEARS)),
+    activeYear: String(Math.max(...LAYER_YEARS)),
     isEmbed: isEmbed,
   };
 

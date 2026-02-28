@@ -110,15 +110,10 @@ const Reducer = (state: IState, action: ActionType): IState => {
         ...state,
         hoveredYear: action.hoveredYear,
       };
-    case "SET_ACTIVE_YEAR_START":
+    case "SET_ACTIVE_YEAR":
       return {
         ...state,
-        activeYearStart: action.activeYearStart,
-      };
-    case "SET_ACTIVE_YEAR_END":
-      return {
-        ...state,
-        activeYearEnd: action.activeYearEnd,
+        activeYear: action.activeYear,
       };
     default:
       return state;

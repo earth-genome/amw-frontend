@@ -73,15 +73,16 @@ export const useQueryParams = ({ state, dispatch, ignore }: Props) => {
       shouldUpdate = true;
     }
 
-    // sync yearStart
-    if (params.get("yearStart") !== state.activeYearStart) {
-      params.set("yearStart", state.activeYearStart);
+    // sync activeYear
+    if (params.get("activeYear") !== state.activeYear) {
+      params.set("activeYear", state.activeYear);
       shouldUpdate = true;
     }
 
-    // sync yearEnd
-    if (params.get("yearEnd") !== state.activeYearEnd) {
-      params.set("yearEnd", state.activeYearEnd);
+    // clean up legacy yearStart/yearEnd params if still present in the URL
+    if (params.has("yearStart") || params.has("yearEnd")) {
+      params.delete("yearStart");
+      params.delete("yearEnd");
       shouldUpdate = true;
     }
 
@@ -98,8 +99,7 @@ export const useQueryParams = ({ state, dispatch, ignore }: Props) => {
     state.selectedArea?.title,
     state.selectedArea?.value,
     state.selectedAreaTypeKey,
-    state.activeYearStart,
-    state.activeYearEnd,
+    state.activeYear,
   ]);
 
   // load initial state from URL (inbound) - only runs once on mount
@@ -144,19 +144,13 @@ export const useQueryParams = ({ state, dispatch, ignore }: Props) => {
       });
     }
 
-    // restore year range from URL params
-    const yearStart = searchParams.get("yearStart");
-    const yearEnd = searchParams.get("yearEnd");
-    if (yearStart && LAYER_YEARS.includes(Number(yearStart))) {
+    // restore activeYear from URL params, falling back to legacy "yearEnd" for old shared links
+    const activeYearParam =
+      searchParams.get("activeYear") ?? searchParams.get("yearEnd");
+    if (activeYearParam && LAYER_YEARS.includes(Number(activeYearParam))) {
       dispatch({
-        type: "SET_ACTIVE_YEAR_START",
-        activeYearStart: yearStart,
-      });
-    }
-    if (yearEnd && LAYER_YEARS.includes(Number(yearEnd))) {
-      dispatch({
-        type: "SET_ACTIVE_YEAR_END",
-        activeYearEnd: yearEnd,
+        type: "SET_ACTIVE_YEAR",
+        activeYear: activeYearParam,
       });
     }
 
