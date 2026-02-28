@@ -31,7 +31,6 @@ import {
   MINING_LAYERS,
   MINING_VECTOR_TILES_LAYER,
   MINING_VECTOR_TILES_URL,
-  PERMITTED_AREA_TYPES_KEYS,
 } from "@/constants/map";
 import { Expression, Popup } from "mapbox-gl";
 import AreaSelect from "@/app/[lang]/components/AreaSelect";
@@ -200,13 +199,14 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
 
       map.getCanvas().style.cursor = "pointer";
 
-      // HACK: because hotspots need to show title independent
-      // of what kind of area is displaying
       const properties = feature.properties;
-      const title =
-        (properties?.type as PERMITTED_AREA_TYPES_KEYS) === "hotspots"
-          ? `${properties.title} ${dictionary?.map_ui?.hotspot ? `- ${dictionary?.map_ui?.hotspot}` : ""}`
-          : selectedAreaType?.renderTitle(properties);
+      // // HACK: because hotspots need to show title independent
+      // // of what kind of area is displaying
+      // const title =
+      //   (properties?.type as PERMITTED_AREA_TYPES_KEYS) === "hotspots"
+      //     ? `${properties.title} ${dictionary?.map_ui?.hotspot ? `- ${dictionary?.map_ui?.hotspot}` : ""}`
+      //     : selectedAreaType?.renderTitle(properties);
+      const title = selectedAreaType?.renderTitle(properties);
       const status = selectedAreaType?.renderStatus(properties);
       const country = properties?.country;
 
@@ -247,12 +247,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         );
       }
     },
-    [
-      dictionary?.map_ui?.hotspot,
-      isMobile,
-      selectedAreaTypeKey,
-      selectedAreaType,
-    ],
+    [isMobile, selectedAreaTypeKey, selectedAreaType],
   );
 
   const handleMouseLeaveMap = useCallback(() => {

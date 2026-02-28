@@ -1,6 +1,5 @@
 import { scaleSequential } from "d3-scale";
 import { interpolateRgbBasis } from "d3-interpolate";
-import { HOTSPOTS_GEOJSON_URL } from "@/cms/hotspots";
 
 const DATA_UPDATED_AT = "20260224";
 const DATA_BASE_URL =
@@ -166,7 +165,7 @@ export const AREA_TYPES = [
     tilesUrl: `${TILES_BASE_URL}/admin_areas_display_impacts_unfiltered/{z}/{x}/{y}.pbf`,
     tilesLayer: `admin_areas_display_impacts_unfiltered`,
     timeseriesUrl: `${DATA_BASE_URL}/data/boundaries/subnational_admin/out/admin_areas_display_yearly.json`,
-    isDefault: true,
+    isDefault: false,
     renderLabel: (properties: Record<string, any>) =>
       `${properties.name_field || "N/A"} ${
         properties.country ? `- ${properties.country}` : ""
@@ -223,24 +222,24 @@ export const AREA_TYPES = [
     allowInEmbed: true,
     allowSelect: true,
   },
-  {
-    key: "hotspots",
-    dictionaryKey: "hotspots",
-    dictionaryKeyDescription: undefined,
-    dictionaryKeySingular: "hotspot",
-    url: HOTSPOTS_GEOJSON_URL,
-    tilesUrl: "",
-    tilesLayer: "",
-    timeseriesUrl: "",
-    isDefault: false,
-    renderLabel: (properties: Record<string, any>) => properties.title,
-    renderTitle: (properties: Record<string, any>) => properties.title,
-    renderStatus: () => "",
-    showCountry: false,
-    useLocale: true,
-    allowInEmbed: false,
-    allowSelect: false,
-  },
+  // {
+  //   key: "hotspots",
+  //   dictionaryKey: "hotspots",
+  //   dictionaryKeyDescription: undefined,
+  //   dictionaryKeySingular: "hotspot",
+  //   url: HOTSPOTS_GEOJSON_URL,
+  //   tilesUrl: "",
+  //   tilesLayer: "",
+  //   timeseriesUrl: "",
+  //   isDefault: false,
+  //   renderLabel: (properties: Record<string, any>) => properties.title,
+  //   renderTitle: (properties: Record<string, any>) => properties.title,
+  //   renderStatus: () => "",
+  //   showCountry: false,
+  //   useLocale: true,
+  //   allowInEmbed: false,
+  //   allowSelect: false,
+  // },
 ] as const;
 
 export type PERMITTED_AREA_TYPES_KEYS = (typeof AREA_TYPES)[number]["key"];

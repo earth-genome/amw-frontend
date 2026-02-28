@@ -1,14 +1,21 @@
 import { useEffect } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { IState } from "@/lib/Store";
+import { getDefaultAreaType, IState } from "@/lib/Store";
 import { slugify } from "@/utils/slugify";
-import { ENTIRE_AMAZON_AREA_ID, LAYER_YEARS } from "@/constants/map";
+import {
+  AREA_TYPES,
+  ENTIRE_AMAZON_AREA_ID,
+  LAYER_YEARS,
+} from "@/constants/map";
 
 interface Props {
   state: IState;
   dispatch: React.Dispatch<any>;
   ignore: boolean;
 }
+
+const getIsValidAreaTypeKey = (key: string | null): key is string =>
+  !!key && AREA_TYPES.some((at) => at.key === key);
 
 export const useQueryParams = ({ state, dispatch, ignore }: Props) => {
   const router = useRouter();
@@ -99,16 +106,36 @@ export const useQueryParams = ({ state, dispatch, ignore }: Props) => {
   useEffect(() => {
     if (ignore) return;
 
-    const areaTypeKey = searchParams.get("areaType");
-    const pendingAreaId = searchParams.get("areaId");
+    const areaTypeKeyParam = searchParams.get("areaType");
+    const isValidAreaTypeKey = getIsValidAreaTypeKey(areaTypeKeyParam);
 
-    // only dispatch if we have URL params and they're different from current state
-    if (areaTypeKey && areaTypeKey !== state.selectedAreaTypeKey) {
+    if (!isValidAreaTypeKey) {
+      // if invalid area type, clear query, set defaults, and return early
+      router.replace(pathname);
       dispatch({
         type: "SET_SELECTED_AREA_TYPE_BY_KEY",
-        selectedAreaTypeKey: areaTypeKey,
+        selectedAreaTypeKey: getDefaultAreaType()?.key,
+      });
+      dispatch({
+        type: "SET_PENDING_SELECTED_AREA_ID",
+        pendingSelectedAreaId: ENTIRE_AMAZON_AREA_ID,
+      });
+      dispatch({
+        type: "SET_IS_QUERY_CHECKED",
+        isQueryChecked: true,
+      });
+      return;
+    }
+
+    // only dispatch if we have URL params and they're different from current state
+    if (areaTypeKeyParam !== state.selectedAreaTypeKey) {
+      dispatch({
+        type: "SET_SELECTED_AREA_TYPE_BY_KEY",
+        selectedAreaTypeKey: areaTypeKeyParam,
       });
     }
+
+    const pendingAreaId = searchParams.get("areaId");
 
     if (pendingAreaId && pendingAreaId !== state.selectedArea?.value) {
       dispatch({

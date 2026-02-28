@@ -1,9 +1,5 @@
 import { createContext, useReducer, Dispatch } from "react";
-import {
-  AreaData,
-  AreasData,
-  AreasTimeseriesData,
-} from "@/types/types";
+import { AreaData, AreasData, AreasTimeseriesData } from "@/types/types";
 import Reducer from "@/lib/Reducer";
 import { AreaSelectOption } from "@/app/[lang]/components/AreaSelect";
 import {
@@ -88,6 +84,9 @@ export const Context = createContext<
   [IState, Dispatch<ActionType>] | undefined
 >(undefined);
 
+export const getDefaultAreaType = () =>
+  AREA_TYPES.find((at) => at.isDefault) ?? AREA_TYPES[0];
+
 const Store = ({
   children,
   lang,
@@ -101,7 +100,7 @@ const Store = ({
 }>) => {
   const defaultAreaType = isEmbed
     ? AREA_TYPES.filter((d) => d.allowInEmbed)[0]
-    : AREA_TYPES[0];
+    : getDefaultAreaType();
   const initialState: IState = {
     map: null,
     lang: lang,
