@@ -1,11 +1,11 @@
 .map-legend {
   width: 360px;
-  height: 100%;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   gap: 12px;
+  padding: 4px 8px;
 }
 
 .legend-time-wrapper {
@@ -14,7 +14,6 @@
   border-radius: 8px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
 }
 
 .legend-toggle-wrapper {
@@ -27,6 +26,7 @@
   font-size: 14px;
   font-weight: 700;
   color: var(--green-dark);
+  text-transform: uppercase;
 }
 
 .legend-carousel {

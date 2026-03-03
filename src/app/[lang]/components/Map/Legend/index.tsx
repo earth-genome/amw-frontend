@@ -124,68 +124,65 @@ const Legend = ({
 
   return (
     <div className="map-legend">
+      <div className="legend-toggle-wrapper">
+        <div className="legend-time-label">
+          {dictionary?.map_legend?.mining_activity}
+        </div>
+        <div className="cumulative-toggle">
+          <ConfigProvider theme={RADIO_GROUP_ANTD_THEME}>
+            <Radio.Group
+              value={isCumulative}
+              onChange={(e) => setIsCumulative(e.target.value)}
+              buttonStyle="solid"
+              size="small"
+            >
+              <Radio.Button value={false}>
+                {dictionary?.map_legend?.single_year}
+              </Radio.Button>
+              <Radio.Button value={true}>
+                {dictionary?.map_legend?.cumulative}
+              </Radio.Button>
+            </Radio.Group>
+          </ConfigProvider>
+        </div>
+      </div>
       <ColorScale dictionary={dictionary} />
 
-      <div className="legend-time-wrapper">
-        <div className="legend-toggle-wrapper">
-          <div className="legend-time-label">
-            {dictionary?.map_legend?.display}
-          </div>
-          <div className="cumulative-toggle">
-            <ConfigProvider theme={RADIO_GROUP_ANTD_THEME}>
-              <Radio.Group
-                value={isCumulative}
-                onChange={(e) => setIsCumulative(e.target.value)}
-                buttonStyle="solid"
-                size="small"
-              >
-                <Radio.Button value={false}>
-                  {dictionary?.map_legend?.single_year}
-                </Radio.Button>
-                <Radio.Button value={true}>
-                  {dictionary?.map_legend?.cumulative}
-                </Radio.Button>
-              </Radio.Group>
-            </ConfigProvider>
+      <div className="legend-carousel">
+        <button
+          className="scroll-button scroll-left"
+          onClick={scrollLeft}
+          disabled={!canScrollLeft}
+          aria-label="Scroll left"
+        >
+          <LeftOutlined />
+        </button>
+
+        <div className="year-pills-container" ref={scrollContainerRef}>
+          <div className="year-pills">
+            <Radio.Group
+              options={sortedYears.map((d) => ({
+                value: String(d),
+                label: formatLayerYear(d),
+              }))}
+              value={activeYear}
+              onChange={({ target: { value } }) => {
+                setActiveYear(value);
+              }}
+              optionType="button"
+              buttonStyle="solid"
+            />
           </div>
         </div>
 
-        <div className="legend-carousel">
-          <button
-            className="scroll-button scroll-left"
-            onClick={scrollLeft}
-            disabled={!canScrollLeft}
-            aria-label="Scroll left"
-          >
-            <LeftOutlined />
-          </button>
-
-          <div className="year-pills-container" ref={scrollContainerRef}>
-            <div className="year-pills">
-              <Radio.Group
-                options={sortedYears.map((d) => ({
-                  value: String(d),
-                  label: formatLayerYear(d),
-                }))}
-                value={activeYear}
-                onChange={({ target: { value } }) => {
-                  setActiveYear(value);
-                }}
-                optionType="button"
-                buttonStyle="solid"
-              />
-            </div>
-          </div>
-
-          <button
-            className="scroll-button scroll-right"
-            onClick={scrollRight}
-            disabled={!canScrollRight}
-            aria-label="Scroll right"
-          >
-            <RightOutlined />
-          </button>
-        </div>
+        <button
+          className="scroll-button scroll-right"
+          onClick={scrollRight}
+          disabled={!canScrollRight}
+          aria-label="Scroll right"
+        >
+          <RightOutlined />
+        </button>
       </div>
     </div>
   );

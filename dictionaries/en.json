@@ -93,9 +93,9 @@
     "very_high": "Activity is occurring within a protected area that doesn't allow for any kind of resource exploitation."
   },
   "map_legend": {
-    "old_mining_activity": "Older mining activity",
-    "recent_mining_activity": "More recent mining activity",
-    "display": "Display",
+    "mining_activity": "Mining activity",
+    "old_mining_activity": "Older",
+    "recent_mining_activity": "More recent",
     "cumulative": "Cumulative",
     "single_year": "Single period"
   },
