@@ -79,6 +79,14 @@ export const useQueryParams = ({ state, dispatch, ignore }: Props) => {
       shouldUpdate = true;
     }
 
+    // sync cumulative
+    const currentCumulative = params.get("cumulative");
+    const stateCumulative = String(state.isCumulative);
+    if (currentCumulative !== stateCumulative) {
+      params.set("cumulative", stateCumulative);
+      shouldUpdate = true;
+    }
+
     // clean up legacy yearStart/yearEnd params if still present in the URL
     if (params.has("yearStart") || params.has("yearEnd")) {
       params.delete("yearStart");
@@ -100,6 +108,7 @@ export const useQueryParams = ({ state, dispatch, ignore }: Props) => {
     state.selectedArea?.value,
     state.selectedAreaTypeKey,
     state.activeYear,
+    state.isCumulative,
   ]);
 
   // load initial state from URL (inbound) - only runs once on mount
@@ -151,6 +160,15 @@ export const useQueryParams = ({ state, dispatch, ignore }: Props) => {
       dispatch({
         type: "SET_ACTIVE_YEAR",
         activeYear: activeYearParam,
+      });
+    }
+
+    // restore isCumulative from URL params
+    const cumulativeParam = searchParams.get("cumulative");
+    if (cumulativeParam === "false") {
+      dispatch({
+        type: "SET_IS_CUMULATIVE",
+        isCumulative: false,
       });
     }
 

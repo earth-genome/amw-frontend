@@ -94,7 +94,10 @@
   },
   "map_legend": {
     "old_mining_activity": "Older mining activity",
-    "recent_mining_activity": "More recent mining activity"
+    "recent_mining_activity": "More recent mining activity",
+    "display": "Display",
+    "cumulative": "Cumulative",
+    "single_year": "Single period"
   },
   "how_to_use": {
     "title": "How to use",

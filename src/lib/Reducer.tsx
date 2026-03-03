@@ -115,6 +115,11 @@ const Reducer = (state: IState, action: ActionType): IState => {
         ...state,
         activeYear: action.activeYear,
       };
+    case "SET_IS_CUMULATIVE":
+      return {
+        ...state,
+        isCumulative: action.isCumulative,
+      };
     default:
       return state;
   }

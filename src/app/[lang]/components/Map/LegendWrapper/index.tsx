@@ -18,6 +18,8 @@ const LegendWrapper = ({
   activeYear,
   setActiveYear,
   dictionary,
+  isCumulative,
+  setIsCumulative,
 }: LegendWrapperProps) => {
   return (
     <div className="legend-wrapper">
@@ -39,6 +41,8 @@ const LegendWrapper = ({
             activeYear={activeYear}
             setActiveYear={setActiveYear}
             dictionary={dictionary}
+            isCumulative={isCumulative}
+            setIsCumulative={setIsCumulative}
           />
         </div>
       </div>

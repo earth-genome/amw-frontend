@@ -103,6 +103,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
     areaUnits,
     hoveredYear,
     activeYear,
+    isCumulative,
     isEmbed,
     selectedAreaType,
   } = state;
@@ -616,7 +617,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           source-layer={MINING_VECTOR_TILES_LAYER}
           type="line"
           filter={[
-            hoveredYear ? "==" : "<=",
+            hoveredYear ? "==" : isCumulative ? "<=" : "==",
             ["get", "year"],
             hoveredYear ? hoveredYear : Number(activeYear),
           ]}
@@ -719,6 +720,10 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
               dispatch({ type: "SET_ACTIVE_YEAR", activeYear: v })
             }
             dictionary={dictionary}
+            isCumulative={isCumulative}
+            setIsCumulative={(v) =>
+              dispatch({ type: "SET_IS_CUMULATIVE", isCumulative: v })
+            }
           />
         )}
 

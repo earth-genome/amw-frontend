@@ -5,14 +5,35 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  gap: 12px;
+}
+
+.legend-time-wrapper {
+  background-color: #ececec;
+  padding: 6px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.legend-toggle-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.legend-time-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--green-dark);
 }
 
 .legend-carousel {
   display: flex;
   align-items: flex-end;
-  gap: 8px;
+  gap: 4px;
   position: relative;
-  margin-top: 10px;
 }
 
 .scroll-button {
@@ -66,35 +87,30 @@
   white-space: nowrap;
 }
 
-.year-pills .ant-radio-button-wrapper,
-.imagery-pills .ant-radio-button-wrapper {
+.year-pills .ant-radio-button-wrapper {
   padding-inline: 20px !important;
   text-transform: uppercase;
   font-size: 14px;
   flex-shrink: 0;
 }
 
-.year-pills .ant-radio-button-wrapper,
-.imagery-pills .ant-radio-button-wrapper {
+.year-pills .ant-radio-button-wrapper {
   background: #fff !important;
   color: #003e36b2;
   border: none !important;
 }
 
-.year-pills .ant-radio-button-wrapper:hover,
-.imagery-pills .ant-radio-button-wrapper:hover {
+.year-pills .ant-radio-button-wrapper:hover {
   color: #003e36b2;
   opacity: 0.9;
 }
 
-.year-pills .ant-radio-button-wrapper-checked,
-.imagery-pills .ant-radio-button-wrapper-checked {
+.year-pills .ant-radio-button-wrapper-checked {
   background: var(--green-normal) !important;
   border: none !important;
 }
 
-.year-pills .ant-radio-button-wrapper-checked::before,
-.imagery-pills .ant-radio-button-wrapper-checked::before {
+.year-pills .ant-radio-button-wrapper-checked::before {
   width: 0px !important;
 }
 
@@ -108,6 +124,27 @@
 
 .ant-radio-button-wrapper:not(:first-child)::before {
   width: 0px !important;
+}
+
+.cumulative-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  gap: 8px;
+}
+
+.cumulative-toggle .ant-radio-button-wrapper:hover {
+  color: rgb(11, 95, 58) !important;
+}
+
+.cumulative-toggle .ant-radio-button-wrapper-checked:hover {
+  color: #fff !important;
+}
+
+.cumulative-toggle-label {
+  font-size: 13px;
+  color: var(--green-dark);
+  user-select: none;
 }
 
 @media (max-width: 600px) {

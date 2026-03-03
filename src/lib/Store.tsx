@@ -36,6 +36,7 @@ export interface IState {
   areaUnits: PERMITTED_AREA_UNITS;
   hoveredYear: number | undefined;
   activeYear: string;
+  isCumulative: boolean;
   isEmbed: boolean;
 }
 
@@ -73,6 +74,10 @@ export type ActionType =
   | {
       type: "SET_ACTIVE_YEAR";
       activeYear: string;
+    }
+  | {
+      type: "SET_IS_CUMULATIVE";
+      isCumulative: boolean;
     };
 
 export const Context = createContext<
@@ -115,6 +120,7 @@ const Store = ({
     areaUnits: AREA_UNITS_OPTIONS[0].value as PERMITTED_AREA_UNITS,
     hoveredYear: undefined,
     activeYear: String(Math.max(...LAYER_YEARS)),
+    isCumulative: true,
     isEmbed: isEmbed,
   };
 

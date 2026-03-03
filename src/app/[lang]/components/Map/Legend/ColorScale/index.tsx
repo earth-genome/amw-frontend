@@ -13,7 +13,7 @@ const ColorScale = ({ dictionary }: ColorScaleProps) => {
   return (
     <div
       style={{
-        margin: "8px 8px 0",
+        margin: "6px 6px 0",
       }}
     >
       <div
