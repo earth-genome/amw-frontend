@@ -21,15 +21,16 @@ import { convertBoundsToGeoJSON, GeoJSONType } from "./helpers";
 import LegendWrapper from "@/app/[lang]/components/Map/LegendWrapper";
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
-import * as turf from "@turf/turf";
 import {
+  AREA_IDS_TO_HIDE,
   ENTIRE_AMAZON_AREA_ID,
   generateSatelliteTiles,
   getColorsForYears,
   LAYER_YEARS,
   MAP_MISSING_DATA_COLOR,
   MINING_LAYERS,
-  PERMITTED_AREA_TYPES_KEYS,
+  MINING_VECTOR_TILES_LAYER,
+  MINING_VECTOR_TILES_URL,
 } from "@/constants/map";
 import { Expression, Popup } from "mapbox-gl";
 import AreaSelect from "@/app/[lang]/components/AreaSelect";
@@ -43,6 +44,7 @@ import Image from "next/image";
 import Logo from "@/app/[lang]/components/Nav/logo.svg";
 import useGeocoderClickOutside from "@/hooks/useClickOutsideGeocoder";
 import MapShareButton from "@/app/[lang]/components/MapShareButton";
+import { filterForMiningCalculator } from "@/utils/miningCalculator";
 
 interface MainMapProps {
   dictionary: { [key: string]: any };
@@ -74,6 +76,13 @@ const LAYER_ORDER = [
   // "hotspots-labels",
 ];
 
+// only show areas with impacts
+const AREAS_LAYER_FILTER = [
+  "all",
+  [">", ["coalesce", ["get", "mining_affected_area_ha"], 0], 0],
+  ["!", ["in", ["get", "id"], ["literal", AREA_IDS_TO_HIDE]]],
+];
+
 const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
   const [state, dispatch] = useContext(Context)!;
   const pathname = usePathname();
@@ -88,8 +97,6 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
   const [longitude, setLongitude] = useState<undefined | number>(undefined);
 
   const {
-    miningData,
-    areasData,
     selectedAreaData,
     selectedArea,
     selectedAreaTypeKey,
@@ -98,6 +105,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
     activeYearStart,
     activeYearEnd,
     isEmbed,
+    selectedAreaType,
   } = state;
 
   const setMapPositionFromURL = useCallback(() => {
@@ -134,20 +142,6 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
 
     window.history.replaceState({}, "", `${pathname}?${params.toString()}`);
   }, [pathname]);
-
-  // const getCurrentBounds = useCallback(() => {
-  //   if (!mapRef.current) return;
-  //   const currentBounds = mapRef.current.getBounds();
-  //   if (!currentBounds) return;
-
-  //   const bbox = [
-  //     currentBounds.getWest(),
-  //     currentBounds.getSouth(),
-  //     currentBounds.getEast(),
-  //     currentBounds.getNorth(),
-  //   ] as [number, number, number, number];
-  //   return bbox;
-  // }, []);
 
   const yearsColors = getColorsForYears(LAYER_YEARS);
 
@@ -205,14 +199,15 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
 
       map.getCanvas().style.cursor = "pointer";
 
-      // HACK: because hotspots need to show title independent
-      // of what kind of area is displaying
       const properties = feature.properties;
-      const title =
-        (properties?.type as PERMITTED_AREA_TYPES_KEYS) === "hotspots"
-          ? `${properties.title} ${dictionary?.map_ui?.hotspot ? `- ${dictionary?.map_ui?.hotspot}` : ""}`
-          : state.selectedAreaType?.renderTitle(properties);
-      const status = state.selectedAreaType?.renderStatus(properties);
+      // // HACK: because hotspots need to show title independent
+      // // of what kind of area is displaying
+      // const title =
+      //   (properties?.type as PERMITTED_AREA_TYPES_KEYS) === "hotspots"
+      //     ? `${properties.title} ${dictionary?.map_ui?.hotspot ? `- ${dictionary?.map_ui?.hotspot}` : ""}`
+      //     : selectedAreaType?.renderTitle(properties);
+      const title = selectedAreaType?.renderTitle(properties);
+      const status = selectedAreaType?.renderStatus(properties);
       const country = properties?.country;
 
       // update popup position and content directly, no zero renders
@@ -222,7 +217,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           `<div>
           <div class="map-tooltip-title">${title}</div>
           ${status ? `<div>${status}</div>` : ""}
-          ${state.selectedAreaType?.showCountry ? `<div>${country}</div>` : ""}
+          ${selectedAreaType?.showCountry ? `<div>${country}</div>` : ""}
         </div>`,
         )
         .addTo(map);
@@ -232,35 +227,42 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
 
       if (hoveredFeatureRef.current != null) {
         map.setFeatureState(
-          { source: "areas", id: hoveredFeatureRef.current },
+          {
+            source: "areas-vector-tiles",
+            sourceLayer: selectedAreaType?.tilesLayer,
+            id: hoveredFeatureRef.current,
+          },
           { hover: false },
         );
       }
       if (feature.id != null) {
         hoveredFeatureRef.current = feature.id;
         map.setFeatureState(
-          { source: "areas", id: feature.id },
+          {
+            source: "areas-vector-tiles",
+            sourceLayer: selectedAreaType?.tilesLayer,
+            id: feature.id,
+          },
           { hover: true },
         );
       }
     },
-    [
-      dictionary?.map_ui?.hotspot,
-      isMobile,
-      selectedAreaTypeKey,
-      state.selectedAreaType,
-    ],
+    [isMobile, selectedAreaTypeKey, selectedAreaType],
   );
 
   const handleMouseLeaveMap = useCallback(() => {
     popupRef.current?.remove();
     if (hoveredFeatureRef.current == null || !mapRef.current) return;
     mapRef.current.setFeatureState(
-      { source: "areas", id: hoveredFeatureRef.current },
+      {
+        source: "areas-vector-tiles",
+        sourceLayer: selectedAreaType?.tilesLayer,
+        id: hoveredFeatureRef.current,
+      },
       { hover: false },
     );
     hoveredFeatureRef.current = undefined;
-  }, []);
+  }, [selectedAreaType?.tilesLayer]);
 
   const handleClick = useCallback(
     (event: MapMouseEvent) => {
@@ -297,16 +299,9 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
 
   useEffect(() => {
     // zoom to selected area on change
-    if (!selectedAreaData || !mapRef.current) return;
+    if (!selectedAreaData?.bbox || !mapRef.current) return;
 
-    const bbox = turf.bbox(selectedAreaData) as [
-      number,
-      number,
-      number,
-      number,
-    ];
-
-    mapRef.current.fitBounds(bbox, {
+    mapRef.current.fitBounds(selectedAreaData.bbox, {
       padding: { top: 70, bottom: isMobile ? 300 : 70, left: 20, right: 20 },
       duration: 2000,
       essential: true,
@@ -352,10 +347,11 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
 
   // in case we're in an iframe embed, this sends a post message to the parent window,
   // for the mining calculator
-  const miningLocations = selectedAreaData?.properties?.locations;
+  const miningLocations = selectedAreaData?.locations;
   useEffect(() => {
-    if (!isEmbed || !miningLocations?.length) return;
-    window.parent.postMessage({ locations: miningLocations }, "*");
+    if (!isEmbed) return;
+    const miningLocationsFiltered = filterForMiningCalculator(miningLocations);
+    window.parent.postMessage({ locations: miningLocationsFiltered }, "*");
   }, [miningLocations, isEmbed]);
 
   return (
@@ -514,30 +510,27 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         />
 
         {/* ================== AREA SOURCES =================== */}
-        {areasData && (
+        {selectedAreaType?.tilesUrl && (
           <Source
-            id={"areas"}
-            type="geojson"
-            tolerance={0.05}
-            data={areasData}
+            id="areas-vector-tiles"
+            type="vector"
+            tiles={[selectedAreaType.tilesUrl]}
+            minzoom={0}
+            maxzoom={14}
             promoteId={"id"} // we need this for the hover effect to work
-          />
-        )}
-        {selectedAreaData && (
-          <Source
-            id={"selected-area"}
-            type="geojson"
-            tolerance={0.05}
-            data={selectedAreaData}
           />
         )}
 
         {/* ================== AREA LAYER =================== */}
-        {areasData && (
+        {selectedAreaType?.tilesUrl && selectedAreaType.tilesLayer && (
           <>
             <Layer
               id={"areas-layer"}
-              source={"areas"}
+              key={`areas-layer-${selectedAreaType.tilesLayer}`}
+              source={"areas-vector-tiles"}
+              source-layer={selectedAreaType.tilesLayer}
+              // @ts-expect-error
+              filter={AREAS_LAYER_FILTER}
               type="line"
               paint={{
                 "line-color": "#ccc",
@@ -557,7 +550,11 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
             />
             <Layer
               id={"areas-layer-fill"}
-              source={"areas"}
+              key={`areas-layer-fill-${selectedAreaType.tilesLayer}`}
+              source={"areas-vector-tiles"}
+              source-layer={selectedAreaType.tilesLayer}
+              // @ts-expect-error
+              filter={AREAS_LAYER_FILTER}
               type="fill"
               paint={{
                 "fill-color": "#22B573",
@@ -572,78 +569,81 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
             />
           </>
         )}
-        {selectedAreaData && selectedArea && (
-          <>
-            <Layer
-              id={"selected-area-layer-fill"}
-              source={"selected-area"}
-              type="fill"
-              paint={{
-                "fill-color": "#22B573",
-                "fill-opacity": 0.1,
-                "fill-outline-color": "#22B573",
-              }}
-            />
-            <Layer
-              id={"selected-area-layer"}
-              source={"selected-area"}
-              type="line"
-              paint={{
-                "line-color": "#22B573",
-                "line-opacity": 1,
-                "line-width": 3,
-              }}
-            />
-          </>
-        )}
+        {selectedAreaType?.tilesUrl &&
+          selectedAreaType.tilesLayer &&
+          selectedArea && (
+            <>
+              <Layer
+                id={"selected-area-layer-fill"}
+                key={`selected-area-layer-fill-${selectedAreaType.tilesLayer}`}
+                source={"areas-vector-tiles"}
+                source-layer={selectedAreaType.tilesLayer}
+                filter={["==", ["get", "id"], selectedArea.value]}
+                type="fill"
+                paint={{
+                  "fill-color": "#22B573",
+                  "fill-opacity": 0.1,
+                  "fill-outline-color": "#22B573",
+                }}
+              />
+              <Layer
+                id={"selected-area-layer"}
+                key={`selected-area-layer-${selectedAreaType.tilesLayer}`}
+                source={"areas-vector-tiles"}
+                source-layer={selectedAreaType.tilesLayer}
+                filter={["==", ["get", "id"], selectedArea.value]}
+                type="line"
+                paint={{
+                  "line-color": "#22B573",
+                  "line-opacity": 1,
+                  "line-width": 3,
+                }}
+              />
+            </>
+          )}
 
         {/* ================== MINE SOURCES =================== */}
-        {miningData && (
-          <Source
-            id={"mines"}
-            type="geojson"
-            tolerance={0.05}
-            data={miningData}
-          />
-        )}
+        <Source
+          id={"mines-vector-tiles"}
+          type="vector"
+          tiles={[MINING_VECTOR_TILES_URL]}
+          minZoom={0}
+          maxzoom={14}
+        />
         {/* ================== MINE LAYER =================== */}
-        {miningData && (
-          <Layer
-            id={"mines-layer"}
-            // NOTE: hiding hotspots on Feb 2026
-            // beforeId={!isEmbed ? getBeforeId("hotspots-fill") : undefined}
-            source={"mines"}
-            type="line"
-            filter={
-              hoveredYear
-                ? ["==", ["get", "year"], hoveredYear]
-                : [
-                    "all",
-                    [">=", ["get", "year"], Number(activeYearStart)],
-                    ["<=", ["get", "year"], Number(activeYearEnd)],
-                  ]
-            }
-            paint={{
-              "line-color": mineLayerColors,
-              "line-opacity": 1,
-              "line-width": [
-                "interpolate",
-                ["exponential", 2],
-                ["zoom"],
-                0,
-                1,
-                10,
-                1,
-                14,
-                2.5,
-              ],
-            }}
-          />
-        )}
+        <Layer
+          id={"mines-layer"}
+          source={"mines-vector-tiles"}
+          source-layer={MINING_VECTOR_TILES_LAYER}
+          type="line"
+          filter={
+            hoveredYear
+              ? ["==", ["get", "year"], hoveredYear]
+              : [
+                  "all",
+                  [">=", ["get", "year"], Number(activeYearStart)],
+                  ["<=", ["get", "year"], Number(activeYearEnd)],
+                ]
+          }
+          paint={{
+            "line-color": mineLayerColors,
+            "line-opacity": 1,
+            "line-width": [
+              "interpolate",
+              ["exponential", 2],
+              ["zoom"],
+              0,
+              1,
+              10,
+              1,
+              14,
+              2.5,
+            ],
+          }}
+        />
 
         {/* NOTE: hiding hotspots on Feb 2026 */}
-        {/* wait for mines to load so that hotspots are layered on top of mines */}
-        {/* {miningData && !isEmbed && <Hotspots />} */}
+        {/* {!isEmbed && <Hotspots />} */}
 
         {/* ============ COUNTRY BOUNDARIES ============== */}
         <Source

@@ -5,9 +5,13 @@ import { marked } from "marked";
 export type PERMITTED_LANGUAGES = "en" | "es" | "pt";
 
 export const LOCALES = [
-  { code: "en", localizedName: "English" },
-  { code: "es", localizedName: "Español" },
-  { code: "pt", localizedName: "Português" },
+  { code: "en", localizedName: "English", exploreIn: "Explore in English" },
+  { code: "es", localizedName: "Español", exploreIn: "Explorar en Español" },
+  {
+    code: "pt",
+    localizedName: "Português",
+    exploreIn: "Explorar em Português",
+  },
 ];
 
 const localeDefinitions = {
@@ -36,16 +40,16 @@ const localeDefinitions = {
 
 export const numberToSignificantDigits = (
   number: number,
-  significantDigits: number
+  significantDigits: number,
 ) => parseFloat(number.toPrecision(significantDigits));
 
 export const formatNumber = (
   number: number,
   language: string,
-  significantDigits: number
+  significantDigits: number,
 ): string => {
   const locale = formatLocale(
-    localeDefinitions[language as PERMITTED_LANGUAGES]
+    localeDefinitions[language as PERMITTED_LANGUAGES],
   );
 
   // If number is <1, display it "<1"
@@ -57,7 +61,7 @@ export const formatNumber = (
     const numberInMillions = number / 1_000_000;
     const numberSignificantDigits = numberToSignificantDigits(
       numberInMillions,
-      significantDigits
+      significantDigits,
     );
     return formatter(numberSignificantDigits) + "M";
   }
@@ -72,7 +76,7 @@ const haToAcre = (n: number) => n * 2.471054;
 
 export const displayAreaInUnits = (
   areaHa: number | undefined,
-  units: PERMITTED_AREA_UNITS
+  units: PERMITTED_AREA_UNITS,
 ): number => {
   if (!areaHa) return 0;
   if (units === "hectares") return areaHa;

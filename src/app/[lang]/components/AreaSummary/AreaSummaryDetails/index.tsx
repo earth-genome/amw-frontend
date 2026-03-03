@@ -18,7 +18,7 @@ export type IllegalityAreaData = {
 
 interface AreaSummaryDetailsProps {
   dictionary: { [key: string]: any };
-  illegalityAreas: IllegalityAreaData[];
+  illegalityAreas: IllegalityAreaData[] | undefined;
   economicCost: string | undefined;
   calculatorIsLoading: boolean;
   calculatorUrl?: string;

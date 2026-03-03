@@ -1,12 +1,6 @@
 import { createContext, useReducer, Dispatch } from "react";
-import {
-  AreaData,
-  AreasData,
-  AreasTimeseriesData,
-  MiningData,
-} from "@/types/types";
+import { AreaData, AreasData, AreasTimeseriesData } from "@/types/types";
 import Reducer from "@/lib/Reducer";
-import { SingleValue } from "react-select";
 import { AreaSelectOption } from "@/app/[lang]/components/AreaSelect";
 import {
   AREA_TYPES,
@@ -21,23 +15,20 @@ import {
   AREA_UNITS_OPTIONS,
   PERMITTED_AREA_UNITS,
 } from "@/app/[lang]/components/Footer";
-import useMiningData from "@/hooks/useMiningData";
 import { PERMITTED_LANGUAGES } from "@/utils/content";
 
 export interface IState {
   map: MapRef | null;
   lang: PERMITTED_LANGUAGES;
   isQueryChecked: boolean;
-  miningData: MiningData | undefined;
-  miningDataIsLoading: boolean;
   areasData: AreasData | undefined;
   areasDataIsLoading: boolean;
   areasDataError: boolean;
   areasTimeseriesData: AreasTimeseriesData | undefined;
   areasTimeseriesDataIsLoading: boolean;
   areasOptions: AreaSelectOption[] | undefined;
-  selectedArea: SingleValue<AreaSelectOption> | undefined;
-  selectedAreaData: AreaData;
+  selectedArea: AreaSelectOption | undefined;
+  selectedAreaData: AreaData | undefined;
   selectedAreaTimeseriesData: AreasTimeseriesData | undefined;
   pendingSelectedAreaId: string | undefined;
   selectedAreaTypeKey: PERMITTED_AREA_TYPES_KEYS | undefined;
@@ -52,11 +43,6 @@ export interface IState {
 export type ActionType =
   | { type: "SET_MAP_REF"; map: MapRef | null }
   | { type: "SET_IS_QUERY_CHECKED"; isQueryChecked: boolean }
-  | {
-      type: "SET_MINING_DATA";
-      miningData: MiningData | undefined;
-      miningDataIsLoading: boolean;
-    }
   | {
       type: "SET_AREAS_DATA";
       areasData: AreasData | undefined;
@@ -98,6 +84,9 @@ export const Context = createContext<
   [IState, Dispatch<ActionType>] | undefined
 >(undefined);
 
+export const getDefaultAreaType = () =>
+  AREA_TYPES.find((at) => at.isDefault) ?? AREA_TYPES[0];
+
 const Store = ({
   children,
   lang,
@@ -111,13 +100,11 @@ const Store = ({
 }>) => {
   const defaultAreaType = isEmbed
     ? AREA_TYPES.filter((d) => d.allowInEmbed)[0]
-    : AREA_TYPES[0];
+    : getDefaultAreaType();
   const initialState: IState = {
     map: null,
     lang: lang,
     isQueryChecked: false,
-    miningData: undefined,
-    miningDataIsLoading: false,
     areasData: undefined,
     areasDataIsLoading: false,
     areasDataError: false,
@@ -144,7 +131,6 @@ const Store = ({
     dispatch,
     ignore: !isBaseRoute, // don't use query params in the content pages
   });
-  useMiningData({ state, dispatch });
   useAreasData({ state, dispatch, lang });
 
   return (

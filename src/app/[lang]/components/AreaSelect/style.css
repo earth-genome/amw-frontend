@@ -100,7 +100,6 @@
   .area-types-wrapper {
     position: fixed;
     text-align: center;
-    top: calc(var(--top-navbar-height) + 10px);
     right: 20px;
     z-index: 1000;
     pointer-events: none; /* allow clicks to pass through */

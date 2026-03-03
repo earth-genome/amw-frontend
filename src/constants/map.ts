@@ -1,11 +1,13 @@
 import { scaleSequential } from "d3-scale";
 import { interpolateRgbBasis } from "d3-interpolate";
-import { HOTSPOTS_GEOJSON_URL } from "@/cms/hotspots";
 
-const DATA_UPDATED_AT = "20260212";
+const DATA_UPDATED_AT = "20260224";
 const DATA_BASE_URL =
   // "/website";
   `${process.env.NEXT_PUBLIC_DATA_URL}/${DATA_UPDATED_AT}`;
+const TILES_BASE_URL =
+  // "/website";
+  `${process.env.NEXT_PUBLIC_TILES_URL}/amw/${DATA_UPDATED_AT}`;
 
 if (!DATA_BASE_URL) {
   throw new Error(
@@ -23,69 +25,60 @@ export const MINING_LAYERS = [
     yearQuarter: 201800,
     satelliteEndpoint: SENTINEL2_TEMPORAL,
     satelliteDates: "2018-01-01/2019-01-01",
-    dataUrl: `${DATA_BASE_URL}/data/outputs/website/mining_201800_simplified.json`,
   },
   {
     yearQuarter: 201900,
     satelliteEndpoint: SENTINEL2_TEMPORAL,
     satelliteDates: "2019-01-01/2020-01-01",
-    dataUrl: `${DATA_BASE_URL}/data/outputs/website/mining_201900_simplified.json`,
   },
   {
     yearQuarter: 202000,
     satelliteEndpoint: SENTINEL2_TEMPORAL,
     satelliteDates: "2020-01-01/2021-01-01",
-    dataUrl: `${DATA_BASE_URL}/data/outputs/website/mining_202000_simplified.json`,
   },
   {
     yearQuarter: 202100,
     satelliteEndpoint: SENTINEL2_TEMPORAL,
     satelliteDates: "2021-01-01/2022-01-01",
-    dataUrl: `${DATA_BASE_URL}/data/outputs/website/mining_202100_simplified.json`,
   },
   {
     yearQuarter: 202200,
     satelliteEndpoint: SENTINEL2_TEMPORAL,
     satelliteDates: "2022-01-01/2023-01-01",
-    dataUrl: `${DATA_BASE_URL}/data/outputs/website/mining_202200_simplified.json`,
   },
   {
     yearQuarter: 202300,
     satelliteEndpoint: SENTINEL2_YEARLY,
     satelliteDates: "2023-01-01/2024-01-01",
-    dataUrl: `${DATA_BASE_URL}/data/outputs/website/mining_202300_simplified.json`,
   },
   {
     yearQuarter: 202400,
     satelliteEndpoint: SENTINEL2_YEARLY,
     satelliteDates: "2024-01-01/2025-01-01",
-    dataUrl: `${DATA_BASE_URL}/data/outputs/website/mining_202400_simplified.json`,
   },
   {
     yearQuarter: 202502,
     satelliteEndpoint: SENTINEL2_SEMIANNUAL,
     satelliteDates: "2025-02-15/2025-08-15",
-    dataUrl: `${DATA_BASE_URL}/data/outputs/website/mining_202502_simplified.json`,
   },
   {
     yearQuarter: 202503,
     satelliteEndpoint: SENTINEL2_QUARTERLY,
     satelliteDates: "2025-07-01/2025-10-01",
-    dataUrl: `${DATA_BASE_URL}/data/outputs/website/mining_202503_simplified.json`,
   },
   {
     yearQuarter: 202504,
     satelliteEndpoint: SENTINEL2_QUARTERLY,
     satelliteDates: "2025-10-01/2026-01-01",
-    dataUrl: `${DATA_BASE_URL}/data/outputs/website/mining_202504_simplified.json`,
   },
 ];
+
+export const MINING_VECTOR_TILES_LAYER = "mining_combined_full";
+export const MINING_VECTOR_TILES_URL = `${TILES_BASE_URL}/mining_combined_full/{z}/{x}/{y}.pbf`;
 
 export const LAYER_YEARS = MINING_LAYERS.map((d) => d.yearQuarter).sort(
   (a, b) => a - b,
 );
-
-export const MINING_DATA_URLS = MINING_LAYERS.map((d) => d.dataUrl);
 
 // generates satellite tiles for a react-map-gl raster source, using 4 different subdmonains
 // for faster loading
@@ -107,7 +100,7 @@ export const MAP_COLOR_SCALE = [
 ];
 
 // we use a different, more contrasting color for the latest year
-export const MAP_LATEST_YEAR_COLOR = "#f50505";
+const MAP_LATEST_YEAR_COLOR = "#f50505";
 export const MAP_COLOR_SCALE_WITH_LATEST_YEAR = [
   ...MAP_COLOR_SCALE,
   MAP_LATEST_YEAR_COLOR,
@@ -115,7 +108,7 @@ export const MAP_COLOR_SCALE_WITH_LATEST_YEAR = [
 
 export const MAP_MISSING_DATA_COLOR = "#ccc";
 
-export const createYearsColorScale = (years: number[]) => {
+const createYearsColorScale = (years: number[]) => {
   return scaleSequential()
     .domain([0, years.length - 1])
     .interpolator(interpolateRgbBasis(MAP_COLOR_SCALE));
@@ -133,6 +126,8 @@ export interface AreaType {
   dictionaryKey: string;
   dictionaryKeySingular: string;
   url: string;
+  tilesUrl: string;
+  tilesLayer: string;
   timeseriesUrl: string;
   isDefault?: boolean;
   renderLabel: (_properties: Record<string, any>) => string;
@@ -148,7 +143,9 @@ export const AREA_TYPES = [
     dictionaryKey: "countries",
     dictionaryKeyDescription: undefined,
     dictionaryKeySingular: "country",
-    url: `${DATA_BASE_URL}/data/boundaries/national_admin/out/national_admin_impacts.json`,
+    url: `${DATA_BASE_URL}/data/boundaries/national_admin/out/national_admin_impacts_unfiltered_dict.json`,
+    tilesUrl: `${TILES_BASE_URL}/national_admin_impacts_unfiltered/{z}/{x}/{y}.pbf`,
+    tilesLayer: `national_admin_impacts_unfiltered`,
     timeseriesUrl: `${DATA_BASE_URL}/data/boundaries/national_admin/out/national_admin_yearly.json`,
     isDefault: true,
     renderLabel: (properties: Record<string, any>) => properties.country,
@@ -164,9 +161,11 @@ export const AREA_TYPES = [
     dictionaryKey: "subnational_jurisdictions",
     dictionaryKeyDescription: undefined,
     dictionaryKeySingular: "subnational_jurisdiction",
-    url: `${DATA_BASE_URL}/data/boundaries/subnational_admin/out/admin_areas_display_impacts_unfiltered.json`,
+    url: `${DATA_BASE_URL}/data/boundaries/subnational_admin/out/admin_areas_display_impacts_unfiltered_dict.json`,
+    tilesUrl: `${TILES_BASE_URL}/admin_areas_display_impacts_unfiltered/{z}/{x}/{y}.pbf`,
+    tilesLayer: `admin_areas_display_impacts_unfiltered`,
     timeseriesUrl: `${DATA_BASE_URL}/data/boundaries/subnational_admin/out/admin_areas_display_yearly.json`,
-    isDefault: true,
+    isDefault: false,
     renderLabel: (properties: Record<string, any>) =>
       `${properties.name_field || "N/A"} ${
         properties.country ? `- ${properties.country}` : ""
@@ -184,7 +183,9 @@ export const AREA_TYPES = [
     dictionaryKey: "indigenous_territories",
     dictionaryKeyDescription: "indigenous_territories_description",
     dictionaryKeySingular: "indigenous_territory",
-    url: `${DATA_BASE_URL}/data/boundaries/protected_areas_and_indigenous_territories/out/indigenous_territories_impacts.json`,
+    url: `${DATA_BASE_URL}/data/boundaries/protected_areas_and_indigenous_territories/out/indigenous_territories_impacts_unfiltered_dict.json`,
+    tilesUrl: `${TILES_BASE_URL}/indigenous_territories_impacts_unfiltered/{z}/{x}/{y}.pbf`,
+    tilesLayer: `indigenous_territories_impacts_unfiltered`,
     timeseriesUrl: `${DATA_BASE_URL}/data/boundaries/protected_areas_and_indigenous_territories/out/indigenous_territories_yearly.json`,
     isDefault: false,
     renderLabel: (properties: Record<string, any>) =>
@@ -204,7 +205,9 @@ export const AREA_TYPES = [
     dictionaryKey: "protected_areas",
     dictionaryKeyDescription: "protected_areas_description",
     dictionaryKeySingular: "protected_area",
-    url: `${DATA_BASE_URL}/data/boundaries/protected_areas_and_indigenous_territories/out/protected_areas_impacts.json`,
+    url: `${DATA_BASE_URL}/data/boundaries/protected_areas_and_indigenous_territories/out/protected_areas_impacts_unfiltered_dict.json`,
+    tilesUrl: `${TILES_BASE_URL}/protected_areas_impacts_unfiltered/{z}/{x}/{y}.pbf`,
+    tilesLayer: `protected_areas_impacts_unfiltered`,
     timeseriesUrl: `${DATA_BASE_URL}/data/boundaries/protected_areas_and_indigenous_territories/out/protected_areas_yearly.json`,
     isDefault: false,
     renderLabel: (properties: Record<string, any>) =>
@@ -219,23 +222,24 @@ export const AREA_TYPES = [
     allowInEmbed: true,
     allowSelect: true,
   },
-  {
-    key: "hotspots",
-    dictionaryKey: "hotspots",
-    dictionaryKeyDescription: undefined,
-    dictionaryKeySingular: "hotspot",
-    url: HOTSPOTS_GEOJSON_URL,
-    // FIXME:
-    timeseriesUrl: "",
-    isDefault: false,
-    renderLabel: (properties: Record<string, any>) => properties.title,
-    renderTitle: (properties: Record<string, any>) => properties.title,
-    renderStatus: () => "",
-    showCountry: false,
-    useLocale: true,
-    allowInEmbed: false,
-    allowSelect: false,
-  },
+  // {
+  //   key: "hotspots",
+  //   dictionaryKey: "hotspots",
+  //   dictionaryKeyDescription: undefined,
+  //   dictionaryKeySingular: "hotspot",
+  //   url: HOTSPOTS_GEOJSON_URL,
+  //   tilesUrl: "",
+  //   tilesLayer: "",
+  //   timeseriesUrl: "",
+  //   isDefault: false,
+  //   renderLabel: (properties: Record<string, any>) => properties.title,
+  //   renderTitle: (properties: Record<string, any>) => properties.title,
+  //   renderStatus: () => "",
+  //   showCountry: false,
+  //   useLocale: true,
+  //   allowInEmbed: false,
+  //   allowSelect: false,
+  // },
 ] as const;
 
 export type PERMITTED_AREA_TYPES_KEYS = (typeof AREA_TYPES)[number]["key"];
@@ -267,3 +271,7 @@ export const getAreaSignificantDigits = (number: number) => {
 export const ECONOMIC_COST_SIGNIFICANT_DIGITS = 2;
 
 export const ENTIRE_AMAZON_AREA_ID = "AMAZ";
+
+// HACK: hide two specific areas, Raposa Serra do Sol IT and Apolobamba PA, because of data issues
+// as reported by ACA
+export const AREA_IDS_TO_HIDE = ["BOAP-0405_0", "BR37901_0"];

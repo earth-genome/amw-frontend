@@ -3,7 +3,6 @@ import { useCallback, useContext } from "react";
 import "./style.css";
 import { Context } from "@/lib/Store";
 import AreaSearch from "@/app/[lang]/components/AreaSelect/AreaSearch";
-import { SingleValue } from "react-select";
 import { AREA_TYPES, PERMITTED_AREA_TYPES_KEYS } from "@/constants/map";
 import { SELECT_ANTD_THEME } from "@/utils/themes";
 
@@ -33,7 +32,7 @@ const AreaSelect = ({ dictionary }: AreaSelectProps) => {
   } = state;
 
   const setSelectedArea = useCallback(
-    (selectedArea: SingleValue<AreaSelectOption> | undefined) => {
+    (selectedArea: AreaSelectOption | undefined) => {
       dispatch({
         type: "SET_SELECTED_AREA_BY_ID",
         selectedAreaId: selectedArea?.value,
@@ -52,7 +51,7 @@ const AreaSelect = ({ dictionary }: AreaSelectProps) => {
     [dispatch],
   );
 
-  const handleAreaSelect = (value: SingleValue<AreaSelectOption>) => {
+  const handleAreaSelect = (value: AreaSelectOption | undefined) => {
     setSelectedArea(value);
   };
 
@@ -63,9 +62,7 @@ const AreaSelect = ({ dictionary }: AreaSelectProps) => {
     >
       <div className="area-types-container">
         <div className="area-types">
-          <ConfigProvider
-            theme={SELECT_ANTD_THEME}
-          >
+          <ConfigProvider theme={SELECT_ANTD_THEME}>
             <Select
               className="area-types-select-box"
               value={selectedAreaType?.key}
@@ -104,7 +101,7 @@ const AreaSelect = ({ dictionary }: AreaSelectProps) => {
             <AreaSearch
               key={selectedAreaType?.key}
               handleAreaSelect={handleAreaSelect}
-              selectedArea={selectedArea}
+              selectedArea={selectedArea ?? undefined}
               dictionary={dictionary}
             />
           ) : (
