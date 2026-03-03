@@ -119,8 +119,6 @@
     "criteria": "criteria",
     "score": "Score",
     "sources": "Sources",
-    "title": "Policy Scoreboard",
-    "intro": "Comprehensive assessment of regulatory frameworks and enforcement mechanisms for artisanal and small-scale gold mining across eight Amazonian countries.",
     "country_rankings_desc": "Countries are evaluated across three key dimensions, each worth up to five points, for a total possible score of 15.",
     "assessment_dimensions_desc": "Each assessment dimension is made up of multiple categories and criteria. Visit the details page for each dimension to see how the score is calculated.",
     "country_overall_score_desc_1": "'s overall score is ",
