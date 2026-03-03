@@ -1,85 +1,189 @@
-import { Select, ConfigProvider } from "antd";
+import { ConfigProvider, Radio } from "antd";
+import { useRef, useEffect, useState, useCallback } from "react";
+import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import "./style.css";
 import ColorScale from "@/app/[lang]/components/Map/Legend/ColorScale";
 import { formatLayerYear } from "@/utils/content";
-import { SELECT_ANTD_THEME } from "@/utils/themes";
-import CustomTooltip from "../../CustomTooltip";
-import QuestionMark from "../../Icons/QuestionMark";
+import { RADIO_GROUP_ANTD_THEME } from "@/utils/themes";
 
 export interface LegendProps {
   years: number[];
-  activeYearStart: string;
-  activeYearEnd: string;
-  setActiveYearStart: (_value: string) => void;
-  setActiveYearEnd: (_value: string) => void;
+  activeYear: string;
+  setActiveYear: (_value: string) => void;
   dictionary: { [key: string]: any };
+  isCumulative: boolean;
+  setIsCumulative: (_value: boolean) => void;
 }
+
+const SCROLL_DISTANCE = 250;
 
 const Legend = ({
   years,
-  activeYearStart,
-  activeYearEnd,
-  setActiveYearStart,
-  setActiveYearEnd,
+  activeYear,
+  setActiveYear,
   dictionary,
+  isCumulative,
+  setIsCumulative,
 }: LegendProps) => {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
   const sortedYears = [...years].sort((a, b) => a - b);
 
-  const allOptions = sortedYears.map((d) => ({
-    value: String(d),
-    label: formatLayerYear(d),
-  }));
+  const updateScrollButtons = () => {
+    if (scrollContainerRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } =
+        scrollContainerRef.current;
+      setCanScrollLeft(scrollLeft > 0);
+      setCanScrollRight(scrollLeft < scrollWidth - clientWidth);
+    }
+  };
 
-  // Filter start options: only years <= end
-  const startOptions = allOptions.filter(
-    (opt) => Number(opt.value) <= Number(activeYearEnd),
-  );
+  const scrollToActiveButton = useCallback(() => {
+    if (scrollContainerRef.current && activeYear) {
+      // Radio.Group with optionType="button" marks the checked item with this class
+      const activeButton = scrollContainerRef.current.querySelector(
+        `.ant-radio-button-wrapper-checked`,
+      ) as HTMLElement;
 
-  // Filter end options: only years >= start
-  const endOptions = allOptions.filter(
-    (opt) => Number(opt.value) >= Number(activeYearStart),
-  );
+      if (activeButton) {
+        const containerRect =
+          scrollContainerRef.current.getBoundingClientRect();
+        const buttonRect = activeButton.getBoundingClientRect();
+
+        const isVisible =
+          buttonRect.left >= containerRect.left &&
+          buttonRect.right <= containerRect.right;
+
+        if (!isVisible) {
+          const scrollLeft =
+            activeButton.offsetLeft -
+            scrollContainerRef.current.clientWidth / 2 +
+            activeButton.offsetWidth / 2;
+
+          scrollContainerRef.current.scrollTo({
+            left: scrollLeft,
+            behavior: "smooth",
+          });
+        }
+      }
+    }
+  }, [activeYear]);
+
+  const scrollLeft = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({
+        left: -SCROLL_DISTANCE,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  const scrollRight = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({
+        left: SCROLL_DISTANCE,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  useEffect(() => {
+    updateScrollButtons();
+    scrollToActiveButton();
+  }, [activeYear, scrollToActiveButton]);
+
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (container) {
+      container.addEventListener("scroll", updateScrollButtons);
+      return () => container.removeEventListener("scroll", updateScrollButtons);
+    }
+  }, []);
+
+  // initial scroll: scroll to active year if set, otherwise scroll to the right
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      const container = scrollContainerRef.current;
+      setTimeout(() => {
+        const activeButton = container.querySelector(
+          `.ant-radio-button-wrapper-checked`,
+        ) as HTMLElement;
+        container.scrollTo({
+          left: activeButton
+            ? activeButton.offsetLeft -
+              container.clientWidth / 2 +
+              activeButton.offsetWidth / 2
+            : container.scrollWidth - container.clientWidth,
+        });
+        updateScrollButtons();
+      }, 100);
+    }
+  }, [years]);
 
   return (
     <div className="map-legend">
+      <div className="legend-toggle-wrapper">
+        <div className="legend-time-label">
+          {dictionary?.map_legend?.mining_activity}
+        </div>
+        <div className="cumulative-toggle">
+          <ConfigProvider theme={RADIO_GROUP_ANTD_THEME}>
+            <Radio.Group
+              value={isCumulative}
+              onChange={(e) => setIsCumulative(e.target.value)}
+              buttonStyle="solid"
+              size="small"
+            >
+              <Radio.Button value={false}>
+                {dictionary?.map_legend?.single_year}
+              </Radio.Button>
+              <Radio.Button value={true}>
+                {dictionary?.map_legend?.cumulative}
+              </Radio.Button>
+            </Radio.Group>
+          </ConfigProvider>
+        </div>
+      </div>
       <ColorScale dictionary={dictionary} />
 
-      <ConfigProvider theme={SELECT_ANTD_THEME}>
-        <div className="period-range-selectors">
-          <div className="period-select-group">
-            <label className="period-label">
-              {dictionary?.map_ui?.period_start}
-            </label>
-            <Select
-              value={activeYearStart}
-              options={startOptions}
-              onChange={(value) => setActiveYearStart(value)}
-              className="period-select"
-              popupMatchSelectWidth={false}
-            />
-          </div>
-          <div className="period-select-group">
-            <label className="period-label">
-              {dictionary?.map_ui?.period_end}
-              <CustomTooltip
-                content={dictionary?.map_ui?.period_end_tooltip}
-                placement="top"
-              >
-                <button className={""}>
-                  <QuestionMark size={12} />
-                </button>
-              </CustomTooltip>
-            </label>
-            <Select
-              value={activeYearEnd}
-              options={endOptions}
-              onChange={(value) => setActiveYearEnd(value)}
-              className="period-select"
-              popupMatchSelectWidth={false}
+      <div className="legend-carousel">
+        <button
+          className="scroll-button scroll-left"
+          onClick={scrollLeft}
+          disabled={!canScrollLeft}
+          aria-label="Scroll left"
+        >
+          <LeftOutlined />
+        </button>
+
+        <div className="year-pills-container" ref={scrollContainerRef}>
+          <div className="year-pills">
+            <Radio.Group
+              options={sortedYears.map((d) => ({
+                value: String(d),
+                label: formatLayerYear(d),
+              }))}
+              value={activeYear}
+              onChange={({ target: { value } }) => {
+                setActiveYear(value);
+              }}
+              optionType="button"
+              buttonStyle="solid"
             />
           </div>
         </div>
-      </ConfigProvider>
+
+        <button
+          className="scroll-button scroll-right"
+          onClick={scrollRight}
+          disabled={!canScrollRight}
+          aria-label="Scroll right"
+        >
+          <RightOutlined />
+        </button>
+      </div>
     </div>
   );
 };

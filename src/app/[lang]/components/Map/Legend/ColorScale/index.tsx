@@ -11,24 +11,7 @@ const ColorScale = ({ dictionary }: ColorScaleProps) => {
   if (!MAP_COLOR_SCALE?.length) return null;
 
   return (
-    <div
-      style={{
-        margin: "8px 8px 0",
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          justifyItems: "center",
-          marginBottom: 6,
-          fontSize: 14,
-          color: "var(--green-dark)",
-        }}
-      >
-        <div>{dictionary?.map_legend?.old_mining_activity}</div>
-        <div>{dictionary?.map_legend?.recent_mining_activity}</div>
-      </div>
+    <div>
       <div
         style={{
           display: "flex",
@@ -46,6 +29,18 @@ const ColorScale = ({ dictionary }: ColorScaleProps) => {
             }}
           />
         ))}
+      </div>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          justifyItems: "center",
+          fontSize: 14,
+          color: "var(--green-dark)",
+        }}
+      >
+        <div>{dictionary?.map_legend?.old_mining_activity}</div>
+        <div>{dictionary?.map_legend?.recent_mining_activity}</div>
       </div>
     </div>
   );

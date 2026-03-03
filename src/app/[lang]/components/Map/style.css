@@ -51,19 +51,6 @@
   z-index: 100;
   font-size: 11px;
 }
-.imagery-pills {
-  position: fixed;
-  text-align: center;
-  bottom: 55px;
-  left: 0;
-  right: 0;
-  z-index: 1000;
-  pointer-events: none; /* allow clicks to pass through */
-}
-
-.imagery-pills > * {
-  pointer-events: auto; /* re-enable clicks on child elements */
-}
 
 .mapboxgl-canvas {
   background-color: transparent !important;

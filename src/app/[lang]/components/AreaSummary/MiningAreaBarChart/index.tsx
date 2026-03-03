@@ -38,7 +38,7 @@ const MiningAreaBarChart = ({
     y: number;
   } | null>(null);
 
-  const { areaUnits, lang } = state;
+  const { areaUnits, lang, activeYear, isCumulative } = state;
 
   const margin = { top: 10, right: 0, bottom: 15, left: 40 };
   const width = chartWidth - margin.left - margin.right;
@@ -190,9 +190,17 @@ const MiningAreaBarChart = ({
                         height={h}
                         fill={color}
                         opacity={
-                          !hoveredBar || d.admin_year === hoveredBar.adminYear
-                            ? 1
-                            : 0.3
+                          hoveredBar
+                            ? d.admin_year === hoveredBar.adminYear
+                              ? 1
+                              : 0.3
+                            : isCumulative
+                              ? d.admin_year <= Number(activeYear)
+                                ? 1
+                                : 0.3
+                              : d.admin_year === Number(activeYear)
+                                ? 1
+                                : 0.3
                         }
                         className={styles.bars}
                         onMouseEnter={(e) => {

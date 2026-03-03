@@ -102,8 +102,8 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
     selectedAreaTypeKey,
     areaUnits,
     hoveredYear,
-    activeYearStart,
-    activeYearEnd,
+    activeYear,
+    isCumulative,
     isEmbed,
     selectedAreaType,
   } = state;
@@ -471,7 +471,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
             type="raster"
             source={`sentinel-${d}`}
             layout={{
-              visibility: activeYearEnd === String(d) ? "visible" : "none",
+              visibility: activeYear === String(d) ? "visible" : "none",
             }}
           />
         ))}
@@ -616,15 +616,11 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           source={"mines-vector-tiles"}
           source-layer={MINING_VECTOR_TILES_LAYER}
           type="line"
-          filter={
-            hoveredYear
-              ? ["==", ["get", "year"], hoveredYear]
-              : [
-                  "all",
-                  [">=", ["get", "year"], Number(activeYearStart)],
-                  ["<=", ["get", "year"], Number(activeYearEnd)],
-                ]
-          }
+          filter={[
+            hoveredYear ? "==" : isCumulative ? "<=" : "==",
+            ["get", "year"],
+            hoveredYear ? hoveredYear : Number(activeYear),
+          ]}
           paint={{
             "line-color": mineLayerColors,
             "line-opacity": 1,
@@ -719,15 +715,15 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
             }
             bounds={bounds}
             years={LAYER_YEARS}
-            activeYearStart={activeYearStart}
-            activeYearEnd={activeYearEnd}
-            setActiveYearStart={(v) =>
-              dispatch({ type: "SET_ACTIVE_YEAR_START", activeYearStart: v })
-            }
-            setActiveYearEnd={(v) =>
-              dispatch({ type: "SET_ACTIVE_YEAR_END", activeYearEnd: v })
+            activeYear={activeYear}
+            setActiveYear={(v) =>
+              dispatch({ type: "SET_ACTIVE_YEAR", activeYear: v })
             }
             dictionary={dictionary}
+            isCumulative={isCumulative}
+            setIsCumulative={(v) =>
+              dispatch({ type: "SET_IS_CUMULATIVE", isCumulative: v })
+            }
           />
         )}
 
