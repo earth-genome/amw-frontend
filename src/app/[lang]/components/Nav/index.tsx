@@ -5,11 +5,11 @@ import { useMenu } from "@/app/[lang]/menuContext";
 import gsap from "gsap";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React, { Fragment, ReactNode, useEffect, useRef, useState } from "react";
+import React, { ReactNode, Suspense, useEffect, useRef, useState } from "react";
 import "./style.css";
-import { LOCALES } from "@/utils/content";
 import ExternalLink from "@/app/[lang]/components/Icons/ExternalLink";
 import { ROUTES } from "@/constants/routes";
+import { LanguageSwitcher, MenuLanguageList } from "./LanguageSwitcher";
 
 interface NavProps {
   children?: ReactNode;
@@ -127,22 +127,10 @@ const Nav: React.FC<NavProps> = ({ children, dictionary }) => {
       )}
 
       {!showMenu && (
-        <>
-          {LOCALES.map((d, i) => (
-            <Fragment key={d.code}>
-              <Link
-                className="menu-lang"
-                onClick={() => sessionStorage.setItem("introViewed", "false")}
-                href={`/${d.code}`}
-              >
-                {d.code}
-              </Link>
-              {i < LOCALES.length - 1 ? (
-                <span className="divider">|</span>
-              ) : null}
-            </Fragment>
-          ))}
-        </>
+        // useSearchParams() requires a <Suspense> boundary
+        <Suspense>
+          <LanguageSwitcher />
+        </Suspense>
       )}
 
       <a
@@ -212,13 +200,9 @@ const Nav: React.FC<NavProps> = ({ children, dictionary }) => {
                 </Link>
               )}
 
-              <ul className="lang-menu">
-                {LOCALES.map((d) => (
-                  <li key={d.code}>
-                    <a href={`/${d.code}`}>{d.localizedName}</a>
-                  </li>
-                ))}
-              </ul>
+              <Suspense>
+                <MenuLanguageList />
+              </Suspense>
             </div>
           </div>
         </Overlay>
