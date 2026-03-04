@@ -225,7 +225,7 @@ const CountryDetails = ({
                   {countryName}
                   {t?.country_dimension_score_desc_1}
                   <strong>
-                    {dimensionLocalized}
+                    {dimensionLocalized.replace(/^(?:III|II|I)\.\s*/, "")}
                     {t?.country_dimension_score_desc_2}
                     {dimensionScore}
                     {t?.country_dimension_score_desc_3}

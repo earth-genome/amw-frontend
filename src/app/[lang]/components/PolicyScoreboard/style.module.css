@@ -7,3 +7,9 @@
     margin-top: 48px;
     border-top: 3px solid #fff;
 }
+
+.footerSection a {
+    color: #fff;
+    text-decoration: underline !important;
+    font-weight: 500;
+}

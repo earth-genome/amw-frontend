@@ -153,14 +153,36 @@ const PolicyScoreboard = ({
       </DetailPanel>
 
       <div className={styles.footerSection}>
-        <p>{t?.attribution_intro}:</p>
+        <p>
+          {t?.attribution_intro}{" "}
+          <Link
+            href="https://www.amazonconservation.org/"
+            target="_blank"
+            rel="nofollow noopener"
+          >
+            Amazon Conservation Association
+          </Link>
+          .
+        </p>
+
+        <p>
+          {t?.contact_info}{" "}
+          <Link
+            href="https://www.amazonconservation.org/"
+            target="_blank"
+            rel="nofollow noopener"
+          >
+            amazonconservation.org
+          </Link>
+          .
+        </p>
         <Link
           className="ac-logo"
           href="https://www.amazonconservation.org/"
           target="_blank"
           rel="nofollow noopener"
         >
-          Amazon Conservation
+          Amazon Conservation Association
         </Link>
       </div>
     </div>
