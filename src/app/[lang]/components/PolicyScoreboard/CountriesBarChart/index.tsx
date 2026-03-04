@@ -63,7 +63,7 @@ const CountriesBarChart = ({
         key: dim.Dimension,
         value: dim.countries[country].dimensionScore,
         color: DIMENSION_COLORS[dim.Dimension as DimensionName],
-        label: `${dim.Dimension}: ${dim.countries[country].dimensionScore}`,
+        label: `${getPolicyDimensionLocalized(dim.Dimension, lang as PERMITTED_LANGUAGES)}: ${dim.countries[country].dimensionScore}`,
       })),
       total: getCountryTotal(country),
     }));

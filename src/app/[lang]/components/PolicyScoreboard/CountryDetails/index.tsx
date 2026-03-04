@@ -81,13 +81,13 @@ const CountryDetails = ({
       key: dim.Dimension,
       value: dim.countries[countryName]?.dimensionScore ?? 0,
       color: DIMENSION_COLORS[dim.Dimension as DimensionName],
-      label: `${dim.Dimension}: ${dim.countries[countryName]?.dimensionScore ?? 0}`,
+      label: `${getPolicyDimensionLocalized(dim.Dimension, lang as PERMITTED_LANGUAGES)}: ${dim.countries[countryName]?.dimensionScore ?? 0}`,
     })),
     total: getCountryTotal(),
   };
 
   const legend = Object.entries(DIMENSION_COLORS).map(([label, color]) => ({
-    label,
+    label: getPolicyDimensionLocalized(label, lang as PERMITTED_LANGUAGES),
     color,
   }));
 

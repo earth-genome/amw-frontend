@@ -45,7 +45,7 @@ export const getPolicyData = cache(
     // Read CSV file from the file system
     const filePath = path.join(
       process.cwd(),
-      "public/data/policy-scoreboard-data.csv",
+      `public/data/policy-scoreboard-data_${lang}.csv`,
     );
     const csvString = await fs.readFile(filePath, "utf-8");
     const round = (n: number, decimals: number): number =>
