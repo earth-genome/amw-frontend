@@ -104,7 +104,7 @@ const CountryDetails = ({
     {},
   );
 
-  const dimensions = Object.keys(categoriesByDimension) as DimensionName[];
+  const dimensionKeys = Object.keys(categoriesByDimension) as DimensionName[];
 
   return (
     <div className={styles.container}>
@@ -137,32 +137,32 @@ const CountryDetails = ({
         </h2>
         <p>{t?.dimensions_intro}</p>
 
-        {dimensions.map((dimension) => {
+        {dimensionKeys.map((dimensionKey) => {
           // Get dimension-level score for this country
           const dimensionData = byDimension.find(
-            (d) => d.Dimension === dimension,
+            (d) => d.Dimension === dimensionKey,
           );
           const dimensionScore =
             dimensionData?.countries[countryName]?.dimensionScore ?? 0;
           const dimensionLocalized = getPolicyDimensionLocalized(
-            dimension,
+            dimensionKey,
             lang as PERMITTED_LANGUAGES,
           );
           const dimensionDescriptionLocalized =
             getPolicyDimensionDescriptionLocalized(
-              dimension,
+              dimensionKey,
               lang as PERMITTED_LANGUAGES,
             );
 
           // Create dimension bar item
           const dimensionItem = {
-            key: dimension,
+            key: dimensionKey,
             label: <div>{""}</div>,
             segments: [
               {
-                key: dimension,
+                key: dimensionKey,
                 value: dimensionScore,
-                color: DIMENSION_COLORS[dimension],
+                color: DIMENSION_COLORS[dimensionKey],
                 label: format(".2~f")(dimensionScore),
               },
             ],
@@ -171,7 +171,7 @@ const CountryDetails = ({
           };
 
           // Create items for bar chart - one bar per category for this country
-          const categoryItems = categoriesByDimension[dimension].map(
+          const categoryItems = categoriesByDimension[dimensionKey].map(
             (category) => {
               const countryScores = category.countries[countryName];
               const percentage =
@@ -195,7 +195,7 @@ const CountryDetails = ({
                   {
                     key: category.Categories,
                     value: percentage,
-                    color: DIMENSION_COLORS[dimension],
+                    color: DIMENSION_COLORS[dimensionKey],
                     label: format(".0%")(percentage),
                   },
                 ],
@@ -207,8 +207,8 @@ const CountryDetails = ({
 
           return (
             <div
-              key={dimension}
-              id={`dimension-${getDimensionSlug(dimension)}`}
+              key={dimensionKey}
+              id={`dimension-${getDimensionSlug(dimensionKey)}`}
               className={styles.dimensionSection}
             >
               <div>
@@ -253,7 +253,7 @@ const CountryDetails = ({
                   <CategoryQuestionsTable
                     scoreboardData={scoreboardData}
                     countryEnglishName={countryEnglishName}
-                    dimension={dimension}
+                    dimension={dimensionKey}
                     dictionary={dictionary}
                   />
                 </div>
