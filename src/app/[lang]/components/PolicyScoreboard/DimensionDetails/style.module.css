@@ -30,3 +30,9 @@
   font-size: 16px;
   font-weight: 600;
 }
+
+.categoryListItem {
+  font-size: 18px;
+  margin-top: 16px;
+  line-height: 1.6;
+}

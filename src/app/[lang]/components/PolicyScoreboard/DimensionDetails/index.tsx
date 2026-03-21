@@ -14,7 +14,10 @@ import DimensionsBarChart from "../DimensionsBarChart";
 import { getPolicyCategoryLocalized } from "@/app/[lang]/(map)/(content)/amazon-mining-policy-scoreboard/policy-categories";
 import { useParams } from "next/navigation";
 import { PERMITTED_LANGUAGES } from "@/utils/content";
-import { getPolicyDimensionDescriptionLocalized } from "@/app/[lang]/(map)/(content)/amazon-mining-policy-scoreboard/policy-dimensions";
+import {
+  getPolicyDimensionCategoriesLocalized,
+  getPolicyDimensionDescriptionLocalized,
+} from "@/app/[lang]/(map)/(content)/amazon-mining-policy-scoreboard/policy-dimensions";
 
 interface DimensionDetailsProps {
   dimensionKey: DimensionName;
@@ -82,7 +85,11 @@ const DimensionDetails = ({
   });
 
   const dimensionDescriptionLocalized = getPolicyDimensionDescriptionLocalized(
-    dimensionName,
+    dimensionKey,
+    lang as PERMITTED_LANGUAGES,
+  );
+  const dimensionCategoriesLocalized = getPolicyDimensionCategoriesLocalized(
+    dimensionKey,
     lang as PERMITTED_LANGUAGES,
   );
 
@@ -92,6 +99,14 @@ const DimensionDetails = ({
         {dimensionDescriptionLocalized.map((d) => (
           <p key={d}>{d}</p>
         ))}
+        <ul>
+          {dimensionCategoriesLocalized.map((d) => (
+            <li key={d.title} className={styles.categoryListItem}>
+              <strong>{d.title}</strong>
+              {d.desc}
+            </li>
+          ))}
+        </ul>
       </div>
       <div className={styles.section}>
         <h2 className={styles.sectionTitle}>
