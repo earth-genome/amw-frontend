@@ -107,7 +107,8 @@ const CategoryQuestionsTable = ({
                   const sources = row[srcKey] as string;
                   const sourcesSplit = sources
                     ?.split("\n")
-                    .map((d) => d.trim());
+                    .map((d) => d.trim())
+                    .filter((d) => Boolean(d));
 
                   return (
                     <div
