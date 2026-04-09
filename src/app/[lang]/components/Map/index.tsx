@@ -83,6 +83,15 @@ const AREAS_LAYER_FILTER = [
   ["!", ["in", ["get", "id"], ["literal", AREA_IDS_TO_HIDE]]],
 ];
 
+const filterInteractiveFeatures = (features: mapboxgl.MapboxGeoJSONFeature[]) =>
+  features.filter(
+    (d) =>
+      // ignore entire amazon layer as it covers everything
+      d?.properties?.id !== ENTIRE_AMAZON_AREA_ID &&
+      // ignore layers except the areas one
+      d?.layer?.id === "areas-layer-fill",
+  );
+
 const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
   const [state, dispatch] = useContext(Context)!;
   const pathname = usePathname();
@@ -186,9 +195,11 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
 
   const handleMouseMove = useCallback(
     (event: MapMouseEvent) => {
-      if (isMobile || !mapRef.current || !popupRef.current) return;
+      if (isMobile || !mapRef.current || !popupRef.current || !event.features)
+        return;
 
-      const feature = event.features?.[0];
+      const featuresFiltered = filterInteractiveFeatures(event.features);
+      const feature = featuresFiltered?.[0];
       const map = event.target;
 
       if (!feature?.properties) {
@@ -274,13 +285,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
       );
       if (clickedOnExcludedLayer) return;
 
-      const featuresFiltered = features.filter(
-        (d) =>
-          // ignore entire amazon layer as it covers everything
-          d?.properties?.id !== ENTIRE_AMAZON_AREA_ID &&
-          // ignore layers except the areas one
-          d?.layer?.id === "areas-layer-fill",
-      );
+      const featuresFiltered = filterInteractiveFeatures(features);
       const feature = featuresFiltered[0];
       const id = feature?.properties?.id;
 
