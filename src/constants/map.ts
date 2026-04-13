@@ -1,7 +1,7 @@
 import { scaleSequential } from "d3-scale";
 import { interpolateRgbBasis } from "d3-interpolate";
 
-const DATA_UPDATED_AT = "20260331";
+const DATA_UPDATED_AT = "20260409";
 const DATA_BASE_URL =
   // "/website";
   `${process.env.NEXT_PUBLIC_DATA_URL}/${DATA_UPDATED_AT}`;
@@ -15,52 +15,52 @@ if (!DATA_BASE_URL) {
   );
 }
 
-const SENTINEL2_TEMPORAL = "v1/tiles/sentinel2-temporal-mosaics";
-const SENTINEL2_YEARLY = "v1/tiles/sentinel2-yearly-mosaics";
-const SENTINEL2_SEMIANNUAL = "v1/tiles/sentinel2-semiannual-mosaics";
+// const SENTINEL2_TEMPORAL = "v1/tiles/sentinel2-temporal-mosaics";
+// const SENTINEL2_YEARLY = "v1/tiles/sentinel2-yearly-mosaics";
+// const SENTINEL2_SEMIANNUAL = "v1/tiles/sentinel2-semiannual-mosaics";
 const SENTINEL2_QUARTERLY = "v1/tiles/sentinel2-quarterly-mosaics";
 
 export const MINING_LAYERS = [
-  {
-    yearQuarter: 201800,
-    satelliteEndpoint: SENTINEL2_TEMPORAL,
-    satelliteDates: "2018-01-01/2019-01-01",
-  },
-  {
-    yearQuarter: 201900,
-    satelliteEndpoint: SENTINEL2_TEMPORAL,
-    satelliteDates: "2019-01-01/2020-01-01",
-  },
-  {
-    yearQuarter: 202000,
-    satelliteEndpoint: SENTINEL2_TEMPORAL,
-    satelliteDates: "2020-01-01/2021-01-01",
-  },
-  {
-    yearQuarter: 202100,
-    satelliteEndpoint: SENTINEL2_TEMPORAL,
-    satelliteDates: "2021-01-01/2022-01-01",
-  },
-  {
-    yearQuarter: 202200,
-    satelliteEndpoint: SENTINEL2_TEMPORAL,
-    satelliteDates: "2022-01-01/2023-01-01",
-  },
-  {
-    yearQuarter: 202300,
-    satelliteEndpoint: SENTINEL2_YEARLY,
-    satelliteDates: "2023-01-01/2024-01-01",
-  },
-  {
-    yearQuarter: 202400,
-    satelliteEndpoint: SENTINEL2_YEARLY,
-    satelliteDates: "2024-01-01/2025-01-01",
-  },
-  {
-    yearQuarter: 202502,
-    satelliteEndpoint: SENTINEL2_SEMIANNUAL,
-    satelliteDates: "2025-02-15/2025-08-15",
-  },
+  // {
+  //   yearQuarter: 201800,
+  //   satelliteEndpoint: SENTINEL2_TEMPORAL,
+  //   satelliteDates: "2018-01-01/2019-01-01",
+  // },
+  // {
+  //   yearQuarter: 201900,
+  //   satelliteEndpoint: SENTINEL2_TEMPORAL,
+  //   satelliteDates: "2019-01-01/2020-01-01",
+  // },
+  // {
+  //   yearQuarter: 202000,
+  //   satelliteEndpoint: SENTINEL2_TEMPORAL,
+  //   satelliteDates: "2020-01-01/2021-01-01",
+  // },
+  // {
+  //   yearQuarter: 202100,
+  //   satelliteEndpoint: SENTINEL2_TEMPORAL,
+  //   satelliteDates: "2021-01-01/2022-01-01",
+  // },
+  // {
+  //   yearQuarter: 202200,
+  //   satelliteEndpoint: SENTINEL2_TEMPORAL,
+  //   satelliteDates: "2022-01-01/2023-01-01",
+  // },
+  // {
+  //   yearQuarter: 202300,
+  //   satelliteEndpoint: SENTINEL2_YEARLY,
+  //   satelliteDates: "2023-01-01/2024-01-01",
+  // },
+  // {
+  //   yearQuarter: 202400,
+  //   satelliteEndpoint: SENTINEL2_YEARLY,
+  //   satelliteDates: "2024-01-01/2025-01-01",
+  // },
+  // {
+  //   yearQuarter: 202502,
+  //   satelliteEndpoint: SENTINEL2_SEMIANNUAL,
+  //   satelliteDates: "2025-02-15/2025-08-15",
+  // },
   {
     yearQuarter: 202503,
     satelliteEndpoint: SENTINEL2_QUARTERLY,
