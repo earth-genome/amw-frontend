@@ -15,7 +15,7 @@ if (!DATA_BASE_URL) {
   );
 }
 
-const SENTINEL2_TEMPORAL = "v1/tiles/sentinel2-temporal-mosaics";
+const SENTINEL2_AMW = "v1/tiles/amw-sentinel2-yearly-mosaics";
 const SENTINEL2_YEARLY = "v1/tiles/sentinel2-yearly-mosaics";
 const SENTINEL2_SEMIANNUAL = "v1/tiles/sentinel2-semiannual-mosaics";
 const SENTINEL2_QUARTERLY = "v1/tiles/sentinel2-quarterly-mosaics";
@@ -23,32 +23,32 @@ const SENTINEL2_QUARTERLY = "v1/tiles/sentinel2-quarterly-mosaics";
 export const MINING_LAYERS = [
   {
     yearQuarter: 201800,
-    satelliteEndpoint: SENTINEL2_TEMPORAL,
+    satelliteEndpoint: SENTINEL2_AMW,
     satelliteDates: "2018-01-01/2019-01-01",
   },
   {
     yearQuarter: 201900,
-    satelliteEndpoint: SENTINEL2_TEMPORAL,
+    satelliteEndpoint: SENTINEL2_AMW,
     satelliteDates: "2019-01-01/2020-01-01",
   },
   {
     yearQuarter: 202000,
-    satelliteEndpoint: SENTINEL2_TEMPORAL,
+    satelliteEndpoint: SENTINEL2_AMW,
     satelliteDates: "2020-01-01/2021-01-01",
   },
   {
     yearQuarter: 202100,
-    satelliteEndpoint: SENTINEL2_TEMPORAL,
+    satelliteEndpoint: SENTINEL2_AMW,
     satelliteDates: "2021-01-01/2022-01-01",
   },
   {
     yearQuarter: 202200,
-    satelliteEndpoint: SENTINEL2_TEMPORAL,
+    satelliteEndpoint: SENTINEL2_AMW,
     satelliteDates: "2022-01-01/2023-01-01",
   },
   {
     yearQuarter: 202300,
-    satelliteEndpoint: SENTINEL2_YEARLY,
+    satelliteEndpoint: SENTINEL2_AMW,
     satelliteDates: "2023-01-01/2024-01-01",
   },
   {
