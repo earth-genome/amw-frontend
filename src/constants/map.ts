@@ -16,7 +16,7 @@ if (!DATA_BASE_URL) {
 }
 
 const SENTINEL2_AMW = "v1/tiles/amw-sentinel2-yearly-mosaics";
-const SENTINEL2_YEARLY = "v1/tiles/sentinel2-yearly-mosaics";
+const SENTINEL2_YEARLY = "v1/tiles/sentinel2-yearly-mosaics-v4";
 const SENTINEL2_SEMIANNUAL = "v1/tiles/sentinel2-semiannual-mosaics";
 const SENTINEL2_QUARTERLY = "v1/tiles/sentinel2-quarterly-mosaics";
 
