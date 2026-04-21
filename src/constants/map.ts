@@ -15,60 +15,60 @@ if (!DATA_BASE_URL) {
   );
 }
 
-const SENTINEL2_AMW = "v1/tiles/amw-sentinel2-yearly-mosaics";
-const SENTINEL2_YEARLY = "v1/tiles/sentinel2-yearly-mosaics-v4";
-const SENTINEL2_SEMIANNUAL = "v1/tiles/sentinel2-semiannual-mosaics";
-const SENTINEL2_QUARTERLY = "v1/tiles/sentinel2-quarterly-mosaics";
+const SENTINEL2_AMW_YEARLY = "v1/tiles/amw-sentinel2-yearly-mosaics";
+const SENTINEL2_GLOBAL_YEARLY = "v1/tiles/sentinel2-yearly-mosaics-v4";
+const SENTINEL2_AMW_SEMIANNUAL = "v1/tiles/amw-sentinel2-semiannual-mosaics";
+const SENTINEL2_AMW_QUARTERLY = "v1/tiles/amw-sentinel2-quarterly-mosaics";
 
 export const MINING_LAYERS = [
   {
     yearQuarter: 201800,
-    satelliteEndpoint: SENTINEL2_AMW,
+    satelliteEndpoint: SENTINEL2_AMW_YEARLY,
     satelliteDates: "2018-01-01/2019-01-01",
   },
   {
     yearQuarter: 201900,
-    satelliteEndpoint: SENTINEL2_AMW,
+    satelliteEndpoint: SENTINEL2_AMW_YEARLY,
     satelliteDates: "2019-01-01/2020-01-01",
   },
   {
     yearQuarter: 202000,
-    satelliteEndpoint: SENTINEL2_AMW,
+    satelliteEndpoint: SENTINEL2_AMW_YEARLY,
     satelliteDates: "2020-01-01/2021-01-01",
   },
   {
     yearQuarter: 202100,
-    satelliteEndpoint: SENTINEL2_AMW,
+    satelliteEndpoint: SENTINEL2_AMW_YEARLY,
     satelliteDates: "2021-01-01/2022-01-01",
   },
   {
     yearQuarter: 202200,
-    satelliteEndpoint: SENTINEL2_AMW,
+    satelliteEndpoint: SENTINEL2_AMW_YEARLY,
     satelliteDates: "2022-01-01/2023-01-01",
   },
   {
     yearQuarter: 202300,
-    satelliteEndpoint: SENTINEL2_AMW,
+    satelliteEndpoint: SENTINEL2_AMW_YEARLY,
     satelliteDates: "2023-01-01/2024-01-01",
   },
   {
     yearQuarter: 202400,
-    satelliteEndpoint: SENTINEL2_YEARLY,
+    satelliteEndpoint: SENTINEL2_GLOBAL_YEARLY,
     satelliteDates: "2024-01-01/2025-01-01",
   },
   {
     yearQuarter: 202502,
-    satelliteEndpoint: SENTINEL2_SEMIANNUAL,
+    satelliteEndpoint: SENTINEL2_AMW_SEMIANNUAL,
     satelliteDates: "2025-02-15/2025-08-15",
   },
   {
     yearQuarter: 202503,
-    satelliteEndpoint: SENTINEL2_QUARTERLY,
+    satelliteEndpoint: SENTINEL2_AMW_QUARTERLY,
     satelliteDates: "2025-07-01/2025-10-01",
   },
   {
     yearQuarter: 202504,
-    satelliteEndpoint: SENTINEL2_QUARTERLY,
+    satelliteEndpoint: SENTINEL2_AMW_QUARTERLY,
     satelliteDates: "2025-10-01/2026-01-01",
   },
 ];
