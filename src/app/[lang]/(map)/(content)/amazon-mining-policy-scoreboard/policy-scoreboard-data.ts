@@ -83,6 +83,9 @@ export const getPolicyData = cache(
                     (d: PolicyScoreboardRow) => +d[evalKey] || 0,
                   ),
                   count: rows.length,
+                  categoryScorePct:
+                    d3.sum(rows, (d: PolicyScoreboardRow) => +d[evalKey] || 0) /
+                    rows.length,
                 },
               ];
             }),
@@ -109,30 +112,24 @@ export const getPolicyData = cache(
 
     const byDimension: ByDimension[] = d3
       .flatRollup(
-        scoreboardData,
-        (rows: PolicyScoreboardRow[]): Record<string, DimensionCountryScore> =>
+        byCategory,
+        (rows: ByCategory[]): Record<string, DimensionCountryScore> =>
           Object.fromEntries(
-            countryNames.map((country) => {
-              const englishName = getCountryEnglishName(country);
-              const evalKey =
-                `${englishName}_Evaluation` as keyof PolicyScoreboardRow;
-              const sum = d3.sum(
-                rows,
-                (d: PolicyScoreboardRow) => +d[evalKey] || 0,
-              );
-              const count = rows.length;
-              return [
-                country,
-                {
-                  sum,
-                  count,
-                  dimensionScorePct: round(sum / count, 3),
-                  dimensionScore: round((sum / count) * 5, 2),
-                },
-              ];
-            }),
+            countryNames.map((country) => [
+              country,
+              {
+                dimensionScore: round(
+                  d3.sum(
+                    rows,
+                    (d: ByCategory) =>
+                      d.countries[country]?.categoryScorePct ?? 0,
+                  ),
+                  2,
+                ),
+              },
+            ]),
           ),
-        (d: PolicyScoreboardRow) => d.Dimension,
+        (d: ByCategory) => d.Dimension,
       )
       .map(
         ([dimension, countries]: [
@@ -146,15 +143,8 @@ export const getPolicyData = cache(
 
     const byCountry: ByCountry[] = countryNames.map((country) => ({
       country,
-      overallScorePct: round(
-        d3.mean(
-          byDimension,
-          (d: ByDimension) => d.countries[country].dimensionScorePct,
-        ) ?? 0,
-        3,
-      ),
       overallScore: round(
-        d3.mean(
+        d3.sum(
           byDimension,
           (d: ByDimension) => d.countries[country].dimensionScore,
         ) ?? 0,

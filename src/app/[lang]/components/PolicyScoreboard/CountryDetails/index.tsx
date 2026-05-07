@@ -175,9 +175,7 @@ const CountryDetails = ({
             (category) => {
               const countryScores = category.countries[countryName];
               const percentage =
-                countryScores && countryScores.count > 0
-                  ? countryScores.sum / countryScores.count
-                  : 0;
+                countryScores && countryScores.categoryScorePct;
 
               const localizedCategory = getPolicyCategoryLocalized(
                 category.CategoryID,

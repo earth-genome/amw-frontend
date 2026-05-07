@@ -35,6 +35,18 @@ export interface PolicyScoreboardRow {
   Peru_Evaluation: string;
   Peru_Justification: string;
   Peru_Sources: string;
+  // Guyana
+  Guyana_Evaluation: string;
+  Guyana_Justification: string;
+  Guyana_Sources: string;
+  // Suriname
+  Suriname_Evaluation: string;
+  Suriname_Justification: string;
+  Suriname_Sources: string;
+  // Venezuela
+  Venezuela_Evaluation: string;
+  Venezuela_Justification: string;
+  Venezuela_Sources: string;
 }
 
 // Country configuration
@@ -52,13 +64,11 @@ export type CountryNameKey = `name_${PERMITTED_LANGUAGES}`;
 export interface CategoryCountryScore {
   sum: number;
   count: number;
+  categoryScorePct: number;
 }
 
 // Score data for a country within a dimension
 export interface DimensionCountryScore {
-  sum: number;
-  count: number;
-  dimensionScorePct: number;
   dimensionScore: number;
 }
 
@@ -79,7 +89,6 @@ export interface ByDimension {
 // Aggregated data by country
 export interface ByCountry {
   country: string;
-  overallScorePct: number;
   overallScore: number;
 }
 

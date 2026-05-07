@@ -26,6 +26,7 @@
   padding: 30px 30px 90px 30px;
   max-width: 650px;
   box-sizing: border-box;
+  font-weight: 500;
 }
 .overlay .content h1 {
   font-size: 50px;
