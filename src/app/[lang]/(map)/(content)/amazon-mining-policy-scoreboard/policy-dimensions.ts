@@ -1,3 +1,4 @@
+import { DimensionName } from "@/app/[lang]/(map)/(content)/amazon-mining-policy-scoreboard/types";
 import { PERMITTED_LANGUAGES } from "@/utils/content";
 
 export interface PolicyDimension {
@@ -13,6 +14,13 @@ export interface PolicyDimension {
   categories_es: { title: string; desc: string }[];
   categories_pt: { title: string; desc: string }[];
 }
+
+export const DIMENSION_COLORS: Record<DimensionName, string> = {
+  "I. Legal Frameworks": "#4CAF50",
+  "II. Mining policies": "#2196F3",
+  "III. Investigation and enforcement": "#FF9800",
+};
+export const MAX_VALUE_DIMENSION = 5;
 
 export const POLICY_DIMENSIONS: PolicyDimension[] = [
   {

@@ -6,17 +6,15 @@ import type {
   DimensionName,
   PolicyScoreboardRow,
 } from "@/app/[lang]/(map)/(content)/amazon-mining-policy-scoreboard/types";
-import {
-  DIMENSION_COLORS,
-  MAX_VALUE_DIMENSION,
-} from "@/app/[lang]/components/PolicyScoreboard";
 import StackedBarChart from "@/app/[lang]/components/PolicyScoreboard/StackedBarChart";
 import CategoryQuestionsTable from "@/app/[lang]/components/PolicyScoreboard/CategoryQuestionsTable";
 import { format } from "d3";
 import styles from "./style.module.css";
 import {
+  DIMENSION_COLORS,
   getPolicyDimensionDescriptionLocalized,
   getPolicyDimensionLocalized,
+  MAX_VALUE_DIMENSION,
   POLICY_DIMENSIONS,
 } from "@/app/[lang]/(map)/(content)/amazon-mining-policy-scoreboard/policy-dimensions";
 import { getPolicyCategoryLocalized } from "@/app/[lang]/(map)/(content)/amazon-mining-policy-scoreboard/policy-categories";

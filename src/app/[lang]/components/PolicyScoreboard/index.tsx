@@ -17,14 +17,6 @@ import type {
 import { useParams } from "next/navigation";
 import styles from "./style.module.css";
 import Link from "next/link";
-import { Button, ConfigProvider } from "antd";
-
-export const DIMENSION_COLORS: Record<DimensionName, string> = {
-  "I. Legal Frameworks": "#4CAF50",
-  "II. Mining policies": "#2196F3",
-  "III. Investigation and enforcement": "#FF9800",
-};
-export const MAX_VALUE_DIMENSION = 5;
 
 type PanelSelection =
   | { type: "country"; slug: string; dimensionSlug?: string }
@@ -65,6 +57,7 @@ const PolicyScoreboard = ({
 
   let panelTitle = "";
   let panelContent: React.ReactNode = null;
+  let reportLink = undefined;
 
   if (panelSelection?.type === "country") {
     const country = POLICY_COUNTRIES.find(
@@ -73,6 +66,8 @@ const PolicyScoreboard = ({
     const nameKey = `name_${lang}` as keyof typeof country;
     const countryName = (country?.[nameKey] ?? panelSelection.slug) as string;
     const countryEnglishName = country?.name_en ?? panelSelection.slug;
+    reportLink = `/amazon-mining-policy-scoreboard/reports/${countryEnglishName}_Mining_Policy_Scorecard_${(lang as string).toUpperCase()}.pdf`;
+
     panelTitle = countryName;
     panelContent = (
       <CountryDetails
@@ -109,23 +104,6 @@ const PolicyScoreboard = ({
 
   return (
     <div>
-      <Link href={"#"}>
-        <ConfigProvider
-          theme={{
-            components: {
-              Button: {
-                colorPrimaryHover: "var(--green-dark)",
-              },
-            },
-            token: {
-              colorPrimaryHover: "var(--green-dark)",
-            },
-          }}
-        >
-          <Button>{t?.download_report}</Button>
-        </ConfigProvider>
-      </Link>
-
       <h2 className={styles.sectionTitle}>{t?.country_rankings}</h2>
       <p>{t?.country_rankings_desc}</p>
       <CountriesBarChart
@@ -148,6 +126,8 @@ const PolicyScoreboard = ({
         onClose={handleClose}
         title={panelTitle}
         backLabel={t?.back_to_scoreboard}
+        dictionary={dictionary}
+        reportLink={reportLink}
       >
         {panelContent}
       </DetailPanel>

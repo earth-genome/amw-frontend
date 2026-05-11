@@ -1,4 +1,3 @@
-import { DIMENSION_COLORS } from "@/app/[lang]/components/PolicyScoreboard";
 import StackedBarChart from "@/app/[lang]/components/PolicyScoreboard/StackedBarChart";
 import { POLICY_COUNTRIES } from "@/app/[lang]/(map)/(content)/amazon-mining-policy-scoreboard/policy-countries";
 import type {
@@ -6,7 +5,7 @@ import type {
   DimensionName,
 } from "@/app/[lang]/(map)/(content)/amazon-mining-policy-scoreboard/types";
 import { useParams } from "next/navigation";
-import { getPolicyDimensionLocalized } from "@/app/[lang]/(map)/(content)/amazon-mining-policy-scoreboard/policy-dimensions";
+import { DIMENSION_COLORS, getPolicyDimensionLocalized } from "@/app/[lang]/(map)/(content)/amazon-mining-policy-scoreboard/policy-dimensions";
 import { PERMITTED_LANGUAGES } from "@/utils/content";
 import styles from "./style.module.css";
 

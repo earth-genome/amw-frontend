@@ -1,14 +1,12 @@
-import {
-  DIMENSION_COLORS,
-  MAX_VALUE_DIMENSION,
-} from "@/app/[lang]/components/PolicyScoreboard";
 import StackedBarChart from "@/app/[lang]/components/PolicyScoreboard/StackedBarChart";
 import type {
   ByDimension,
   DimensionCountryScore,
 } from "@/app/[lang]/(map)/(content)/amazon-mining-policy-scoreboard/types";
 import {
+  DIMENSION_COLORS,
   getPolicyDimensionLocalized,
+  MAX_VALUE_DIMENSION,
   POLICY_DIMENSIONS,
 } from "@/app/[lang]/(map)/(content)/amazon-mining-policy-scoreboard/policy-dimensions";
 import { POLICY_COUNTRIES } from "@/app/[lang]/(map)/(content)/amazon-mining-policy-scoreboard/policy-countries";
@@ -64,7 +62,12 @@ const DimensionsBarChart = ({
             {onCountryClick && (
               <button
                 className={styles.dimensionLink}
-                onClick={() => onCountryClick(getCountrySlug(country), getDimensionSlug(dim.Dimension))}
+                onClick={() =>
+                  onCountryClick(
+                    getCountrySlug(country),
+                    getDimensionSlug(dim.Dimension),
+                  )
+                }
               >
                 {t?.details}
               </button>
