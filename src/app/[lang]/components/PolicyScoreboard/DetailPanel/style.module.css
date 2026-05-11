@@ -58,6 +58,8 @@
 .panelContent p {
   line-height: 1.6;
   font-size: 17px;
+  hyphens: auto;
+  text-align: justify;
 }
 
 .closeButton {
