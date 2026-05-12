@@ -49,7 +49,7 @@ export const getPolicyData = cache(
     );
     const csvString = await fs.readFile(filePath, "utf-8");
     const round = (n: number, decimals: number): number =>
-      Math.round(n * 10 ** decimals) / 10 ** decimals;
+      Number(Math.round(Number(n + "e" + decimals)) + "e-" + decimals);
 
     const scoreboardData = d3.csvParse(
       csvString,
