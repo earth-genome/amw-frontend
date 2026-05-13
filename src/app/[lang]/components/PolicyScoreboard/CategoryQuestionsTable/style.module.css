@@ -1,0 +1,124 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-top: 16px;
+}
+
+.title {
+  font-weight: 700;
+  font-size: 16px;
+  margin-bottom: 12px;
+}
+
+.categorySection {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.categoryHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 12px 16px;
+  font-weight: 600;
+  font-size: 14px;
+  border: none;
+  border-bottom: 1px solid #a5a5a5;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.2s;
+  color: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.categoryHeader:hover {
+  filter: brightness(0.95);
+}
+
+.categoryCriteriaCount {
+  font-weight: 400;
+  font-size: 13px;
+  margin-left: 4px;
+}
+
+.toggleIcon {
+  font-size: 18px;
+  font-weight: 400;
+  color: #fff;
+}
+
+.accordionContent {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.3s ease;
+}
+
+.accordionExpanded {
+  grid-template-rows: 1fr;
+}
+
+.accordionInner {
+  overflow: hidden;
+}
+
+.questionRow {
+  padding: 16px;
+  border-bottom: 1px solid #a5a5a5;
+  background: #fff;
+}
+
+.questionRow:last-child {
+  border-bottom: none;
+}
+
+.questionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.questionText {
+  font-size: 16px;
+  font-weight: 500;
+  flex: 1;
+  color: #000;
+}
+
+.evaluation {
+  font-size: 14px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.justification {
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+.sources {
+  font-size: 14px;
+  color: #333;
+  line-height: 1.4;
+  word-break: break-all;
+}
+
+.sourcesItem {
+  margin-top: 8px;
+}
+
+.sourcesLabel {
+  font-weight: 600;
+  margin-right: 4px;
+}
