@@ -9,7 +9,7 @@
   color: #fff;
   overflow-y: auto;
   background-size: cover;
-  opacity: 0.99;
+  opacity: 1;
   background-color: var(--green-dark);
 }
 .overlay::before {
@@ -33,7 +33,7 @@
 }
 .overlay .content p {
   line-height: 1.6;
-  font-size: 17px;
+  font-size: 19px;
   hyphens: auto;
   text-align: justify;
 }

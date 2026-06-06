@@ -71,7 +71,7 @@ const CategoryQuestionsTable = ({
     <div className={styles.container}>
       <div>
         <div className={styles.title}>{t?.categories_details}</div>
-        <div>{t?.categories_details_desc}</div>
+        <div className={styles.subtitle}>{t?.categories_details_desc}</div>
       </div>
       {categories.map((category) => {
         const isExpanded = expandedCategory === category;

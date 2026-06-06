@@ -30,7 +30,7 @@ const Nav: React.FC<NavProps> = ({ children, dictionary }) => {
   // eslint-disable-next-line no-unused-vars
   const { menuOpen, setMenuOpen } = useMenu();
   const menuRef = useRef<HTMLUListElement>(null); // Ref for the menu to animate
-  const isRootPath = /^\/(en|es|pt)?\/?$/.test(pathname);
+  // const isRootPath = /^\/(en|es|pt)?\/?$/.test(pathname);
 
   const newsletterLink = process.env.NEXT_PUBLIC_NEWSLETTER_LINK;
 
@@ -111,18 +111,16 @@ const Nav: React.FC<NavProps> = ({ children, dictionary }) => {
             </Link>
           )}
 
-          {isRootPath && (
-            <Link
-              className="menu-link"
-              href={`/${locale}/about`}
-              onClick={() => {
-                setShowMenu(false);
-                setMenuOpen(false);
-              }}
-            >
-              {dictionary.menu.about_amw}
-            </Link>
-          )}
+          <Link
+            className="menu-link"
+            href={`/${locale}/amazon-mining-policy-scoreboard`}
+            onClick={() => {
+              setShowMenu(false);
+              setMenuOpen(false);
+            }}
+          >
+            {dictionary.menu.policy_scoreboard_short}
+          </Link>
         </>
       )}
 

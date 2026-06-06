@@ -217,7 +217,7 @@ const CountryDetails = ({
                   showMaxValue={true}
                   showLegend={false}
                 />
-                <div style={{ lineHeight: 1.6, marginTop: 12 }}>
+                <p>
                   {countryName}
                   {t?.country_dimension_score_desc_1}
                   <strong>
@@ -228,7 +228,7 @@ const CountryDetails = ({
                     {5}
                   </strong>
                   {t?.country_dimension_score_desc_4}
-                </div>
+                </p>
                 {dimensionDescriptionLocalized.map((d) => (
                   <p key={d}>{d}</p>
                 ))}

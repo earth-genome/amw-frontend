@@ -7,8 +7,14 @@
 
 .title {
   font-weight: 700;
-  font-size: 16px;
+  font-size: 17px;
   margin-bottom: 12px;
+}
+
+.subtitle {
+  font-weight: 500;
+  font-size: 17px;
+  line-height: 1.6;
 }
 
 .categorySection {
@@ -24,7 +30,7 @@
   width: 100%;
   padding: 12px 16px;
   font-weight: 600;
-  font-size: 14px;
+  font-size: 15px;
   border: none;
   border-bottom: 1px solid #a5a5a5;
   border-radius: 8px;
@@ -93,7 +99,7 @@
 }
 
 .evaluation {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   padding: 4px 12px;
   border-radius: 4px;
@@ -101,14 +107,14 @@
 }
 
 .justification {
-  font-size: 14px;
+  font-size: 15px;
   color: #333;
   margin-bottom: 8px;
   line-height: 1.5;
 }
 
 .sources {
-  font-size: 14px;
+  font-size: 15px;
   color: #333;
   line-height: 1.4;
   word-break: break-all;
