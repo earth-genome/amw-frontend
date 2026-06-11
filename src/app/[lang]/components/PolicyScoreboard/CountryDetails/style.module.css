@@ -4,6 +4,13 @@
   gap: 48px;
 }
 
+.countryDescription {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  line-height: 1.6;
+}
+
 .countryScoreSection {
   margin-bottom: 16px;
 }

@@ -12,15 +12,16 @@ import { format } from "d3";
 import styles from "./style.module.css";
 import {
   DIMENSION_COLORS,
-  getPolicyDimensionDescriptionLocalized,
   getPolicyDimensionLocalized,
+  getPolicyDimensionOverviewLocalized,
   MAX_VALUE_DIMENSION,
   POLICY_DIMENSIONS,
 } from "@/app/[lang]/(map)/(content)/amazon-mining-policy-scoreboard/policy-dimensions";
 import { getPolicyCategoryLocalized } from "@/app/[lang]/(map)/(content)/amazon-mining-policy-scoreboard/policy-categories";
+import { getPolicyCountryDescriptionLocalized } from "@/app/[lang]/(map)/(content)/amazon-mining-policy-scoreboard/policy-countries";
 import { useParams } from "next/navigation";
 import { useEffect } from "react";
-import { PERMITTED_LANGUAGES } from "@/utils/content";
+import { getMarkdownText, PERMITTED_LANGUAGES } from "@/utils/content";
 
 interface CountryDetailsProps {
   byCategory: ByCategory[];
@@ -64,6 +65,12 @@ const CountryDetails = ({
   }, [scrollToDimensionSlug]);
 
   const t = dictionary?.policy_scoreboard;
+
+  const countryDescription = getPolicyCountryDescriptionLocalized(
+    countryEnglishName,
+    lang as PERMITTED_LANGUAGES,
+  );
+
   // Calculate overall country score
   const getCountryTotal = (): number =>
     byDimension.reduce(
@@ -106,6 +113,12 @@ const CountryDetails = ({
 
   return (
     <div className={styles.container}>
+      {countryDescription && (
+        <div
+          className={styles.countryDescription}
+          dangerouslySetInnerHTML={getMarkdownText(countryDescription)}
+        />
+      )}
       <div className={styles.countryScoreSection}>
         <div>
           <h2 className={styles.sectionTitle}>{t?.country_assessment_score}</h2>
@@ -146,8 +159,8 @@ const CountryDetails = ({
             dimensionKey,
             lang as PERMITTED_LANGUAGES,
           );
-          const dimensionDescriptionLocalized =
-            getPolicyDimensionDescriptionLocalized(
+          const dimensionOverviewLocalized =
+            getPolicyDimensionOverviewLocalized(
               dimensionKey,
               lang as PERMITTED_LANGUAGES,
             );
@@ -229,9 +242,13 @@ const CountryDetails = ({
                   </strong>
                   {t?.country_dimension_score_desc_4}
                 </p>
-                {dimensionDescriptionLocalized.map((d) => (
-                  <p key={d}>{d}</p>
-                ))}
+                {dimensionOverviewLocalized && (
+                  <div
+                    dangerouslySetInnerHTML={getMarkdownText(
+                      dimensionOverviewLocalized,
+                    )}
+                  />
+                )}
               </div>
               <div>
                 <div className={styles.categoryChartsTitle}>
