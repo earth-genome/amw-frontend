@@ -126,7 +126,12 @@ const PolicyScoreboard = ({
             }}
           >
             <Button
-              style={{ marginBottom: "12px", marginTop: "6px" }}
+              style={{
+                marginBottom: "12px",
+                marginTop: "6px",
+                whiteSpace: "normal",
+                height: "auto",
+              }}
               size="large"
             >
               {dictionary?.policy_scoreboard?.read_regional_report}{" "}
