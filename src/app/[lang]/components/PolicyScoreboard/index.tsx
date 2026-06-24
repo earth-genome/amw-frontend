@@ -17,6 +17,8 @@ import type {
 import { useParams } from "next/navigation";
 import styles from "./style.module.css";
 import Link from "next/link";
+import { Button, ConfigProvider } from "antd";
+import { LinkOutlined } from "@ant-design/icons";
 
 type PanelSelection =
   | { type: "country"; slug: string; dimensionSlug?: string }
@@ -58,6 +60,7 @@ const PolicyScoreboard = ({
   let panelTitle = "";
   let panelContent: React.ReactNode = null;
   let reportLink = undefined;
+  let regionalReportLink = `/amazon-mining-policy-scoreboard/reports/regional/Amazon_Mining_Policy_Scoreboard_Takeways_${(lang as string).toUpperCase()}.pdf`;
 
   if (panelSelection?.type === "country") {
     const country = POLICY_COUNTRIES.find(
@@ -104,6 +107,34 @@ const PolicyScoreboard = ({
 
   return (
     <div>
+      {regionalReportLink && (
+        <Link
+          href={regionalReportLink}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <ConfigProvider
+            theme={{
+              components: {
+                Button: {
+                  colorPrimaryHover: "var(--green-dark)",
+                },
+              },
+              token: {
+                colorPrimaryHover: "var(--green-dark)",
+              },
+            }}
+          >
+            <Button
+              style={{ marginBottom: "12px", marginTop: "6px" }}
+              size="large"
+            >
+              {dictionary?.policy_scoreboard?.read_regional_report}{" "}
+              <LinkOutlined style={{ color: "var(--green-dark)" }} />
+            </Button>
+          </ConfigProvider>
+        </Link>
+      )}
       <h2 className={styles.sectionTitle}>{t?.country_rankings}</h2>
       <p>{t?.country_rankings_desc}</p>
       <CountriesBarChart
