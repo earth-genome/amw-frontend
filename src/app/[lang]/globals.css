@@ -6,7 +6,7 @@
   --green-light: #22b573;
   --green-normal: #006837;
   --top-navbar-height: 28px;
-  --body-text-font: serif;
+  --body-text-font: "Source Sans 3", sans-serif;
 }
 
 body {
