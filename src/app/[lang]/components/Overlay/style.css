@@ -12,6 +12,11 @@
   background-size: cover;
   opacity: 0.99;
 }
+
+.overlay p {
+  font-family: var(--body-text-font);
+}
+
 .overlay .content {
   width: 55%;
   position: absolute;

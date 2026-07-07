@@ -12,9 +12,7 @@
 }
 
 .subtitle {
-  font-weight: 500;
-  font-size: 17px;
-  line-height: 1.6;
+  margin-bottom: 0;
 }
 
 .categorySection {
@@ -74,6 +72,8 @@
 }
 
 .questionRow {
+  font-family: var(--body-text-font);
+
   padding: 16px;
   border-bottom: 1px solid #a5a5a5;
   background: #fff;
