@@ -4,6 +4,13 @@
   gap: 48px;
 }
 
+.countryDescription {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  line-height: 1.6;
+}
+
 .countryScoreSection {
   margin-bottom: 16px;
 }
@@ -38,7 +45,7 @@
 
 .categoryChartsTitle {
   font-weight: 700;
-  font-size: 16px;
+  font-size: 19px;
   margin-bottom: 18px;
 }
 

@@ -12,6 +12,11 @@
   background-size: cover;
   opacity: 0.99;
 }
+
+.overlay p {
+  font-family: var(--body-text-font);
+}
+
 .overlay .content {
   width: 55%;
   position: absolute;
@@ -35,7 +40,7 @@
 }
 .overlay .content p {
   line-height: 1.6;
-  font-size: 17px;
+  font-size: 19px;
 }
 .overlay .content h2 {
   border-bottom: 3px solid #22b573;

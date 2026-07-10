@@ -11,6 +11,7 @@
     "case_studies": "Estudios de caso",
     "data_code_and_methods": "Datos, código y métodos",
     "policy_scoreboard": "Rastreador de políticas mineras",
+    "policy_scoreboard_short": "Rastreador de políticas",
     "faq": "FAQ",
     "contact": "Contacto"
   },
@@ -137,6 +138,7 @@
     "categories_details_desc": "Cada categoría se puntúa utilizando los criterios que se describen a continuación. Las descripciones pueden estar en el idioma del material fuente.",
     "attribution_intro": "Esta plataforma y análisis es liderada por",
     "contact_info": "Información de contacto disponible en",
+    "read_regional_report": "Lee el análisis de conclusiones y recomendaciones regionales",
     "download_report": "Descargar informe en formato PDF"
   }
 }

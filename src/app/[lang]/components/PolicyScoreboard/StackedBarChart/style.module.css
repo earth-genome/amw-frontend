@@ -21,7 +21,7 @@
 
 .label {
   width: calc(100% - 80px);
-  font-size: 16;
+  font-size: 16px;
   font-weight: 700;
   display: flex;
   justify-content: space-between;
@@ -47,12 +47,12 @@
 }
 
 .compact .label {
-  font-size: 13px;
+  font-size: 16px;
   font-weight: 500;
 }
 
 .compact .value {
-  font-size: 12px;
+  font-size: 15px;
 }
 
 .barStack {
@@ -67,7 +67,7 @@
 
 .value {
   width: 70px;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 500;
   display: flex;
   justify-content: space-evenly;

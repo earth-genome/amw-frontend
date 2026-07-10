@@ -30,6 +30,10 @@
   font-weight: 500;
 }
 
+.panel p {
+  font-family: var(--body-text-font);
+}
+
 @media (min-width: 600px) {
   .panel {
     min-width: 600px;
@@ -57,7 +61,7 @@
 
 .panelContent p {
   line-height: 1.6;
-  font-size: 17px;
+  font-size: 19px;
   hyphens: auto;
   text-align: justify;
 }

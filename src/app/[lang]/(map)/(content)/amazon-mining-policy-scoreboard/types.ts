@@ -55,6 +55,9 @@ export interface PolicyCountry {
   name_en: string;
   name_es: string;
   name_pt: string;
+  desc_en: string;
+  desc_es: string;
+  desc_pt: string;
 }
 
 // Helper type to get country name key based on language

@@ -9,8 +9,11 @@
   color: #fff;
   overflow-y: auto;
   background-size: cover;
-  opacity: 0.99;
+  opacity: 1;
   background-color: var(--green-dark);
+}
+.overlay p {
+  font-family: var(--body-text-font);
 }
 .overlay::before {
   content: "";
@@ -26,14 +29,13 @@
   padding: 30px 30px 90px 30px;
   max-width: 650px;
   box-sizing: border-box;
-  font-weight: 500;
 }
 .overlay .content h1 {
   font-size: 50px;
 }
 .overlay .content p {
   line-height: 1.6;
-  font-size: 17px;
+  font-size: 19px;
   hyphens: auto;
   text-align: justify;
 }

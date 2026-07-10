@@ -12,7 +12,7 @@ import styles from "./style.module.css";
 import DimensionsBarChart from "../DimensionsBarChart";
 import { getPolicyCategoryLocalized } from "@/app/[lang]/(map)/(content)/amazon-mining-policy-scoreboard/policy-categories";
 import { useParams } from "next/navigation";
-import { PERMITTED_LANGUAGES } from "@/utils/content";
+import { getMarkdownText, PERMITTED_LANGUAGES } from "@/utils/content";
 import {
   DIMENSION_COLORS,
   getPolicyDimensionCategoriesLocalized,
@@ -47,6 +47,15 @@ const DimensionDetails = ({
     (c) => c.Dimension === dimensionKey,
   );
 
+  const dimensionDescriptionLocalized = getPolicyDimensionDescriptionLocalized(
+    dimensionKey,
+    lang as PERMITTED_LANGUAGES,
+  );
+  const dimensionCategoriesLocalized = getPolicyDimensionCategoriesLocalized(
+    dimensionKey,
+    lang as PERMITTED_LANGUAGES,
+  );
+
   // Build per-category country comparison bar charts
   const categoryCharts = dimensionCategories.map((category) => {
     const items = countries
@@ -77,37 +86,22 @@ const DimensionDetails = ({
       category.CategoryID,
       lang as PERMITTED_LANGUAGES,
     );
+    const localizedDescription = dimensionCategoriesLocalized.find(
+      (c) => c.id === category.CategoryID,
+    )?.desc;
 
     return {
       categoryLabel: `${category.CategoryID}. ${localizedCategory}`,
+      description: localizedDescription ?? "",
       items,
     };
   });
 
-  const dimensionDescriptionLocalized = getPolicyDimensionDescriptionLocalized(
-    dimensionKey,
-    lang as PERMITTED_LANGUAGES,
-  );
-  const dimensionCategoriesLocalized = getPolicyDimensionCategoriesLocalized(
-    dimensionKey,
-    lang as PERMITTED_LANGUAGES,
-  );
-
   return (
     <div className={styles.container}>
-      <div>
-        {dimensionDescriptionLocalized.map((d) => (
-          <p key={d}>{d}</p>
-        ))}
-        <ul>
-          {dimensionCategoriesLocalized.map((d) => (
-            <li key={d.title} className={styles.categoryListItem}>
-              <strong>{d.title}</strong>
-              {d.desc}
-            </li>
-          ))}
-        </ul>
-      </div>
+      <div
+        dangerouslySetInnerHTML={getMarkdownText(dimensionDescriptionLocalized)}
+      />
       <div className={styles.section}>
         <h2 className={styles.sectionTitle}>
           {dimensionName} - {t?.country_comparison}
@@ -127,6 +121,12 @@ const DimensionDetails = ({
         {categoryCharts.map((chart) => (
           <div key={chart.categoryLabel}>
             <h3 className={styles.categoryTitle}>{chart.categoryLabel}</h3>
+            {chart.description && (
+              <div
+                className={styles.categoryDescription}
+                dangerouslySetInnerHTML={getMarkdownText(chart.description)}
+              />
+            )}
             <div className={styles.categorySection}>
               <StackedBarChart
                 items={chart.items}
