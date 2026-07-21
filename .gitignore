@@ -43,5 +43,8 @@ next-env.d.ts
 public/test-data/
 public/website/
 
+# csv
+.~lock.*
+
 # Sentry Config File
 .env.sentry-build-plugin

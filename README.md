@@ -51,3 +51,7 @@ Then, add a new layer to `MINING_LAYERS`, in `src/constants/map.ts`. Remember to
 - `satelliteDates`: the dates part of the satellite imagery url, in the format: `YYYY-MM-DD/YYYY-MM-DD` (start date/end date)
 
 The `MINING_VECTOR_TILES_LAYER` and `MINING_VECTOR_TILES_URL` variables should stay the same, and they should point to the same .pmtiles file on S3, now updated.
+
+## Updating Mining Policy Scoreboard data
+
+Process the source xlsx file through the `yarn copy-scoreboard PATH_TO_FILE.xlsx` command to output the required CSVs.

@@ -1,5 +1,7 @@
 .partners {
   padding: 5px 5px 5px 15px;
+  width: fit-content;
+  pointer-events: auto;
 }
 .partners a {
   margin: 0 20px 0 0;

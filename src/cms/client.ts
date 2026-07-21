@@ -58,6 +58,7 @@ export const apiFetcher = async <T>(
     {
       method: "GET",
       headers: requestHeaders,
+      cache: "no-store",
     }
   );
 
