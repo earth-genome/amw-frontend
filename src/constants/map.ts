@@ -71,17 +71,15 @@ export const MINING_LAYERS = [
     satelliteEndpoint: SENTINEL2_AMW_QUARTERLY,
     satelliteDates: "2025-10-01/2026-01-01",
   },
-  // FIXME:
   {
     yearQuarter: 202601,
     satelliteEndpoint: SENTINEL2_AMW_QUARTERLY,
-    satelliteDates: "2025-10-01/2026-01-01",
+    satelliteDates: "2026-01-01/2026-04-01",
   },
-  // FIXME:
   {
     yearQuarter: 202602,
     satelliteEndpoint: SENTINEL2_AMW_QUARTERLY,
-    satelliteDates: "2025-10-01/2026-01-01",
+    satelliteDates: "2026-04-01/2026-07-01",
   },
 ];
 
