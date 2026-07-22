@@ -5,16 +5,8 @@ import { PERMITTED_LANGUAGES } from "@/utils/content";
 import { useEffect } from "react";
 import useSWR from "swr";
 
-// route any upstream URL through our same-origin API proxy so the browser
-// never makes a cross-origin request (avoids the CloudFront CORS/preflight issue)
-const proxied = (url: string | null) =>
-  url ? `/api/proxy?src=${encodeURIComponent(url)}` : null;
-
-const fetcher = async (...args: Parameters<typeof fetch>) => {
-  const res = await fetch(...args);
-  if (!res.ok) throw new Error(`Request failed: ${res.status}`);
-  return res.json();
-};
+const fetcher = (...args: Parameters<typeof fetch>) =>
+  fetch(...args).then((res) => res.json());
 
 interface Props {
   state: IState;
@@ -36,20 +28,17 @@ const useAreasData = ({ state, dispatch, lang }: Props) => {
   const areasTimeseriesDataUrl =
     selectedAreaType && isQueryChecked ? selectedAreaType.timeseriesUrl : null;
 
-  // build the real upstream URL first (with locale if needed), then proxy it
-  const areasDataKey = proxied(
-    areasDataUrl
-      ? selectedAreaType?.useLocale
-        ? `${areasDataUrl}?locale=${lang}`
-        : areasDataUrl
-      : null,
-  );
-
   const {
     data: areasData,
     error: areasDataError,
     isLoading: areasDataIsLoading,
-  } = useSWR<AreasData>(areasDataKey, fetcher, swrConfig);
+  } = useSWR<AreasData>(
+    selectedAreaType?.useLocale
+      ? `${areasDataUrl}?locale=${lang}`
+      : areasDataUrl,
+    fetcher,
+    swrConfig,
+  );
 
   useEffect(() => {
     if (areasDataIsLoading || areasDataError) {
@@ -98,7 +87,7 @@ const useAreasData = ({ state, dispatch, lang }: Props) => {
     data: areasTimeseriesData,
     error: areasTimeseriesDataError,
     isLoading: areasTimeseriesDataIsLoading,
-  } = useSWR<AreasData>(proxied(areasTimeseriesDataUrl), fetcher, swrConfig);
+  } = useSWR<AreasData>(areasTimeseriesDataUrl, fetcher, swrConfig);
 
   useEffect(() => {
     if (areasTimeseriesDataIsLoading || areasTimeseriesDataError) {
