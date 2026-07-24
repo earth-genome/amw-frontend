@@ -102,10 +102,5 @@ export const formatLayerYear = (year: number): string => {
     return yearStr;
   }
 
-  // HACK: 2025Q2 also covers Q1
-  if (year === 202502 || year === 202501) {
-    return `${yearStr} Q1-Q2`;
-  }
-
   return `${yearStr} Q${quarter}`;
 };

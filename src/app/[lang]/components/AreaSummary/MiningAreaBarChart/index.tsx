@@ -51,7 +51,7 @@ const MiningAreaBarChart = ({
       ...d,
       area_ha_significant: numberToSignificantDigits(
         d.intersected_area_ha_cumulative,
-        getAreaSignificantDigits(d.intersected_area_ha_cumulative)
+        getAreaSignificantDigits(d.intersected_area_ha_cumulative),
       ),
     }));
 
@@ -70,7 +70,7 @@ const MiningAreaBarChart = ({
 
   // group by year
   const groupedData = d3.groups(dataProcessed, (d) =>
-    String(d.admin_year).slice(0, 4)
+    String(d.admin_year).slice(0, 4),
   );
 
   // X scale for the years only, not quarters
@@ -95,7 +95,7 @@ const MiningAreaBarChart = ({
     formatNumber(
       displayAreaInUnits(value, areaUnits),
       lang,
-      getAreaSignificantDigits(value)
+      getAreaSignificantDigits(value),
     );
 
   const fullBarWidth = outerXScale.bandwidth();
@@ -153,7 +153,7 @@ const MiningAreaBarChart = ({
               const sortedEntries = entries.sort(
                 (a, b) =>
                   Number(String(a.admin_year).slice(4)) -
-                  Number(String(b.admin_year).slice(4))
+                  Number(String(b.admin_year).slice(4)),
               );
 
               return (
@@ -161,18 +161,12 @@ const MiningAreaBarChart = ({
                   {sortedEntries.map((d, _i) => {
                     const suffix = String(d.admin_year).slice(4);
                     const isQuarter = suffix !== "00";
-                    let barWidth;
                     let x = x0;
 
-                    // HACK: make 2025 Q2 bar cover 2025 Q1-Q2
-                    if (d.admin_year === 202502) {
-                      barWidth = fullBarWidth / 2;
-                    } else {
-                      barWidth = isQuarter ? quarterBarWidth : fullBarWidth;
-                      if (isQuarter) {
-                        const quarterIndex = Number(suffix) - 1; // 01 → 0, 02 → 1, etc.
-                        x += quarterIndex * quarterBarWidth;
-                      }
+                    const barWidth = isQuarter ? quarterBarWidth : fullBarWidth;
+                    if (isQuarter) {
+                      const quarterIndex = Number(suffix) - 1; // 01 → 0, 02 → 1, etc.
+                      x += quarterIndex * quarterBarWidth;
                     }
 
                     const areaVal = d.area_ha_significant;
