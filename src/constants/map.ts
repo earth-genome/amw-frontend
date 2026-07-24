@@ -17,7 +17,7 @@ if (!DATA_BASE_URL) {
 
 const SENTINEL2_AMW_YEARLY = "v1/tiles/amw-sentinel2-yearly-mosaics";
 const SENTINEL2_GLOBAL_YEARLY = "v1/tiles/sentinel2-yearly-mosaics-v4";
-const SENTINEL2_AMW_SEMIANNUAL = "v1/tiles/amw-sentinel2-semiannual-mosaics";
+// const SENTINEL2_AMW_SEMIANNUAL = "v1/tiles/amw-sentinel2-semiannual-mosaics";
 const SENTINEL2_AMW_QUARTERLY = "v1/tiles/amw-sentinel2-quarterly-mosaics";
 
 export const MINING_LAYERS = [
