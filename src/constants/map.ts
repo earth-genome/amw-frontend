@@ -1,7 +1,7 @@
 import { scaleSequential } from "d3-scale";
 import { interpolateRgbBasis } from "d3-interpolate";
 
-const DATA_UPDATED_AT = "20260331";
+const DATA_UPDATED_AT = "20260724";
 const DATA_BASE_URL =
   // "/website";
   `${process.env.NEXT_PUBLIC_DATA_URL}/${DATA_UPDATED_AT}`;
@@ -57,6 +57,11 @@ export const MINING_LAYERS = [
     satelliteDates: "2024-01-01/2025-01-01",
   },
   {
+    yearQuarter: 202501,
+    satelliteEndpoint: SENTINEL2_AMW_SEMIANNUAL,
+    satelliteDates: "2025-02-15/2025-08-15",
+  },
+  {
     yearQuarter: 202502,
     satelliteEndpoint: SENTINEL2_AMW_SEMIANNUAL,
     satelliteDates: "2025-02-15/2025-08-15",
@@ -70,6 +75,16 @@ export const MINING_LAYERS = [
     yearQuarter: 202504,
     satelliteEndpoint: SENTINEL2_AMW_QUARTERLY,
     satelliteDates: "2025-10-01/2026-01-01",
+  },
+  {
+    yearQuarter: 202601,
+    satelliteEndpoint: SENTINEL2_AMW_QUARTERLY,
+    satelliteDates: "2026-01-01/2026-04-01",
+  },
+  {
+    yearQuarter: 202602,
+    satelliteEndpoint: SENTINEL2_AMW_QUARTERLY,
+    satelliteDates: "2026-04-01/2026-07-01",
   },
 ];
 
