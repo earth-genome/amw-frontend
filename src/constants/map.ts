@@ -58,13 +58,13 @@ export const MINING_LAYERS = [
   },
   {
     yearQuarter: 202501,
-    satelliteEndpoint: SENTINEL2_AMW_SEMIANNUAL,
-    satelliteDates: "2025-02-15/2025-08-15",
+    satelliteEndpoint: SENTINEL2_AMW_QUARTERLY,
+    satelliteDates: "2025-01-01/2025-04-01",
   },
   {
     yearQuarter: 202502,
-    satelliteEndpoint: SENTINEL2_AMW_SEMIANNUAL,
-    satelliteDates: "2025-02-15/2025-08-15",
+    satelliteEndpoint: SENTINEL2_AMW_QUARTERLY,
+    satelliteDates: "2025-04-01/2025-07-01",
   },
   {
     yearQuarter: 202503,
