@@ -51,7 +51,7 @@ const MiningAreaBarChart = ({
       ...d,
       area_ha_significant: numberToSignificantDigits(
         d.intersected_area_ha_cumulative,
-        getAreaSignificantDigits(d.intersected_area_ha_cumulative),
+        getAreaSignificantDigits(d.intersected_area_ha_cumulative, 2),
       ),
     }));
 

@@ -276,10 +276,10 @@ export const ILLEGALITY_COLORS = {
 
 export type PERMITTED_ILLEGALITY_KEYS = keyof typeof ILLEGALITY_KEYS;
 
-export const getAreaSignificantDigits = (number: number) => {
-  if (number < 10) return 1;
-  if (number < 1000) return 2;
-  return 3;
+export const getAreaSignificantDigits = (number: number, base = 1) => {
+  if (number < 10) return base;
+  if (number < 1000) return base + 1;
+  return base + 2;
 };
 
 export const ECONOMIC_COST_SIGNIFICANT_DIGITS = 2;
