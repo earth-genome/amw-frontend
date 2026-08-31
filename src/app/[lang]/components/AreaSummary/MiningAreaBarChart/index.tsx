@@ -5,12 +5,12 @@ import useChartDimensions from "@/hooks/useChartDimensions";
 import {
   displayAreaInUnits,
   formatLayerYear,
-  formatNumber,
+  formatAreaNumber,
   numberToSignificantDigits,
 } from "@/utils/content";
 import { Context } from "@/lib/Store";
 import styles from "./styles.module.css";
-import { getAreaSignificantDigits } from "@/constants/map";
+import { AREA_SIGNIFICANT_DIGITS } from "@/constants/map";
 
 interface MiningAreaBarChartProps {
   dictionary: { [key: string]: any };
@@ -51,7 +51,7 @@ const MiningAreaBarChart = ({
       ...d,
       area_ha_significant: numberToSignificantDigits(
         d.intersected_area_ha_cumulative,
-        getAreaSignificantDigits(d.intersected_area_ha_cumulative),
+        AREA_SIGNIFICANT_DIGITS,
       ),
     }));
 
@@ -92,10 +92,10 @@ const MiningAreaBarChart = ({
 
   const yTicks = yScale.ticks(2);
   const valueFormat = (value: number) =>
-    formatNumber(
+    formatAreaNumber(
       displayAreaInUnits(value, areaUnits),
       lang,
-      getAreaSignificantDigits(value),
+      AREA_SIGNIFICANT_DIGITS,
     );
 
   const fullBarWidth = outerXScale.bandwidth();

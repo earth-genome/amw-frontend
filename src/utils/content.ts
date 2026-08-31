@@ -43,7 +43,7 @@ export const numberToSignificantDigits = (
   significantDigits: number,
 ) => parseFloat(number.toPrecision(significantDigits));
 
-export const formatNumber = (
+export const formatAreaNumber = (
   number: number,
   language: string,
   significantDigits: number,
@@ -66,7 +66,8 @@ export const formatNumber = (
     return formatter(numberSignificantDigits) + "M";
   }
 
-  const formatString = `,.${significantDigits}~s`;
+  // If number is < 10k, display as ",d", else use significant digits
+  const formatString = number < 10000 ? ",d" : `,.${significantDigits}~s`;
   const formatter = locale.format(formatString);
   return formatter(number || 0);
 };

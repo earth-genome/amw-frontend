@@ -5,7 +5,7 @@ import { Context } from "@/lib/Store";
 import {
   displayAreaInUnits,
   formatLayerYear,
-  formatNumber,
+  formatAreaNumber,
 } from "@/utils/content";
 import AreaSummaryDetails, {
   IllegalityAreaData,
@@ -13,9 +13,9 @@ import AreaSummaryDetails, {
 import { CloseCircleFilled } from "@ant-design/icons";
 import useMiningCalculator from "@/hooks/useMiningCalculator";
 import {
+  AREA_SIGNIFICANT_DIGITS,
   ECONOMIC_COST_SIGNIFICANT_DIGITS,
   ENTIRE_AMAZON_AREA_ID,
-  getAreaSignificantDigits,
 } from "@/constants/map";
 
 interface AreaProps {
@@ -120,10 +120,10 @@ const AreaSummary: React.FC<AreaProps> = ({
         </div>
         <div className={style.areaKm}>
           {hasAffectedArea
-            ? `${formatNumber(
+            ? `${formatAreaNumber(
                 displayAreaInUnits(affectedAreaHa, areaUnits),
                 lang,
-                getAreaSignificantDigits(affectedAreaHa),
+                AREA_SIGNIFICANT_DIGITS,
               )} ${dictionary?.map_ui?.[`${areaUnits}Abbrev`] ?? ""}`
             : dictionary.map_ui.no_mining}
         </div>
@@ -135,7 +135,7 @@ const AreaSummary: React.FC<AreaProps> = ({
             hideMiningCalculator={hideMiningCalculator}
             economicCost={
               economicCost
-                ? formatNumber(
+                ? formatAreaNumber(
                     economicCost,
                     lang,
                     ECONOMIC_COST_SIGNIFICANT_DIGITS,
