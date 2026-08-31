@@ -276,12 +276,6 @@ export const ILLEGALITY_COLORS = {
 
 export type PERMITTED_ILLEGALITY_KEYS = keyof typeof ILLEGALITY_KEYS;
 
-export const getAreaSignificantDigits = (number: number, base = 1) => {
-  if (number < 10) return base;
-  if (number < 1000) return base + 1;
-  return base + 2;
-};
-
 export const ECONOMIC_COST_SIGNIFICANT_DIGITS = 2;
 
 export const ENTIRE_AMAZON_AREA_ID = "AMAZ";
@@ -289,3 +283,5 @@ export const ENTIRE_AMAZON_AREA_ID = "AMAZ";
 // HACK: hide two specific areas, Raposa Serra do Sol IT and Apolobamba PA, because of data issues
 // as reported by ACA
 export const AREA_IDS_TO_HIDE = ["BOAP-0405_0", "BR37901_0"];
+
+export const AREA_SIGNIFICANT_DIGITS = 4;
