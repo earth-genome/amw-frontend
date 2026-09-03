@@ -55,8 +55,10 @@ export const formatAreaNumber = (
   // If number is <1, display it "<1"
   if (number < 1 && number > 0) return `<1`;
 
-  // If number is >= 1 billion, format as millions instead of using the "giga" / "G" from d3 format
-  if (Math.abs(number) >= 1_000_000_000) {
+  // If number is >= 1 billion, format as millions instead of using the "giga" / "G" from d3 format.
+  // Compare the value rounded to significantDigits: the d3 s-formatter below rounds too, so a value
+  // just under 1e9 (e.g. 997,000,000) would otherwise be bumped up into the "G" prefix this avoids.
+  if (Math.abs(numberToSignificantDigits(number, significantDigits)) >= 1_000_000_000) {
     const formatter = locale.format(",.0~f");
     const numberInMillions = number / 1_000_000;
     const numberSignificantDigits = numberToSignificantDigits(
