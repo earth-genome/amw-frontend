@@ -54,6 +54,9 @@
   color: rgb(30, 195, 99);
   text-decoration: none;
 }
+.main-menu li {
+  margin-bottom: 5px;
+}
 .menu-lang {
   text-decoration: none;
   text-transform: uppercase;
