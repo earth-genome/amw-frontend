@@ -47,6 +47,11 @@ const Nav: React.FC<NavProps> = ({ children, dictionary }) => {
       href: `/${locale}/${ROUTES["policy-scoreboard"].url}`,
       label: dictionary.menu.policy_scoreboard,
     },
+    {
+      href: `https://panorama.amazonminingwatch.org`,
+      label: dictionary.menu.panorama,
+      isExternal: true,
+    },
     { href: `/${locale}/faq`, label: dictionary.menu.faq },
     { href: `/${locale}/contact`, label: dictionary.menu.contact },
   ];
@@ -152,7 +157,7 @@ const Nav: React.FC<NavProps> = ({ children, dictionary }) => {
       </a>
 
       {showMenu && (
-        <Overlay maxWidth={800} widthPct={"100%"}>
+        <Overlay maxWidth={1000} widthPct={"100%"}>
           <div className="main-menu">
             <div>
               <ul
@@ -172,7 +177,15 @@ const Nav: React.FC<NavProps> = ({ children, dictionary }) => {
               >
                 {menuItems.map((item) => (
                   <li key={item.href}>
-                    <Link href={item.href}>{item.label}</Link>
+                    <Link
+                      href={item.href}
+                      {...(item.isExternal && {
+                        target: "_blank",
+                        rel: "noopener noreferrer",
+                      })}
+                    >
+                      {item.label}
+                    </Link>
                   </li>
                 ))}
               </ul>
