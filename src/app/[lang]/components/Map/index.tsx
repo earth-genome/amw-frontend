@@ -6,6 +6,7 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
 } from "react";
 import { usePathname } from "next/navigation";
 import Map, {
@@ -76,13 +77,6 @@ const LAYER_ORDER = [
   // "hotspots-labels",
 ];
 
-// only show areas with impacts
-const AREAS_LAYER_FILTER = [
-  "all",
-  [">", ["coalesce", ["get", "mining_affected_area_ha"], 0], 0],
-  ["!", ["in", ["get", "id"], ["literal", AREA_IDS_TO_HIDE]]],
-];
-
 const filterInteractiveFeatures = (features: mapboxgl.MapboxGeoJSONFeature[]) =>
   features.filter(
     (d) =>
@@ -116,6 +110,21 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
     isEmbed,
     selectedAreaType,
   } = state;
+
+  const areasLayerFilter = useMemo(() => {
+    const TO_HIDE_WITHOUT_MINING = ["indigenous-territory", "protected-area"];
+    const hideAreasWithoutMining =
+      selectedAreaTypeKey &&
+      TO_HIDE_WITHOUT_MINING.includes(selectedAreaTypeKey);
+
+    return [
+      "all",
+      ...(hideAreasWithoutMining
+        ? [[">", ["coalesce", ["get", "mining_affected_area_ha"], 0], 0]]
+        : []),
+      ["!", ["in", ["get", "id"], ["literal", AREA_IDS_TO_HIDE]]],
+    ];
+  }, [selectedAreaTypeKey]);
 
   const setMapPositionFromURL = useCallback(() => {
     const searchParams = new URLSearchParams(window.location.search);
@@ -279,12 +288,6 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
     (event: MapMouseEvent) => {
       const map = event.target;
       const features = map.queryRenderedFeatures(event.point);
-
-      const clickedOnExcludedLayer = features?.some(
-        (feature) => feature?.layer?.id === "hole-layer",
-      );
-      if (clickedOnExcludedLayer) return;
-
       const featuresFiltered = filterInteractiveFeatures(features);
       const feature = featuresFiltered[0];
       const id = feature?.properties?.id;
@@ -535,7 +538,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
               source={"areas-vector-tiles"}
               source-layer={selectedAreaType.tilesLayer}
               // @ts-expect-error
-              filter={AREAS_LAYER_FILTER}
+              filter={areasLayerFilter}
               type="line"
               paint={{
                 "line-color": "#ccc",
@@ -559,7 +562,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
               source={"areas-vector-tiles"}
               source-layer={selectedAreaType.tilesLayer}
               // @ts-expect-error
-              filter={AREAS_LAYER_FILTER}
+              filter={areasLayerFilter}
               type="fill"
               paint={{
                 "fill-color": "#22B573",
