@@ -54,4 +54,4 @@ The `MINING_VECTOR_TILES_LAYER` and `MINING_VECTOR_TILES_URL` variables should s
 
 ## Updating Mining Policy Scoreboard data
 
-Process the source xlsx file through the `yarn copy-scoreboard PATH_TO_FILE.xlsx` command to output the required CSVs.
+Process the source xlsx file through the `yarn copy-scoreboard PATH_TO_FILE.xlsx` command to output the required CSVs
