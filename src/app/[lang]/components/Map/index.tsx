@@ -524,7 +524,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
             type="vector"
             tiles={[selectedAreaType.tilesUrl]}
             minzoom={0}
-            maxzoom={14}
+            maxzoom={11}
             promoteId={"id"} // we need this for the hover effect to work
           />
         )}
@@ -615,7 +615,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           id={"mines-vector-tiles"}
           type="vector"
           tiles={[MINING_VECTOR_TILES_URL]}
-          minZoom={0}
+          minzoom={0}
           maxzoom={14}
         />
         {/* ================== MINE LAYER =================== */}
