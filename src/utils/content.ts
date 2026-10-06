@@ -72,6 +72,28 @@ export const formatAreaNumber = (
   return formatter(number || 0);
 };
 
+// formats an amount of money with k, M and B suffixes, billions being the largest unit,
+// instead of the SI "G" (giga) prefix, which doesn't make sense for money
+export const formatCurrencyNumber = (
+  number: number,
+  language: string,
+  significantDigits: number,
+): string => {
+  const locale = formatLocale(
+    localeDefinitions[language as PERMITTED_LANGUAGES],
+  );
+  if (number < 1 && number > 0) return `<1`;
+  // round first, so that e.g. 997M is displayed as 1B instead of 1G
+  const rounded = numberToSignificantDigits(number, significantDigits);
+  if (Math.abs(rounded) >= 1_000_000_000) {
+    return (
+      locale.format(`,.${significantDigits}~r`)(rounded / 1_000_000_000) + "B"
+    );
+  }
+  const formatString = rounded < 10000 ? ",d" : `,.${significantDigits}~s`;
+  return locale.format(formatString)(rounded || 0);
+};
+
 const haToSquareKm = (n: number) => n * 0.01;
 const haToAcre = (n: number) => n * 2.471054;
 

@@ -6,6 +6,7 @@ import {
   displayAreaInUnits,
   formatLayerYear,
   formatAreaNumber,
+  formatCurrencyNumber,
 } from "@/utils/content";
 import AreaSummaryDetails, {
   IllegalityAreaData,
@@ -151,7 +152,7 @@ const AreaSummary: React.FC<AreaProps> = ({
             hideMiningCalculator={isMiningCalculatorHidden}
             economicCost={
               economicCost
-                ? formatAreaNumber(
+                ? formatCurrencyNumber(
                     economicCost,
                     lang,
                     ECONOMIC_COST_SIGNIFICANT_DIGITS,
