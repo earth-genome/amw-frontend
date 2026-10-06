@@ -1,0 +1,65 @@
+.latestIssue {
+  background: var(--green-dark);
+  padding: 100px 0;
+}
+
+.latestIssue .eyebrow {
+  color: var(--green-light);
+  margin-bottom: 32px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 60px;
+}
+
+@media (max-width: 800px) {
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+}
+
+.imageWrapper {
+  display: block;
+  aspect-ratio: 4 / 3;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #1c241d;
+}
+
+.image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease-in-out;
+}
+
+.imageWrapper:hover .image {
+  transform: scale(1.03);
+}
+
+.latestIssue .title {
+  font-size: clamp(36px, 4.5vw, 64px);
+  margin-bottom: 20px;
+}
+
+.title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.latestIssue .summary {
+  font-size: 20px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.latestIssue .button {
+  margin-top: 32px;
+  padding: 16px 40px;
+  font-size: 14px;
+}

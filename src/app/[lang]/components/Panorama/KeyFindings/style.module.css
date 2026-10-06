@@ -1,0 +1,93 @@
+.keyFindings {
+  background: var(--green-dark);
+  padding: 100px 0;
+}
+
+.keyFindings .title {
+  font-size: 36px;
+  max-width: 600px;
+  margin-bottom: 40px;
+}
+
+.highlights {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 40px 60px;
+  margin-bottom: 60px;
+}
+
+.highlightTitle {
+  font-family: "Urbanist", sans-serif;
+  font-size: 110px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--green-light);
+}
+
+@media (max-width: 600px) {
+  .highlightTitle {
+    font-size: 72px;
+  }
+}
+
+.highlightSubtitle {
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin: 12px 0 8px 0;
+}
+
+.highlightText {
+  font-size: 15px;
+  line-height: 1.5;
+  max-width: 420px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.breakdownTitle {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.breakdownItems {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 24px;
+}
+
+.breakdownItem {
+  border-top: 1px solid var(--green-light);
+  padding-top: 12px;
+}
+
+.breakdownItemTitle {
+  font-family: "Urbanist", sans-serif;
+  font-size: 44px;
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.breakdownItemText {
+  font-size: 14px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.85);
+  margin-top: 4px;
+}
+
+.keyFindings .breakdownText {
+  margin-top: 40px;
+  max-width: 760px;
+  font-size: 17px;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.keyFindings .breakdownItemLink {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 12px;
+}

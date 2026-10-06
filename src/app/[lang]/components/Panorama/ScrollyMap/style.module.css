@@ -1,0 +1,184 @@
+/* the map sits behind the report content, opaque report sections cover it,
+   including its overlays since this creates a new stacking context */
+.scrollyMap {
+  position: fixed;
+  inset: 0;
+  top: var(--top-navbar-height);
+  z-index: 0;
+  background: #0f1a12;
+}
+
+/* there is no footer, so the overlays sit closer to the bottom */
+.scrollyMap :global(.mapboxgl-ctrl-attrib) {
+  bottom: 0;
+}
+
+/* below the top navbar and the sticky report navbar */
+.miniMap {
+  position: fixed;
+  right: 20px;
+  top: calc(var(--top-navbar-height) + 48px + 16px);
+  padding: 4px;
+  border-radius: 8px;
+  background: #ffffffcc;
+  backdrop-filter: blur(30.75px);
+  pointer-events: none;
+}
+
+.scrollyMap .areaSummary {
+  bottom: 24px;
+}
+
+@media (max-width: 600px) {
+  .miniMap {
+    display: none;
+  }
+}
+
+/* ================== EXPLORATION MODE ================== */
+
+.mapWrapper {
+  position: absolute;
+  inset: 0;
+}
+
+/* the map can be clicked to explore it, the grab cursor is only shown while exploring */
+.scrollyMap.cursorPointer
+  :global(.mapboxgl-canvas-container.mapboxgl-interactive) {
+  cursor: pointer;
+}
+
+/* above the faded report content, so the map gets all the pointer events */
+.scrollyMapExploring {
+  z-index: 5;
+}
+
+.scrollyMap .hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.scrollyMap .areaSummary {
+  transition: opacity 0.4s ease-in-out;
+}
+
+.dot {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--green-light);
+}
+
+/* follows the cursor, see handlePointerMove */
+.hint {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--green-dark);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.hintVisible {
+  opacity: 1;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.status,
+.exploreControls {
+  position: fixed;
+  top: calc(var(--top-navbar-height) + 16px);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+.status {
+  left: 20px;
+  gap: 10px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: rgba(15, 26, 18, 0.85);
+  font-size: 13px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.statusLabel {
+  color: var(--green-light);
+}
+
+.statusTitle {
+  color: #fff;
+  font-weight: 600;
+}
+
+.exploreControls {
+  right: 20px;
+  gap: 12px;
+}
+
+.escHint {
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: rgba(15, 26, 18, 0.85);
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.backButton {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--green-dark);
+  font-family: "Urbanist", sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  transition: opacity 0.2s ease-in-out;
+}
+
+.backButton:hover {
+  opacity: 0.85;
+}
+
+/* zoom controls on the middle right */
+.scrollyMap :global(.mapboxgl-ctrl-top-right) {
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.scrollyMap :global(.mapboxgl-ctrl-top-right .mapboxgl-ctrl) {
+  margin: 0 20px 0 0;
+}

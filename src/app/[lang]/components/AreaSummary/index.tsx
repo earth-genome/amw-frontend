@@ -6,6 +6,7 @@ import {
   displayAreaInUnits,
   formatLayerYear,
   formatAreaNumber,
+  formatCurrencyNumber,
 } from "@/utils/content";
 import AreaSummaryDetails, {
   IllegalityAreaData,
@@ -20,14 +21,20 @@ import {
 
 interface AreaProps {
   dictionary: { [key: string]: any };
-  maxYear: number;
   yearsColors: string[];
+  // scrollytelling mode: no close button and the chart stops at the active year
+  isScrollytelling?: boolean;
+  // hides the mining calculator, e.g. in a Panorama report
+  hideMiningCalculator?: boolean;
+  className?: string;
 }
 
 const AreaSummary: React.FC<AreaProps> = ({
   dictionary,
-  maxYear,
   yearsColors,
+  isScrollytelling = false,
+  hideMiningCalculator = false,
+  className,
 }) => {
   const [state, dispatch] = useContext(Context)!;
   const {
@@ -37,10 +44,16 @@ const AreaSummary: React.FC<AreaProps> = ({
     selectedAreaTimeseriesData,
     selectedAreaTypeKey,
     lang,
+    activeYear,
   } = state;
+  // the total affected area is displayed until the selected year/quarter
+  const displayYear = Number(activeYear);
   // don't use mining calculator for countries because it is not reliable for such large areas,
-  const hideMiningCalculator =
-    !selectedAreaTypeKey || selectedAreaTypeKey === "countries";
+  // nor when it is hidden, e.g. in a Panorama report
+  const isMiningCalculatorHidden =
+    hideMiningCalculator ||
+    !selectedAreaTypeKey ||
+    selectedAreaTypeKey === "countries";
 
   const {
     calculatorData,
@@ -48,18 +61,20 @@ const AreaSummary: React.FC<AreaProps> = ({
     calculatorIsLoading,
     // calculatorError,
   } = useMiningCalculator(
-    hideMiningCalculator ? [] : selectedAreaData?.locations,
+    isMiningCalculatorHidden
+      ? []
+      : selectedAreaData?.locations_per_year?.[activeYear],
   );
 
   const [affectedAreaHa, economicCost] = useMemo(() => {
     // use the data that is pre-calculated in the timeseries,
     // and mining calculator data that is fetched on the fly
 
-    const latestYearAffectedArea = selectedAreaTimeseriesData?.find(
-      (d) => d.admin_year === maxYear,
+    const displayYearAffectedArea = selectedAreaTimeseriesData?.find(
+      (d) => d.admin_year === displayYear,
     )?.intersected_area_ha_cumulative;
-    return [latestYearAffectedArea, calculatorData?.totalImpact];
-  }, [calculatorData?.totalImpact, maxYear, selectedAreaTimeseriesData]);
+    return [displayYearAffectedArea, calculatorData?.totalImpact];
+  }, [calculatorData?.totalImpact, displayYear, selectedAreaTimeseriesData]);
   const hasAffectedArea = affectedAreaHa != null;
 
   const {
@@ -78,7 +93,7 @@ const AreaSummary: React.FC<AreaProps> = ({
     dispatch({ type: "SET_SELECTED_AREA_BY_ID", selectedAreaId: undefined });
 
   return (
-    <div className={style.areaCard}>
+    <div className={`${style.areaCard} ${className ?? ""}`}>
       <div className={style.areaTitle}>
         <div>
           {/* <div className={style.areaYear}>{formatLayerYear(maxYear)}</div> */}
@@ -96,11 +111,13 @@ const AreaSummary: React.FC<AreaProps> = ({
           )}
         </div>
 
-        <div className={style.areaTitleRight}>
-          <div className={style.areaClose} onClick={handleClose}>
-            <CloseCircleFilled />
+        {!isScrollytelling && (
+          <div className={style.areaTitleRight}>
+            <div className={style.areaClose} onClick={handleClose}>
+              <CloseCircleFilled />
+            </div>
           </div>
-        </div>
+        )}
       </div>
       <div
         className={style.areaBody}
@@ -116,7 +133,7 @@ const AreaSummary: React.FC<AreaProps> = ({
         }
       >
         <div>
-          {dictionary.map_ui.total_area_affected} {formatLayerYear(maxYear)}
+          {dictionary.map_ui.total_area_affected} {formatLayerYear(displayYear)}
         </div>
         <div className={style.areaKm}>
           {hasAffectedArea
@@ -132,10 +149,10 @@ const AreaSummary: React.FC<AreaProps> = ({
       {hasAffectedArea && (
         <div>
           <AreaSummaryDetails
-            hideMiningCalculator={hideMiningCalculator}
+            hideMiningCalculator={isMiningCalculatorHidden}
             economicCost={
               economicCost
-                ? formatAreaNumber(
+                ? formatCurrencyNumber(
                     economicCost,
                     lang,
                     ECONOMIC_COST_SIGNIFICANT_DIGITS,
@@ -153,7 +170,9 @@ const AreaSummary: React.FC<AreaProps> = ({
                 d.mining_affected_area_pct > 0,
             )}
             yearsColors={yearsColors}
-            maxYear={maxYear}
+            displayYear={displayYear}
+            hideBarsAfterActiveYear={isScrollytelling}
+            isFloating={isScrollytelling}
           />
         </div>
       )}

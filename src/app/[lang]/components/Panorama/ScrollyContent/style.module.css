@@ -1,0 +1,9 @@
+.content {
+  transition: opacity 0.4s ease-in-out;
+}
+
+/* while exploring, the map below receives all the pointer events */
+.contentHidden {
+  opacity: 0;
+  pointer-events: none;
+}

@@ -12,6 +12,9 @@ export interface MiningData extends GeoJSON.FeatureCollection<
   MiningProperties
 > {}
 
+// mining locations grouped by layer year (e.g. "201800", "202501"), years without data may be missing
+export type LocationsPerYear = Partial<Record<string, MiningLocation[]>>;
+
 export interface AreaData {
   country: string;
   country_code: string;
@@ -24,7 +27,7 @@ export interface AreaData {
   area_units: string;
   ethnicities_field: string | null;
   id: string;
-  locations: MiningLocation[];
+  locations_per_year: LocationsPerYear;
   mining_affected_area_ha: number;
   illegality_areas: {
     admin_illegality_max: number;

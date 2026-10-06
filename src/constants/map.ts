@@ -1,14 +1,23 @@
 import { scaleSequential } from "d3-scale";
 import { interpolateRgbBasis } from "d3-interpolate";
 
-const DATA_UPDATED_AT = "20260924";
-const DATA_BASE_URL =
-  // "/website";
-  `${process.env.NEXT_PUBLIC_DATA_URL}/${DATA_UPDATED_AT}`;
-const TILES_BASE_URL =
-  // "/website";
-  `${process.env.NEXT_PUBLIC_TILES_URL}/amw/${DATA_UPDATED_AT}`;
+// data snapshot (YYYYMMDD) of the main map, Panorama reports can use a different one
+export const DATA_UPDATED_AT = "20261006";
 
+const getDataBaseUrl = (dataSnapshot: string) =>
+  // "/website";
+  `${process.env.NEXT_PUBLIC_DATA_URL}/${dataSnapshot}`;
+const getTilesBaseUrl = (dataSnapshot: string) =>
+  // "/website";
+  `${process.env.NEXT_PUBLIC_TILES_URL}/amw/${dataSnapshot}`;
+
+// a valid YYYYMMDD snapshot, or the main map one
+export const getDataSnapshot = (dataSnapshot: string | null | undefined) => {
+  const trimmed = dataSnapshot?.trim();
+  return trimmed && /^\d{8}$/.test(trimmed) ? trimmed : DATA_UPDATED_AT;
+};
+
+const DATA_BASE_URL = getDataBaseUrl(DATA_UPDATED_AT);
 if (!DATA_BASE_URL) {
   throw new Error(
     "NEXT_PUBLIC_DATA_URL environment variable is not set. Please add it to your .env file.",
@@ -85,10 +94,16 @@ export const MINING_LAYERS = [
     satelliteEndpoint: SENTINEL2_AMW_QUARTERLY,
     satelliteDates: "2026-04-01/2026-07-01",
   },
+  {
+    yearQuarter: 202603,
+    satelliteEndpoint: SENTINEL2_AMW_QUARTERLY,
+    satelliteDates: "2026-07-01/2026-10-01",
+  },
 ];
 
 export const MINING_VECTOR_TILES_LAYER = "mining_combined_full";
-export const MINING_VECTOR_TILES_URL = `${TILES_BASE_URL}/mining_combined_full/{z}/{x}/{y}.pbf`;
+export const getMiningVectorTilesUrl = (dataSnapshot: string) =>
+  `${getTilesBaseUrl(dataSnapshot)}/${MINING_VECTOR_TILES_LAYER}/{z}/{x}/{y}.pbf`;
 
 export const LAYER_YEARS = MINING_LAYERS.map((d) => d.yearQuarter).sort(
   (a, b) => a - b,
@@ -139,10 +154,9 @@ export interface AreaType {
   key: string;
   dictionaryKey: string;
   dictionaryKeySingular: string;
-  url: string;
-  tilesUrl: string;
+  dataPath: string; // relative to the data snapshot
   tilesLayer: string;
-  timeseriesUrl: string;
+  timeseriesPath: string; // relative to the data snapshot
   isDefault?: boolean;
   renderLabel: (_properties: Record<string, any>) => string;
   renderTitle: (_properties: Record<string, any>) => string;
@@ -157,10 +171,11 @@ export const AREA_TYPES = [
     dictionaryKey: "countries",
     dictionaryKeyDescription: undefined,
     dictionaryKeySingular: "country",
-    url: `${DATA_BASE_URL}/data/boundaries/national_admin/out/national_admin_impacts_unfiltered_dict.json`,
-    tilesUrl: `${TILES_BASE_URL}/national_admin_impacts_unfiltered/{z}/{x}/{y}.pbf`,
+    dataPath:
+      "data/boundaries/national_admin/out/national_admin_impacts_unfiltered_dict.json",
     tilesLayer: `national_admin_impacts_unfiltered`,
-    timeseriesUrl: `${DATA_BASE_URL}/data/boundaries/national_admin/out/national_admin_yearly.json`,
+    timeseriesPath:
+      "data/boundaries/national_admin/out/national_admin_yearly.json",
     isDefault: true,
     renderLabel: (properties: Record<string, any>) => properties.country,
     renderTitle: (properties: Record<string, any>) => properties.country,
@@ -175,10 +190,11 @@ export const AREA_TYPES = [
     dictionaryKey: "subnational_jurisdictions",
     dictionaryKeyDescription: undefined,
     dictionaryKeySingular: "subnational_jurisdiction",
-    url: `${DATA_BASE_URL}/data/boundaries/subnational_admin/out/admin_areas_display_impacts_unfiltered_dict.json`,
-    tilesUrl: `${TILES_BASE_URL}/admin_areas_display_impacts_unfiltered/{z}/{x}/{y}.pbf`,
+    dataPath:
+      "data/boundaries/subnational_admin/out/admin_areas_display_impacts_unfiltered_dict.json",
     tilesLayer: `admin_areas_display_impacts_unfiltered`,
-    timeseriesUrl: `${DATA_BASE_URL}/data/boundaries/subnational_admin/out/admin_areas_display_yearly.json`,
+    timeseriesPath:
+      "data/boundaries/subnational_admin/out/admin_areas_display_yearly.json",
     isDefault: false,
     renderLabel: (properties: Record<string, any>) =>
       `${properties.name_field || "N/A"} ${
@@ -197,10 +213,11 @@ export const AREA_TYPES = [
     dictionaryKey: "indigenous_territories",
     dictionaryKeyDescription: "indigenous_territories_description",
     dictionaryKeySingular: "indigenous_territory",
-    url: `${DATA_BASE_URL}/data/boundaries/protected_areas_and_indigenous_territories/out/indigenous_territories_impacts_unfiltered_dict.json`,
-    tilesUrl: `${TILES_BASE_URL}/indigenous_territories_impacts_unfiltered/{z}/{x}/{y}.pbf`,
+    dataPath:
+      "data/boundaries/protected_areas_and_indigenous_territories/out/indigenous_territories_impacts_unfiltered_dict.json",
     tilesLayer: `indigenous_territories_impacts_unfiltered`,
-    timeseriesUrl: `${DATA_BASE_URL}/data/boundaries/protected_areas_and_indigenous_territories/out/indigenous_territories_yearly.json`,
+    timeseriesPath:
+      "data/boundaries/protected_areas_and_indigenous_territories/out/indigenous_territories_yearly.json",
     isDefault: false,
     renderLabel: (properties: Record<string, any>) =>
       `${properties.name_field || "N/A"} ${
@@ -219,10 +236,11 @@ export const AREA_TYPES = [
     dictionaryKey: "protected_areas",
     dictionaryKeyDescription: "protected_areas_description",
     dictionaryKeySingular: "protected_area",
-    url: `${DATA_BASE_URL}/data/boundaries/protected_areas_and_indigenous_territories/out/protected_areas_impacts_unfiltered_dict.json`,
-    tilesUrl: `${TILES_BASE_URL}/protected_areas_impacts_unfiltered/{z}/{x}/{y}.pbf`,
+    dataPath:
+      "data/boundaries/protected_areas_and_indigenous_territories/out/protected_areas_impacts_unfiltered_dict.json",
     tilesLayer: `protected_areas_impacts_unfiltered`,
-    timeseriesUrl: `${DATA_BASE_URL}/data/boundaries/protected_areas_and_indigenous_territories/out/protected_areas_yearly.json`,
+    timeseriesPath:
+      "data/boundaries/protected_areas_and_indigenous_territories/out/protected_areas_yearly.json",
     isDefault: false,
     renderLabel: (properties: Record<string, any>) =>
       `${properties.name_field || "N/A"} ${
@@ -255,6 +273,18 @@ export const AREA_TYPES = [
   //   allowSelect: false,
   // },
 ] as const;
+
+// urls of an area type data, for a data snapshot
+export const getAreaDataUrl = (areaType: AreaType, dataSnapshot: string) =>
+  `${getDataBaseUrl(dataSnapshot)}/${areaType.dataPath}`;
+
+export const getAreaTimeseriesUrl = (
+  areaType: AreaType,
+  dataSnapshot: string,
+) => `${getDataBaseUrl(dataSnapshot)}/${areaType.timeseriesPath}`;
+
+export const getAreaTilesUrl = (areaType: AreaType, dataSnapshot: string) =>
+  `${getTilesBaseUrl(dataSnapshot)}/${areaType.tilesLayer}/{z}/{x}/{y}.pbf`;
 
 export type PERMITTED_AREA_TYPES_KEYS = (typeof AREA_TYPES)[number]["key"];
 

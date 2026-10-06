@@ -1,0 +1,78 @@
+.issuesList {
+  background: var(--green-dark);
+  padding: 40px 0 60px 0;
+}
+
+.header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.title {
+  font-size: 48px;
+}
+
+.issues {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.issues li {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.issue {
+  display: grid;
+  grid-template-columns: 160px 1fr auto;
+  align-items: center;
+  gap: 24px;
+  padding: 36px 18px;
+  color: inherit;
+  text-decoration: none;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.issue:hover {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.issue:hover .issueTitle,
+.issue:hover .issueRead {
+  text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+  .issue {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+}
+
+.issueNumber {
+  font-family: "Urbanist", sans-serif;
+  font-size: 64px;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--green-light);
+}
+
+.issuesList .issueCoverage {
+  color: var(--green-light);
+  margin-bottom: 8px;
+}
+
+.issueTitle {
+  font-size: 32px;
+}
+
+.issuesList .issueSummary {
+  font-size: 17px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.85);
+  margin-top: 12px;
+}

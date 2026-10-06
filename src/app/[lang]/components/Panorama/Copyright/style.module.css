@@ -1,0 +1,6 @@
+.copyright {
+  font-family: var(--body-text-font);
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.8);
+  box-sizing: border-box;
+}
