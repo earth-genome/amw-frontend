@@ -23,7 +23,7 @@ const StepAreaSummary = ({
   summaryClassName,
 }: StepAreaSummaryProps) => {
   const [state] = useContext(Context)!;
-  const { activeParams } = useScrolly();
+  const { activeParams, hideMiningCalculator } = useScrolly();
   const windowSize = useWindowSize();
   const yearsColors = useMemo(() => getColorsForYears(LAYER_YEARS), []);
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -61,9 +61,9 @@ const StepAreaSummary = ({
       {isShown && (
         <AreaSummary
           dictionary={dictionary}
-          maxYear={LAYER_YEARS[LAYER_YEARS.length - 1]}
           yearsColors={yearsColors}
           isScrollytelling
+          hideMiningCalculator={hideMiningCalculator}
           className={summaryClassName}
         />
       )}

@@ -178,6 +178,10 @@ export interface PanoramaReport extends StrapiDocument {
   // short description of the issue, used in the home page
   summary?: string | null;
   issueNumber: number;
+  // YYYYMMDD snapshot of the map data, the main map one when empty
+  dataSnapshot?: string | null;
+  // hides the mining calculator in the area summaries
+  hideMiningCalculator?: boolean | null;
   datePublished: string;
   dateCoverage: string;
   pdfReport: StrapiMedia | null;

@@ -26,7 +26,7 @@ interface AreaSummaryDetailsProps {
   hideMiningCalculator: boolean;
   description?: string;
   yearsColors: string[];
-  maxYear: number;
+  displayYear: number;
   hideBarsAfterActiveYear?: boolean;
   isFloating?: boolean;
 }
@@ -41,7 +41,7 @@ const AreaSummaryDetails = ({
   description,
   illegalityAreas,
   yearsColors,
-  maxYear,
+  displayYear,
   hideBarsAfterActiveYear,
   isFloating,
 }: AreaSummaryDetailsProps) => {
@@ -62,7 +62,7 @@ const AreaSummaryDetails = ({
         <div>
           <p>
             {dictionary?.map_ui?.economic_cost_calculator_intro}{" "}
-            {formatLayerYear(maxYear)}
+            {formatLayerYear(displayYear)}
             {", "}
             {dictionary?.map_ui?.economic_cost_calculator_ending}
           </p>
@@ -129,7 +129,7 @@ const AreaSummaryDetails = ({
         <div>
           <div className={style.label}>
             <div>
-              {dictionary?.map_ui?.economic_cost} {formatLayerYear(maxYear)}
+              {dictionary?.map_ui?.economic_cost} {formatLayerYear(displayYear)}
             </div>
             <div>
               <EconomicCostTooltip />

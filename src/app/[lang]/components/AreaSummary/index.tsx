@@ -20,18 +20,19 @@ import {
 
 interface AreaProps {
   dictionary: { [key: string]: any };
-  maxYear: number;
   yearsColors: string[];
-  // scrollytelling mode: no close button, no mining calculator and the chart stops at the active year
+  // scrollytelling mode: no close button and the chart stops at the active year
   isScrollytelling?: boolean;
+  // hides the mining calculator, e.g. in a Panorama report
+  hideMiningCalculator?: boolean;
   className?: string;
 }
 
 const AreaSummary: React.FC<AreaProps> = ({
   dictionary,
-  maxYear,
   yearsColors,
   isScrollytelling = false,
+  hideMiningCalculator = false,
   className,
 }) => {
   const [state, dispatch] = useContext(Context)!;
@@ -47,8 +48,9 @@ const AreaSummary: React.FC<AreaProps> = ({
   // the total affected area is displayed until the selected year/quarter
   const displayYear = Number(activeYear);
   // don't use mining calculator for countries because it is not reliable for such large areas,
-  const hideMiningCalculator =
-    isScrollytelling ||
+  // nor when it is hidden, e.g. in a Panorama report
+  const isMiningCalculatorHidden =
+    hideMiningCalculator ||
     !selectedAreaTypeKey ||
     selectedAreaTypeKey === "countries";
 
@@ -58,7 +60,9 @@ const AreaSummary: React.FC<AreaProps> = ({
     calculatorIsLoading,
     // calculatorError,
   } = useMiningCalculator(
-    hideMiningCalculator ? [] : selectedAreaData?.locations,
+    isMiningCalculatorHidden
+      ? []
+      : selectedAreaData?.locations_per_year?.[activeYear],
   );
 
   const [affectedAreaHa, economicCost] = useMemo(() => {
@@ -144,7 +148,7 @@ const AreaSummary: React.FC<AreaProps> = ({
       {hasAffectedArea && (
         <div>
           <AreaSummaryDetails
-            hideMiningCalculator={hideMiningCalculator}
+            hideMiningCalculator={isMiningCalculatorHidden}
             economicCost={
               economicCost
                 ? formatAreaNumber(
@@ -165,7 +169,7 @@ const AreaSummary: React.FC<AreaProps> = ({
                 d.mining_affected_area_pct > 0,
             )}
             yearsColors={yearsColors}
-            maxYear={maxYear}
+            displayYear={displayYear}
             hideBarsAfterActiveYear={isScrollytelling}
             isFloating={isScrollytelling}
           />

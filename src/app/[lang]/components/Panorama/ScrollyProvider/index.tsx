@@ -22,12 +22,20 @@ interface ScrollyContextType {
   setActiveParams: (_params: MapParams, _label?: string) => void;
   exploreState: ExploreState;
   setExploreState: (_exploreState: ExploreState) => void;
+  // hides the mining calculator in the area summaries of the report
+  hideMiningCalculator: boolean;
 }
 
 const ScrollyContext = createContext<ScrollyContextType | undefined>(undefined);
 
 // holds the map params of the active scrollytelling step and syncs them to the map store
-const ScrollyProvider = ({ children }: { children: ReactNode }) => {
+const ScrollyProvider = ({
+  children,
+  hideMiningCalculator = false,
+}: {
+  children: ReactNode;
+  hideMiningCalculator?: boolean;
+}) => {
   const [state, dispatch] = useContext(Context)!;
   const [activeStep, setActiveStep] = useState<
     { params: MapParams; label?: string } | undefined
@@ -62,6 +70,7 @@ const ScrollyProvider = ({ children }: { children: ReactNode }) => {
         setActiveParams,
         exploreState,
         setExploreState,
+        hideMiningCalculator,
       }}
     >
       {children}

@@ -79,8 +79,13 @@ const getCameraPadding = (width: number) =>
 // a barebones version of the main map, driven by the active scrollytelling step
 const ScrollyMap = ({ dictionary }: ScrollyMapProps) => {
   const [state] = useContext(Context)!;
-  const { activeParams, activeLabel, exploreState, setExploreState } =
-    useScrolly();
+  const {
+    activeParams,
+    activeLabel,
+    exploreState,
+    setExploreState,
+    hideMiningCalculator,
+  } = useScrolly();
   const mapRef = useRef<MapRef>(null);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
   const [bounds, setBounds] = useState<GeoJSONType | undefined>(undefined);
@@ -402,9 +407,9 @@ const ScrollyMap = ({ dictionary }: ScrollyMapProps) => {
       {selectedArea && isDesktop && (
         <AreaSummary
           dictionary={dictionary}
-          maxYear={LAYER_YEARS[LAYER_YEARS.length - 1]}
           yearsColors={yearsColors}
           isScrollytelling
+          hideMiningCalculator={hideMiningCalculator}
           className={`${style.areaSummary} ${isStory ? "" : style.hidden}`}
         />
       )}

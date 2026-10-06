@@ -13,6 +13,7 @@ import {
   parsePanoramaIssueParam,
 } from "@/cms/panorama";
 import { getDictionary } from "@/get-dictionary";
+import { getDataSnapshot } from "@/constants/map";
 import { PERMITTED_LANGUAGES } from "@/utils/content";
 import MapWrapper from "@/app/[lang]/components/Map/Wrapper";
 import ScrollyProvider from "@/app/[lang]/components/Panorama/ScrollyProvider";
@@ -130,8 +131,12 @@ const Page = async ({ params: { lang, issue } }: PageProps) => {
   ];
 
   return (
-    <MapWrapper lang={lang} syncQueryParams={false}>
-      <ScrollyProvider>
+    <MapWrapper
+      lang={lang}
+      syncQueryParams={false}
+      dataSnapshot={getDataSnapshot(report.dataSnapshot)}
+    >
+      <ScrollyProvider hideMiningCalculator={!!report.hideMiningCalculator}>
         <ScrollyMap dictionary={dictionary} />
 
         <ScrollyContent>

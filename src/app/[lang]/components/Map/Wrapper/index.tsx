@@ -10,6 +10,7 @@ interface MapWrapperProps {
   lang: PERMITTED_LANGUAGES;
   isEmbed?: boolean;
   syncQueryParams?: boolean;
+  dataSnapshot?: string;
 }
 
 const MapWrapper = ({
@@ -17,6 +18,7 @@ const MapWrapper = ({
   lang,
   isEmbed,
   syncQueryParams,
+  dataSnapshot,
 }: MapWrapperProps) => {
   const pathname = usePathname();
   const pathSegments = pathname.split("/").filter(Boolean);
@@ -29,6 +31,7 @@ const MapWrapper = ({
         isBaseRoute={isBaseRoute}
         isEmbed={isEmbed}
         syncQueryParams={syncQueryParams}
+        dataSnapshot={dataSnapshot}
       >
         {children}
       </Store>

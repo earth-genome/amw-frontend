@@ -10,7 +10,8 @@ import {
   MAP_MISSING_DATA_COLOR,
   MINING_LAYERS,
   MINING_VECTOR_TILES_LAYER,
-  MINING_VECTOR_TILES_URL,
+  getAreaTilesUrl,
+  getMiningVectorTilesUrl,
 } from "@/constants/map";
 import { Context } from "@/lib/Store";
 
@@ -27,10 +28,14 @@ const MapLayers = ({ showAreasLayers = true }: MapLayersProps) => {
     selectedArea,
     selectedAreaTypeKey,
     selectedAreaType,
+    dataSnapshot,
     hoveredYear,
     activeYear,
     isCumulative,
   } = state;
+  const areasTilesUrl = selectedAreaType
+    ? getAreaTilesUrl(selectedAreaType, dataSnapshot)
+    : undefined;
 
   const areasLayerFilter = useMemo(() => {
     const TO_HIDE_WITHOUT_MINING = ["indigenous-territory", "protected-area"];
@@ -121,11 +126,11 @@ const MapLayers = ({ showAreasLayers = true }: MapLayersProps) => {
       />
 
       {/* ================== AREA SOURCES =================== */}
-      {selectedAreaType?.tilesUrl && (
+      {areasTilesUrl && (
         <Source
           id="areas-vector-tiles"
           type="vector"
-          tiles={[selectedAreaType.tilesUrl]}
+          tiles={[areasTilesUrl]}
           minzoom={0}
           maxzoom={11}
           // we need this for the hover effect to work
@@ -135,7 +140,8 @@ const MapLayers = ({ showAreasLayers = true }: MapLayersProps) => {
 
       {/* ================== AREA LAYER =================== */}
       {showAreasLayers &&
-        selectedAreaType?.tilesUrl &&
+        areasTilesUrl &&
+        selectedAreaType &&
         selectedAreaType.tilesLayer && (
           <>
             <Layer
@@ -183,7 +189,8 @@ const MapLayers = ({ showAreasLayers = true }: MapLayersProps) => {
             />
           </>
         )}
-      {selectedAreaType?.tilesUrl &&
+      {areasTilesUrl &&
+        selectedAreaType &&
         selectedAreaType.tilesLayer &&
         selectedArea && (
           <>
@@ -220,7 +227,7 @@ const MapLayers = ({ showAreasLayers = true }: MapLayersProps) => {
       <Source
         id={"mines-vector-tiles"}
         type="vector"
-        tiles={[MINING_VECTOR_TILES_URL]}
+        tiles={[getMiningVectorTilesUrl(dataSnapshot)]}
         minzoom={0}
         maxzoom={14}
       />
