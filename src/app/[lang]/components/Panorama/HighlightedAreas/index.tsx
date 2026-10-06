@@ -59,7 +59,11 @@ const HighlightedAreas = ({
       id={REPORT_ANCHORS.highlightedAreas}
       className={style.highlightedAreas}
     >
-      <ScrollyStep params={overviewParams} className={style.intro}>
+      <ScrollyStep
+        params={overviewParams}
+        label={highlightedAreas.title}
+        className={style.intro}
+      >
         <div className={style.introContent}>
           <h2 className={`${shared.heading} ${style.introTitle}`}>
             {highlightedAreas.title}
@@ -93,6 +97,7 @@ const HighlightedAreas = ({
             <ScrollyStep
               key={area.id}
               params={areasParams[area.id]}
+              label={area.title}
               className={style.areaStep}
             >
               <article className={style.areaCard}>

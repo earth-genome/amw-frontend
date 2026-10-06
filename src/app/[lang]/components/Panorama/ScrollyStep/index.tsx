@@ -5,12 +5,19 @@ import { MapParams } from "@/utils/mapParams";
 
 interface ScrollyStepProps {
   params: MapParams;
+  // title of the step, e.g. the area name
+  label?: string;
   children: ReactNode;
   className?: string;
 }
 
 // a scrollytelling step, which becomes active when it crosses the middle of the viewport
-const ScrollyStep = ({ params, children, className }: ScrollyStepProps) => {
+const ScrollyStep = ({
+  params,
+  label,
+  children,
+  className,
+}: ScrollyStepProps) => {
   const ref = useRef<HTMLDivElement>(null);
   const { setActiveParams } = useScrolly();
 
@@ -21,7 +28,7 @@ const ScrollyStep = ({ params, children, className }: ScrollyStepProps) => {
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries.some((entry) => entry.isIntersecting)) {
-          setActiveParams(params);
+          setActiveParams(params, label);
         }
       },
       // a line in the middle of the viewport
@@ -30,7 +37,7 @@ const ScrollyStep = ({ params, children, className }: ScrollyStepProps) => {
     observer.observe(element);
 
     return () => observer.disconnect();
-  }, [params, setActiveParams]);
+  }, [params, label, setActiveParams]);
 
   return (
     <div ref={ref} className={className}>

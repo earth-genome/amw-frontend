@@ -166,6 +166,10 @@
     "latest_issue": "Última edição",
     "all_issues": "Todas as edições",
     "read": "Ler",
-    "read_issue": "Ler edição"
+    "read_issue": "Ler edição",
+    "explore_hint": "Clique para explorar",
+    "exploring": "Explorando",
+    "back_to_report": "Voltar ao relatório",
+    "esc": "Esc"
   }
 }

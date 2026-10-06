@@ -17,6 +17,7 @@ import { PERMITTED_LANGUAGES } from "@/utils/content";
 import MapWrapper from "@/app/[lang]/components/Map/Wrapper";
 import ScrollyProvider from "@/app/[lang]/components/Panorama/ScrollyProvider";
 import ScrollyMap from "@/app/[lang]/components/Panorama/ScrollyMap";
+import ScrollyContent from "@/app/[lang]/components/Panorama/ScrollyContent";
 import Hero from "@/app/[lang]/components/Panorama/Hero";
 import HeroImage from "@/app/[lang]/components/Panorama/HeroImage";
 import TextSection from "@/app/[lang]/components/Panorama/TextSection";
@@ -133,65 +134,67 @@ const Page = async ({ params: { lang, issue } }: PageProps) => {
       <ScrollyProvider>
         <ScrollyMap dictionary={dictionary} />
 
-        <main>
-          <Hero
-            dictionary={dictionary}
-            title={report.title}
-            issueNumber={report.issueNumber}
-            dateCoverage={report.dateCoverage}
-            summary={report?.summary}
-            pdfReport={report.pdfReport}
-            signUpLink={home?.signUp?.link}
-            issuesHref={issuesHref}
-            backgroundImageUrl={getPanoramaMediaUrl(
-              home?.hero?.backgroundImage?.url,
-            )}
-          />
-          <HeroImage heroImage={report.heroImage} />
-          <TextSection
-            id={REPORT_ANCHORS.overview}
-            section={report.introduction}
-          />
-          <KeyFindings
-            id={REPORT_ANCHORS.keyFindings}
-            dictionary={dictionary}
-            keyFindings={report.keyFindings}
-            dateCoverage={report.dateCoverage}
-            lang={lang}
-          />
-          <ReportNav
-            dictionary={dictionary}
-            issueNumber={report.issueNumber}
-            items={navItems}
-            progressTargetId={REPORT_ANCHORS.highlightedAreas}
-          />
-          <HighlightedAreas
-            dictionary={dictionary}
-            highlightedAreas={report.highlightedAreas}
-            lang={lang}
-          />
-          <ViewMapCta
-            dictionary={dictionary}
-            cta={home?.viewMapCallToAction}
-            lang={lang}
-          />
-          <TextSection
-            id={REPORT_ANCHORS.conclusion}
-            section={report.conclusion}
-            variant="dark"
-          />
-          <Footer
-            dictionary={dictionary}
-            lang={lang}
-            methodology={home?.methodology}
-            acknowledgements={home?.acknowledgements}
-            signUp={home?.signUp}
-            pdfReport={report.pdfReport}
-            reports={reports}
-            currentIssueNumber={report.issueNumber}
-            issuesHref={issuesHref}
-          />
-        </main>
+        <ScrollyContent>
+          <main>
+            <Hero
+              dictionary={dictionary}
+              title={report.title}
+              issueNumber={report.issueNumber}
+              dateCoverage={report.dateCoverage}
+              summary={report?.summary}
+              pdfReport={report.pdfReport}
+              signUpLink={home?.signUp?.link}
+              issuesHref={issuesHref}
+              backgroundImageUrl={getPanoramaMediaUrl(
+                home?.hero?.backgroundImage?.url,
+              )}
+            />
+            <HeroImage heroImage={report.heroImage} />
+            <TextSection
+              id={REPORT_ANCHORS.overview}
+              section={report.introduction}
+            />
+            <KeyFindings
+              id={REPORT_ANCHORS.keyFindings}
+              dictionary={dictionary}
+              keyFindings={report.keyFindings}
+              dateCoverage={report.dateCoverage}
+              lang={lang}
+            />
+            <ReportNav
+              dictionary={dictionary}
+              issueNumber={report.issueNumber}
+              items={navItems}
+              progressTargetId={REPORT_ANCHORS.highlightedAreas}
+            />
+            <HighlightedAreas
+              dictionary={dictionary}
+              highlightedAreas={report.highlightedAreas}
+              lang={lang}
+            />
+            <ViewMapCta
+              dictionary={dictionary}
+              cta={home?.viewMapCallToAction}
+              lang={lang}
+            />
+            <TextSection
+              id={REPORT_ANCHORS.conclusion}
+              section={report.conclusion}
+              variant="dark"
+            />
+            <Footer
+              dictionary={dictionary}
+              lang={lang}
+              methodology={home?.methodology}
+              acknowledgements={home?.acknowledgements}
+              signUp={home?.signUp}
+              pdfReport={report.pdfReport}
+              reports={reports}
+              currentIssueNumber={report.issueNumber}
+              issuesHref={issuesHref}
+            />
+          </main>
+        </ScrollyContent>
       </ScrollyProvider>
     </MapWrapper>
   );

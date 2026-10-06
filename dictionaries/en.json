@@ -166,6 +166,10 @@
     "latest_issue": "Latest issue",
     "all_issues": "All issues",
     "read": "Read",
-    "read_issue": "Read issue"
+    "read_issue": "Read issue",
+    "explore_hint": "Click to explore",
+    "exploring": "Exploring",
+    "back_to_report": "Back to report",
+    "esc": "Esc"
   }
 }
