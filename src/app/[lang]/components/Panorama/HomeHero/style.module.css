@@ -1,0 +1,62 @@
+.hero {
+  min-height: calc(100vh - var(--top-navbar-height));
+  margin-top: var(--top-navbar-height);
+  display: flex;
+  align-items: flex-end;
+  background-color: #0f1a12;
+  background-size: cover;
+  background-position: center;
+  box-sizing: border-box;
+}
+
+/* darkens the background image, mostly on the left where the text is */
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(15, 26, 18, 0.85) 0%,
+    rgba(15, 26, 18, 0.55) 50%,
+    rgba(15, 26, 18, 0.25) 100%
+  );
+}
+
+.content {
+  position: relative;
+  padding: 80px 60px 60px 60px;
+  max-width: 1200px;
+}
+
+@media (max-width: 600px) {
+  .content {
+    padding: 80px 20px 40px 20px;
+  }
+}
+
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 14px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--green-light);
+}
+
+.hero .title {
+  font-size: clamp(72px, 12vw, 180px);
+  color: var(--green-light);
+  margin: 8px 0 16px 0;
+}
+
+.hero .subtitle {
+  font-size: 22px;
+  line-height: 1.5;
+  max-width: 600px;
+  margin-bottom: 32px;
+}
+
+.hero .button {
+  padding: 16px 40px;
+  font-size: 14px;
+}

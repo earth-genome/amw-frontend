@@ -1,0 +1,99 @@
+/* shared styles for the Panorama report sections
+
+   NOTE: when a component class overrides a property set here, scope it under the
+   component's root class (e.g. ".keyFindings .title"), because the order of these
+   stylesheets can change after client-side navigation */
+
+.section {
+  position: relative;
+  z-index: 1; /* above the scrollytelling map */
+  color: #fff;
+  /* leave room for the top and report navbars when scrolling to a section */
+  scroll-margin-top: calc(var(--top-navbar-height) + 48px);
+}
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+@media (max-width: 600px) {
+  .container {
+    padding: 0 20px;
+  }
+}
+
+.eyebrow {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 12px;
+}
+
+.heading {
+  font-family: "Urbanist", sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  line-height: 1.05;
+  margin: 0;
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px 26px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.button:hover {
+  opacity: 0.85;
+}
+
+.buttonPrimary {
+  background: var(--green-light);
+  border: 1px solid var(--green-light);
+  color: #fff;
+}
+
+.buttonOutline {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  color: #fff;
+}
+
+.buttonDark {
+  background: #0f1a12;
+  border: 1px solid #0f1a12;
+  color: #fff;
+}
+
+.link {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--green-light);
+  text-decoration: none;
+}
+
+.link:hover {
+  text-decoration: underline;
+}

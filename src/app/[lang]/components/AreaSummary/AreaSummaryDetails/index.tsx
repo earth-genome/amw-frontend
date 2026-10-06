@@ -27,6 +27,8 @@ interface AreaSummaryDetailsProps {
   description?: string;
   yearsColors: string[];
   maxYear: number;
+  hideBarsAfterActiveYear?: boolean;
+  isFloating?: boolean;
 }
 
 const AreaSummaryDetails = ({
@@ -40,6 +42,8 @@ const AreaSummaryDetails = ({
   illegalityAreas,
   yearsColors,
   maxYear,
+  hideBarsAfterActiveYear,
+  isFloating,
 }: AreaSummaryDetailsProps) => {
   // eslint-disable-next-line no-unused-vars
   const [state, dispatch] = useContext(Context)!;
@@ -58,7 +62,8 @@ const AreaSummaryDetails = ({
         <div>
           <p>
             {dictionary?.map_ui?.economic_cost_calculator_intro}{" "}
-            {formatLayerYear(maxYear)}{", "}
+            {formatLayerYear(maxYear)}
+            {", "}
             {dictionary?.map_ui?.economic_cost_calculator_ending}
           </p>
         </div>
@@ -93,7 +98,17 @@ const AreaSummaryDetails = ({
     );
 
   return (
-    <div className={style.wrapper}>
+    <div
+      className={style.wrapper}
+      style={
+        isFloating
+          ? {
+              borderBottomLeftRadius: 12,
+              borderBottomRightRadius: 12,
+            }
+          : {}
+      }
+    >
       {selectedAreaTimeseriesData?.length ? (
         <div>
           <div className={style.label}>
@@ -105,6 +120,7 @@ const AreaSummaryDetails = ({
             data={selectedAreaTimeseriesData}
             yearsColors={yearsColors}
             chartHeight={90}
+            hideBarsAfterActiveYear={hideBarsAfterActiveYear}
           />
         </div>
       ) : null}

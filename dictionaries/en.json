@@ -141,5 +141,31 @@
     "contact_info": "Contact information available at",
     "read_regional_report": "Read the analysis of regional takeaways and recommendations",
     "download_report": "Download report in PDF format"
+  },
+  "panorama": {
+    "panorama": "Panorama",
+    "issue": "Issue",
+    "quarterly_report": "Quarterly report",
+    "download_report": "Download report",
+    "subscribe": "Subscribe for updates",
+    "sign_up": "Sign up for updates",
+    "key_findings": "Key findings",
+    "section": "Section",
+    "of": "of",
+    "mining_update": "Mining update:",
+    "see_on_map": "See on the interactive map",
+    "see_on_map_short": "See on the map",
+    "explore_map": "Explore map",
+    "issues": "Issues",
+    "current": "current",
+    "copyright": "Amazon Mining Watch | Panorama. All rights reserved.",
+    "overview": "Overview",
+    "conclusion": "Conclusion",
+    "browse_issues": "Browse issues",
+    "browse_previous_issues": "Browse previous issues",
+    "latest_issue": "Latest issue",
+    "all_issues": "All issues",
+    "read": "Read",
+    "read_issue": "Read issue"
   }
 }

@@ -92,11 +92,13 @@ const Store = ({
   lang,
   isBaseRoute,
   isEmbed = false,
+  syncQueryParams = true,
 }: Readonly<{
   children: React.ReactNode;
   lang: PERMITTED_LANGUAGES;
   isBaseRoute: boolean;
   isEmbed?: boolean;
+  syncQueryParams?: boolean; // set to false for maps driven by something other than the URL, e.g. scrollytelling
 }>) => {
   const defaultAreaType = isEmbed
     ? AREA_TYPES.filter((d) => d.allowInEmbed)[0]
@@ -129,7 +131,7 @@ const Store = ({
   useQueryParams({
     state,
     dispatch,
-    ignore: !isBaseRoute, // don't use query params in the content pages
+    ignore: !isBaseRoute || !syncQueryParams, // don't use query params in the content pages
   });
   useAreasData({ state, dispatch, lang });
 

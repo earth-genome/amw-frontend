@@ -1,0 +1,36 @@
+/* the map sits behind the report content, opaque report sections cover it,
+   including its overlays since this creates a new stacking context */
+.scrollyMap {
+  position: fixed;
+  inset: 0;
+  top: var(--top-navbar-height);
+  z-index: 0;
+  background: #0f1a12;
+}
+
+/* there is no footer, so the overlays sit closer to the bottom */
+.scrollyMap :global(.mapboxgl-ctrl-attrib) {
+  bottom: 0;
+}
+
+/* below the top navbar and the sticky report navbar */
+.miniMap {
+  position: fixed;
+  right: 20px;
+  top: calc(var(--top-navbar-height) + 48px + 16px);
+  padding: 4px;
+  border-radius: 8px;
+  background: #ffffffcc;
+  backdrop-filter: blur(30.75px);
+  pointer-events: none;
+}
+
+.scrollyMap .areaSummary {
+  bottom: 24px;
+}
+
+@media (max-width: 600px) {
+  .miniMap {
+    display: none;
+  }
+}

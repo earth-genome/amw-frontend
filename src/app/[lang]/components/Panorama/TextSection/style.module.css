@@ -1,0 +1,33 @@
+.textSection {
+  padding: 100px 0;
+}
+
+.light {
+  background: #173f35;
+}
+
+.dark {
+  background: var(--green-dark);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1.6fr;
+  column-gap: 60px;
+  row-gap: 24px;
+}
+
+@media (max-width: 800px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.title {
+  font-size: 36px;
+}
+
+.text {
+  font-size: 18px;
+  line-height: 1.6;
+}

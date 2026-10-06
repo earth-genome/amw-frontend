@@ -1,0 +1,154 @@
+/* transparent steps let the scrollytelling map show through, so they don't capture
+   pointer events, only their content does */
+.highlightedAreas {
+  color: #fff;
+}
+
+/* the top padding clears the top and report navbars, so long text isn't hidden,
+   the light background is positioned above the map to tint it */
+.intro {
+  position: relative;
+  z-index: 1;
+  background: rgba(0, 62, 54, 0.4);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 120px 20px 80px 20px;
+  box-sizing: border-box;
+  pointer-events: none;
+}
+
+.introContent {
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
+  text-align: center;
+  pointer-events: auto;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.8);
+}
+
+.introContent .introTitle {
+  font-size: 56px;
+  margin-bottom: 16px;
+}
+
+.introText {
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+/* slightly transparent, so the map shows through */
+.sectionIntro {
+  background: rgba(0, 62, 54, 0.92);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding: 120px 0 80px 0;
+  box-sizing: border-box;
+}
+
+.sectionIntroContent {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.sectionIntro .sectionTitle {
+  font-size: 64px;
+  max-width: 900px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 600px) {
+  .sectionIntro .sectionTitle {
+    font-size: 38px;
+  }
+}
+
+.sectionText {
+  font-size: 18px;
+  line-height: 1.7;
+  max-width: 760px;
+}
+
+/* the step stays active for a full screen after the card,
+   so the area can be seen on the map */
+.areaStep {
+  padding: 25vh 0 100vh 20px;
+  box-sizing: border-box;
+  pointer-events: none;
+}
+
+@media (max-width: 600px) {
+  .areaStep {
+    padding: 15vh 16px 100vh 16px;
+  }
+}
+
+.areaCard {
+  position: relative;
+  z-index: 1;
+  max-width: 480px;
+  padding: 28px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(15, 31, 24, 0.92);
+  pointer-events: auto;
+}
+
+.areaEyebrow {
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--green-light);
+  margin-bottom: 8px;
+}
+
+.areaTitle {
+  font-size: 28px;
+}
+
+.areaLocation {
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: 4px;
+}
+
+.areaText {
+  font-size: 16px;
+  line-height: 1.6;
+  margin: 16px 0;
+}
+
+.miningUpdate {
+  font-family: var(--body-text-font);
+  font-size: 16px;
+  line-height: 1.6;
+  border-left: 2px solid var(--green-light);
+  padding-left: 12px;
+  margin-bottom: 16px;
+}
+
+/* on mobile, the area summary flows below the card instead of being fixed on the map */
+.areaSummaryWrapper {
+  position: relative;
+  z-index: 1;
+  max-width: 480px;
+  margin-top: 16px;
+  pointer-events: auto;
+}
+
+.areaSummaryWrapper .areaSummary {
+  position: relative;
+  inset: auto;
+  width: auto;
+}
+
+.miningUpdateLabel {
+  float: left;
+  margin-right: 4px;
+  font-weight: 700;
+  color: var(--green-light);
+}
