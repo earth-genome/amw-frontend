@@ -48,7 +48,7 @@ const AreaSummary: React.FC<AreaProps> = ({
     calculatorIsLoading,
     // calculatorError,
   } = useMiningCalculator(
-    hideMiningCalculator ? [] : selectedAreaData?.locations,
+    hideMiningCalculator ? [] : selectedAreaData?.locations_per_year?.[maxYear],
   );
 
   const [affectedAreaHa, economicCost] = useMemo(() => {
