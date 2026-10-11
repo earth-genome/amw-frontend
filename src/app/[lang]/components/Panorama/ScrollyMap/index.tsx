@@ -159,22 +159,21 @@ const ScrollyMap = ({ dictionary }: ScrollyMapProps) => {
       // padding. cameraForBounds already accounts for the current padding of the map,
       // so it only gets the difference with the padding the map will have after the fly
       const currentPadding = map.getPadding();
+      const getFitPadding = (side: keyof Padding) =>
+        Math.max(
+          0,
+          margins[side] + padding[side] - (currentPadding[side] ?? 0),
+        );
       const fitPadding = {
-        top: Math.max(0, margins.top + padding.top - currentPadding.top),
-        bottom: Math.max(
-          0,
-          margins.bottom + padding.bottom - currentPadding.bottom,
-        ),
-        left: Math.max(0, margins.left + padding.left - currentPadding.left),
-        right: Math.max(
-          0,
-          margins.right + padding.right - currentPadding.right,
-        ),
+        top: getFitPadding("top"),
+        bottom: getFitPadding("bottom"),
+        left: getFitPadding("left"),
+        right: getFitPadding("right"),
       };
       const camera = map.cameraForBounds(selectedAreaData.bbox, {
         padding: fitPadding,
       });
-      if (camera?.zoom === undefined) return undefined;
+      if (!camera || camera.zoom === undefined) return undefined;
 
       // the center of the area, which the padding of the fly places in the middle of the
       // part of the map left by the cards
