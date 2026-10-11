@@ -1,6 +1,6 @@
 "use client";
 import "./style.css";
-import React from "react";
+import React, { useMemo } from "react";
 import Map, { Layer, Source } from "react-map-gl";
 import geojson from "@/app/[lang]/data/amazon_aca.json";
 import { GeoJSONType } from "@/app/[lang]/components/Map/helpers";
@@ -8,9 +8,44 @@ import { GeoJSONType } from "@/app/[lang]/components/Map/helpers";
 interface MiniMapProps {
   bounds?: GeoJSONType;
   showMinimapBounds: boolean;
+  width?: number;
+  height?: number;
+  // a circle at the center of the bounds stays visible when the bounds are tiny
+  boundsMarker?: "rectangle" | "circle";
 }
 
-const MiniMap: React.FC<MiniMapProps> = ({ bounds, showMinimapBounds }) => {
+const DEFAULT_WIDTH = 165;
+const DEFAULT_HEIGHT = 100;
+const DEFAULT_ZOOM = 1;
+
+const MiniMap: React.FC<MiniMapProps> = ({
+  bounds,
+  showMinimapBounds,
+  width = DEFAULT_WIDTH,
+  height = DEFAULT_HEIGHT,
+  boundsMarker = "rectangle",
+}) => {
+  // scale the zoom with the width, so the whole Amazon fits at any size
+  const zoom = DEFAULT_ZOOM + Math.log2(width / DEFAULT_WIDTH);
+
+  const boundsCenter = useMemo<
+    GeoJSON.Feature<GeoJSON.Point> | undefined
+  >(() => {
+    const ring = bounds?.geometry?.coordinates?.[0];
+    if (!ring) return undefined;
+    // southwest and northeast corners of the bounds polygon
+    const [swLng, swLat] = ring[0];
+    const [neLng, neLat] = ring[2];
+    return {
+      type: "Feature",
+      geometry: {
+        type: "Point",
+        coordinates: [(swLng + neLng) / 2, (swLat + neLat) / 2],
+      },
+      properties: {},
+    };
+  }, [bounds]);
+
   return (
     <div className="mini-map">
       <Map
@@ -26,9 +61,9 @@ const MiniMap: React.FC<MiniMapProps> = ({ bounds, showMinimapBounds }) => {
         }}
         dragPan={false}
         scrollZoom={false}
-        zoom={1}
+        zoom={zoom}
         touchZoomRotate={false}
-        style={{ width: 165, height: 100 }}
+        style={{ width, height }}
         onLoad={(e) => {
           const map = e.target;
           map.doubleClickZoom.disable();
@@ -70,7 +105,24 @@ const MiniMap: React.FC<MiniMapProps> = ({ bounds, showMinimapBounds }) => {
           }}
         />
 
-        {showMinimapBounds && (
+        {showMinimapBounds && boundsMarker === "circle" && boundsCenter && (
+          <Source type="geojson" data={boundsCenter} id="bounds-center-source">
+            <Layer
+              id={"bounds-circle"}
+              type={"circle"}
+              paint={{
+                "circle-color": "#ffb301",
+                "circle-opacity": 0.5,
+                "circle-radius": 5,
+                "circle-stroke-color": "#ffb301",
+                "circle-stroke-width": 2,
+                "circle-stroke-opacity": 0.9,
+              }}
+            />
+          </Source>
+        )}
+
+        {showMinimapBounds && boundsMarker === "rectangle" && (
           <Source type="geojson" data={bounds} id="bounds-source">
             <Layer
               id={"bounds-outline"}

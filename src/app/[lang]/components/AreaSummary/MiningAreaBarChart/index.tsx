@@ -17,6 +17,8 @@ interface MiningAreaBarChartProps {
   data: AreasTimeseriesData;
   chartHeight?: number;
   yearsColors: string[];
+  // removes the bars after the active year, instead of just making them lighter
+  hideBarsAfterActiveYear?: boolean;
 }
 
 const MiningAreaBarChart = ({
@@ -24,6 +26,7 @@ const MiningAreaBarChart = ({
   dictionary,
   chartHeight = 100,
   yearsColors,
+  hideBarsAfterActiveYear = false,
 }: MiningAreaBarChartProps) => {
   const [state, dispatch] = useContext(Context)!;
   const containerRef = useRef<HTMLDivElement>(null);
@@ -56,7 +59,7 @@ const MiningAreaBarChart = ({
     }));
 
     // add color and period change calculation
-    return [...dataWithPrecision].map((d, i) => ({
+    const dataWithColors = [...dataWithPrecision].map((d, i) => ({
       ...d,
       color: yearsColors[i],
       area_change_ha:
@@ -64,7 +67,12 @@ const MiningAreaBarChart = ({
           ? d.area_ha_significant - dataWithPrecision[i - 1].area_ha_significant
           : null,
     }));
-  }, [data, yearsColors]);
+
+    // filter after the colors are assigned, so they stay aligned with the years
+    return hideBarsAfterActiveYear
+      ? dataWithColors.filter((d) => d.admin_year <= Number(activeYear))
+      : dataWithColors;
+  }, [data, yearsColors, hideBarsAfterActiveYear, activeYear]);
 
   if (!dataProcessed?.length) return null;
 

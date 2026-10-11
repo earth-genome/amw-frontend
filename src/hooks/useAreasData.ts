@@ -1,4 +1,8 @@
-import { AREA_IDS_TO_HIDE } from "@/constants/map";
+import {
+  AREA_IDS_TO_HIDE,
+  getAreaDataUrl,
+  getAreaTimeseriesUrl,
+} from "@/constants/map";
 import { IState } from "@/lib/Store";
 import { AreasData } from "@/types/types";
 import { PERMITTED_LANGUAGES } from "@/utils/content";
@@ -21,12 +25,21 @@ const swrConfig = {
 };
 
 const useAreasData = ({ state, dispatch, lang }: Props) => {
-  const { selectedAreaType, pendingSelectedAreaId, isQueryChecked } = state;
+  const {
+    selectedAreaType,
+    pendingSelectedAreaId,
+    isQueryChecked,
+    dataSnapshot,
+  } = state;
   // wait for query to be checked before loading data
   const areasDataUrl =
-    selectedAreaType && isQueryChecked ? selectedAreaType.url : null;
+    selectedAreaType && isQueryChecked
+      ? getAreaDataUrl(selectedAreaType, dataSnapshot)
+      : null;
   const areasTimeseriesDataUrl =
-    selectedAreaType && isQueryChecked ? selectedAreaType.timeseriesUrl : null;
+    selectedAreaType && isQueryChecked
+      ? getAreaTimeseriesUrl(selectedAreaType, dataSnapshot)
+      : null;
 
   const {
     data: areasData,
@@ -64,8 +77,11 @@ const useAreasData = ({ state, dispatch, lang }: Props) => {
       areasDataError: areasDataError,
     });
 
-    // if there is a pending area id to be set from the query parameters
-    if (pendingSelectedAreaId) {
+    // if there is a pending area id to be set from the query parameters or a
+    // scrollytelling step, only once the data of its area type has loaded: before the
+    // request starts (e.g. right after the area type changes) there is no data yet and
+    // the pending area would be lost
+    if (pendingSelectedAreaId && areasData) {
       dispatch({
         type: "SET_SELECTED_AREA_BY_ID",
         selectedAreaId: pendingSelectedAreaId,
