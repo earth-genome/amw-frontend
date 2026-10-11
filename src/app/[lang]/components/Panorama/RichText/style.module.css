@@ -1,0 +1,16 @@
+.richText {
+  font-family: var(--body-text-font);
+}
+
+.richText p {
+  margin: 0 0 1em 0;
+  font-size: 1.15rem;
+}
+
+.richText p:last-child {
+  margin-bottom: 0;
+}
+
+.richText a {
+  color: var(--green-light);
+}

@@ -1,0 +1,83 @@
+.hero {
+  background-color: #173f35;
+  background-size: cover;
+  background-position: center;
+  min-height: calc(100vh - var(--top-navbar-height));
+  margin-top: var(--top-navbar-height);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 80px 20px;
+  box-sizing: border-box;
+}
+
+/* darkens the background image, so the centered text stays readable */
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 26, 18, 0.65);
+}
+
+.content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 900px;
+}
+
+.issue {
+  border: 1px solid var(--green-light);
+  border-radius: 999px;
+  padding: 3px 14px;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--green-light);
+  margin-bottom: 16px;
+}
+
+.hero .title {
+  font-size: 120px;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 600px) {
+  .hero .title {
+    font-size: 56px;
+  }
+}
+
+.coverage {
+  font-size: 14px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.hero .tagline {
+  font-size: 18px;
+  margin: 0 0 32px 0;
+}
+
+.buttons {
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.browseIssues {
+  font-family: var(--body-text-font);
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 40px;
+}
+
+.browseIssues:hover {
+  color: #fff;
+}
+
+.hero .logos {
+  justify-content: center;
+}
