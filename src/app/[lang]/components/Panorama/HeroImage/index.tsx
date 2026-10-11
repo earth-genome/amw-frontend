@@ -1,3 +1,4 @@
+import Image from "next/image";
 import shared from "@/app/[lang]/components/Panorama/panorama.module.css";
 import style from "./style.module.css";
 import RichText from "@/app/[lang]/components/Panorama/RichText";
@@ -13,11 +14,12 @@ const HeroImage = ({ heroImage }: HeroImageProps) => {
 
   return (
     <section className={`${shared.section} ${style.heroImage}`}>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
+      <Image
         className={style.image}
         src={imageUrl}
         alt={heroImage.image?.alternativeText || ""}
+        fill
+        sizes="100vw"
       />
       <RichText className={style.caption} content={heroImage.caption} />
     </section>

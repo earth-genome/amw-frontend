@@ -1,6 +1,7 @@
 import shared from "@/app/[lang]/components/Panorama/panorama.module.css";
 import style from "./style.module.css";
 import RichText from "@/app/[lang]/components/Panorama/RichText";
+import PartnerLogos from "@/app/[lang]/components/Panorama/PartnerLogos";
 import { getPanoramaMediaUrl, Hero } from "@/cms/panorama";
 import Link from "next/link";
 import SmoothScrollLink from "@/app/[lang]/components/Panorama/SmoothScrollLink";
@@ -54,6 +55,8 @@ const HomeHero = ({
             </Link>
           )}
         </div>
+
+        <PartnerLogos className={style.logos} />
       </div>
     </section>
   );

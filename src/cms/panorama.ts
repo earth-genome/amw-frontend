@@ -24,8 +24,9 @@ export const getPanoramaReportUrl = (issueNumber: number) =>
     "populate[conclusion]=true",
   ]);
 
-// only the plain fields (title, issueNumber, summary, etc.), without the components
+// the plain fields (title, issueNumber, summary, etc.) and the hero image for the thumbnails
 export const PANORAMA_REPORTS_LIST_URL = buildUrl("panorama-reports", [
+  "populate[heroImage][populate][image]=true",
   "sort=issueNumber:desc",
   "pagination[pageSize]=100",
 ]);
@@ -201,6 +202,7 @@ export type PanoramaReportListItem = Pick<
   | "issueNumber"
   | "dateCoverage"
   | "datePublished"
+  | "heroImage"
 >;
 
 interface PanoramaHome extends StrapiDocument {
@@ -210,6 +212,8 @@ interface PanoramaHome extends StrapiDocument {
   acknowledgements: TextSection | null;
   viewMapCallToAction: ViewMapCta | null;
   signUp: SignUp | null;
+  // shows the latest issue section, hidden when empty
+  displayLatestIssuesSection?: boolean | null;
 }
 
 export type PanoramaReportsResponse = StrapiResponse<PanoramaReport[]>;

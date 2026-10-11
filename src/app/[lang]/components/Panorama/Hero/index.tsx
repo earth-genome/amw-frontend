@@ -2,6 +2,7 @@ import shared from "@/app/[lang]/components/Panorama/panorama.module.css";
 import Link from "next/link";
 import style from "./style.module.css";
 import RichText from "@/app/[lang]/components/Panorama/RichText";
+import PartnerLogos from "@/app/[lang]/components/Panorama/PartnerLogos";
 import { getPanoramaMediaUrl, StrapiMedia } from "@/cms/panorama";
 
 interface HeroProps {
@@ -76,32 +77,7 @@ const Hero = ({
           {dictionary?.panorama?.browse_previous_issues}
         </Link>
 
-        <div className={style.logos}>
-          <Link
-            className={`${style.logo} ${style.acLogo}`}
-            href="https://www.amazonconservation.org/"
-          >
-            Amazon Conservation
-          </Link>
-          <Link
-            className={`${style.logo} ${style.pcLogo}`}
-            href="https://pulitzercenter.org"
-          >
-            Pulitzer Center
-          </Link>
-          <Link
-            className={`${style.logo} ${style.egLogo}`}
-            href="https://earthgenome.org/"
-          >
-            Earth Genome
-          </Link>
-          <Link
-            className={`${style.logo} ${style.mooreLogo}`}
-            href="https://www.moore.org/"
-          >
-            Gordon and Betty Moore Foundation
-          </Link>
-        </div>
+        <PartnerLogos className={style.logos} />
       </div>
     </section>
   );

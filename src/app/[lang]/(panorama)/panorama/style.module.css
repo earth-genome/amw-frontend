@@ -4,3 +4,8 @@
   background: #0f1a12;
   padding: 40px 0;
 }
+
+/* anchor for the "Issues" links when the latest issue section is hidden */
+.anchor {
+  scroll-margin-top: calc(var(--top-navbar-height) + 48px);
+}

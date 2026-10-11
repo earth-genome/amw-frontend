@@ -1,8 +1,13 @@
+import Image from "next/image";
 import Link from "next/link";
 import shared from "@/app/[lang]/components/Panorama/panorama.module.css";
 import style from "./style.module.css";
 import RichText from "@/app/[lang]/components/Panorama/RichText";
-import { getPanoramaReportPath, PanoramaReportListItem } from "@/cms/panorama";
+import {
+  getPanoramaMediaUrl,
+  getPanoramaReportPath,
+  PanoramaReportListItem,
+} from "@/cms/panorama";
 
 interface IssuesListProps {
   dictionary: { [key: string]: any };
@@ -28,12 +33,25 @@ const IssuesList = ({ dictionary, lang, reports, id }: IssuesListProps) => {
         <ul className={style.issues}>
           {reports.map((report) => {
             const reportPath = getPanoramaReportPath(lang, report.issueNumber);
+            // the same image as the hero image of the report
+            const thumbnail = report.heroImage?.image;
+            const thumbnailUrl = getPanoramaMediaUrl(thumbnail?.url);
             return (
               <li key={report.issueNumber}>
                 {/* the whole row links to the issue */}
                 <Link href={reportPath} className={style.issue}>
                   <div className={style.issueNumber}>
                     {padNumber(report.issueNumber)}
+                  </div>
+                  <div className={style.issueThumbnail}>
+                    {thumbnailUrl && (
+                      <Image
+                        src={thumbnailUrl}
+                        alt={thumbnail?.alternativeText || report.title}
+                        fill
+                        sizes="(max-width: 600px) 100vw, 220px"
+                      />
+                    )}
                   </div>
                   <div>
                     <div className={`${shared.eyebrow} ${style.issueCoverage}`}>

@@ -14,6 +14,7 @@ import type { MapRef } from "react-map-gl";
 import AreaSummary from "@/app/[lang]/components/AreaSummary";
 import MiniMap from "@/app/[lang]/components/MiniMap";
 import MapLayers from "@/app/[lang]/components/Map/MapLayers";
+import Legend from "@/app/[lang]/components/Map/Legend";
 import {
   INITIAL_VIEW,
   MAP_MIN_ZOOM,
@@ -54,6 +55,12 @@ const EXPLORE_HANDLERS = [
   "boxZoom",
 ] as const;
 
+// period of the story, restored when exiting the exploration
+interface StoryPeriod {
+  activeYear: string;
+  isCumulative: boolean;
+}
+
 interface ExploreBounds {
   west: number;
   east: number;
@@ -78,7 +85,7 @@ const getCameraPadding = (width: number) =>
 
 // a barebones version of the main map, driven by the active scrollytelling step
 const ScrollyMap = ({ dictionary }: ScrollyMapProps) => {
-  const [state] = useContext(Context)!;
+  const [state, dispatch] = useContext(Context)!;
   const {
     activeParams,
     activeLabel,
@@ -91,7 +98,7 @@ const ScrollyMap = ({ dictionary }: ScrollyMapProps) => {
   const [bounds, setBounds] = useState<GeoJSONType | undefined>(undefined);
   const windowSize = useWindowSize();
 
-  const { selectedArea, selectedAreaData } = state;
+  const { selectedArea, selectedAreaData, activeYear, isCumulative } = state;
   // on mobile, the area summary is displayed in the scrollytelling steps
   const isDesktop =
     windowSize !== undefined && windowSize.width > SCROLLY_MOBILE_BREAKPOINT;
@@ -111,6 +118,8 @@ const ScrollyMap = ({ dictionary }: ScrollyMapProps) => {
   // scroll position to go back to when exiting the exploration
   const scrollYRef = useRef(0);
   const exploreBoundsRef = useRef<ExploreBounds>();
+  // the period can be changed with the legend while exploring
+  const storyPeriodRef = useRef<StoryPeriod>();
   // timeout of the fly when entering or exiting the exploration
   const transitionTimeoutRef = useRef<number>();
   // the map can be moved once it has flown to the story view
@@ -241,6 +250,7 @@ const ScrollyMap = ({ dictionary }: ScrollyMapProps) => {
     document.documentElement.style.overflow = "hidden";
 
     hideHint();
+    storyPeriodRef.current = { activeYear, isCumulative };
     setExploreState("exploring");
 
     // first fly to the story view, in case the map was still moving towards it. The
@@ -262,6 +272,24 @@ const ScrollyMap = ({ dictionary }: ScrollyMapProps) => {
     setCanMoveMap(false);
     map.setMinZoom(MAP_MIN_ZOOM);
     exploreBoundsRef.current = undefined;
+
+    // go back to the period of the story, if it was changed with the legend
+    const storyPeriod = storyPeriodRef.current;
+    if (storyPeriod) {
+      if (storyPeriod.activeYear !== activeYear) {
+        dispatch({
+          type: "SET_ACTIVE_YEAR",
+          activeYear: storyPeriod.activeYear,
+        });
+      }
+      if (storyPeriod.isCumulative !== isCumulative) {
+        dispatch({
+          type: "SET_IS_CUMULATIVE",
+          isCumulative: storyPeriod.isCumulative,
+        });
+      }
+      storyPeriodRef.current = undefined;
+    }
 
     // fly back to the story view, then show the story where it was left
     const isFlying = flyToStory(EXPLORE_FLY_DURATION);
@@ -437,6 +465,23 @@ const ScrollyMap = ({ dictionary }: ScrollyMapProps) => {
             {activeLabel && (
               <span className={style.statusTitle}>{activeLabel}</span>
             )}
+          </div>
+
+          {/* the period can be changed while exploring, it goes back to the
+              period of the story when exiting */}
+          <div className={style.legend}>
+            <Legend
+              years={LAYER_YEARS}
+              activeYear={activeYear}
+              setActiveYear={(value) =>
+                dispatch({ type: "SET_ACTIVE_YEAR", activeYear: value })
+              }
+              dictionary={dictionary}
+              isCumulative={isCumulative}
+              setIsCumulative={(value) =>
+                dispatch({ type: "SET_IS_CUMULATIVE", isCumulative: value })
+              }
+            />
           </div>
 
           <div className={style.exploreControls}>

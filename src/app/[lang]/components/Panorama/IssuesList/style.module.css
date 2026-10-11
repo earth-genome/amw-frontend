@@ -28,7 +28,7 @@
 
 .issue {
   display: grid;
-  grid-template-columns: 160px 1fr auto;
+  grid-template-columns: 120px 220px 1fr auto;
   align-items: center;
   gap: 24px;
   padding: 36px 18px;
@@ -46,6 +46,12 @@
   text-decoration: underline;
 }
 
+@media (max-width: 900px) {
+  .issue {
+    grid-template-columns: 100px 160px 1fr auto;
+  }
+}
+
 @media (max-width: 600px) {
   .issue {
     grid-template-columns: 1fr;
@@ -59,6 +65,30 @@
   font-weight: 600;
   line-height: 1;
   color: var(--green-light);
+}
+
+.issueThumbnail {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  border-radius: 4px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* fills the thumbnail, see the fill prop of next/image */
+.issueThumbnail img {
+  object-fit: cover;
+  transition: transform 0.3s ease-in-out;
+}
+
+.issue:hover .issueThumbnail img {
+  transform: scale(1.03);
+}
+
+@media (max-width: 600px) {
+  .issueThumbnail {
+    margin: 8px 0;
+  }
 }
 
 .issuesList .issueCoverage {

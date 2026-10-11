@@ -25,6 +25,9 @@
   position: relative;
   padding: 80px 60px 60px 60px;
   max-width: 1200px;
+  /* lets the content shrink within the hero, instead of overflowing it */
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 @media (max-width: 600px) {
@@ -44,7 +47,8 @@
 }
 
 .hero .title {
-  font-size: clamp(72px, 12vw, 180px);
+  font-size: clamp(40px, 12vw, 180px);
+  overflow-wrap: break-word;
   color: var(--green-light);
   margin: 8px 0 16px 0;
 }
@@ -59,4 +63,8 @@
 .hero .button {
   padding: 16px 40px;
   font-size: 14px;
+}
+
+.hero .logos {
+  margin-top: 40px;
 }

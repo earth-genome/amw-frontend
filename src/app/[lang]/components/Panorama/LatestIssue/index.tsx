@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import shared from "@/app/[lang]/components/Panorama/panorama.module.css";
 import style from "./style.module.css";
@@ -31,11 +32,12 @@ const LatestIssue = ({ dictionary, lang, report, id }: LatestIssueProps) => {
         <div className={style.grid}>
           <Link href={reportPath} className={style.imageWrapper}>
             {imageUrl && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
+              <Image
                 className={style.image}
                 src={imageUrl}
                 alt={report.heroImage?.image?.alternativeText || ""}
+                fill
+                sizes="(max-width: 800px) 100vw, 50vw"
               />
             )}
           </Link>

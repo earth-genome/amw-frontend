@@ -118,6 +118,19 @@
   animation: fadeIn 0.4s ease-in-out;
 }
 
+/* period selector on the bottom left, above the mapbox logo */
+.legend {
+  position: fixed;
+  left: 20px;
+  bottom: 40px;
+  z-index: 10;
+  padding: 6px;
+  border-radius: 12px;
+  background: #ffffffcc;
+  backdrop-filter: blur(30.75px);
+  animation: fadeIn 0.4s ease-in-out;
+}
+
 .status {
   left: 20px;
   gap: 10px;

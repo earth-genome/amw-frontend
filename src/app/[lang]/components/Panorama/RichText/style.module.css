@@ -1,5 +1,24 @@
 .richText {
   font-family: var(--body-text-font);
+  /* long words and links, e.g. urls, wrap instead of overflowing on small screens */
+  overflow-wrap: break-word;
+}
+
+/* images and other media in the markdown fit the text width, instead of their
+   natural size, which overflows the page on small screens */
+.richText img,
+.richText video,
+.richText iframe {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* wide tables scroll within the text */
+.richText table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
 }
 
 .richText p {

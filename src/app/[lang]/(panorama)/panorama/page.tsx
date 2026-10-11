@@ -77,7 +77,11 @@ const Page = async ({ params: { lang } }: PageProps) => {
 
   const home = homeResponse?.data;
   const reports = reportsResponse?.data ?? [];
-  const latestReport = await fetchLatestReport(reports[0]?.issueNumber, lang);
+  // the latest issue section is hidden unless enabled in the CMS
+  const displayLatestIssue = !!home?.displayLatestIssuesSection;
+  const latestReport = displayLatestIssue
+    ? await fetchLatestReport(reports[0]?.issueNumber, lang)
+    : undefined;
 
   return (
     <main>
@@ -88,12 +92,17 @@ const Page = async ({ params: { lang } }: PageProps) => {
         signUpLink={home?.signUp?.link}
       />
       <TextSection id={HOME_ANCHORS.about} section={home?.intro} />
-      <LatestIssue
-        id={HOME_ANCHORS.issues}
-        dictionary={dictionary}
-        lang={lang}
-        report={latestReport}
-      />
+      {displayLatestIssue ? (
+        <LatestIssue
+          id={HOME_ANCHORS.issues}
+          dictionary={dictionary}
+          lang={lang}
+          report={latestReport}
+        />
+      ) : (
+        // keeps the "Issues" links working, pointing to the list of issues
+        <div id={HOME_ANCHORS.issues} className={style.anchor} />
+      )}
       <IssuesList
         id={HOME_ANCHORS.allIssues}
         dictionary={dictionary}

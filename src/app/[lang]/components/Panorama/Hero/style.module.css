@@ -78,48 +78,6 @@
   color: #fff;
 }
 
-.logos {
-  display: flex;
-  flex-wrap: wrap;
+.hero .logos {
   justify-content: center;
-  align-items: center;
-  gap: 24px;
-}
-
-.logo {
-  display: inline-block;
-  text-indent: -9999px;
-  overflow: hidden;
-  height: 48px;
-  background-repeat: no-repeat;
-  background-position: center center;
-  background-size: contain;
-  /* display partner logos in white */
-  filter: brightness(0) invert(1);
-  opacity: 0.5;
-  transition: opacity 0.2s ease-in-out;
-}
-
-.logo:hover {
-  opacity: 0.8;
-}
-
-.acLogo {
-  width: 100px;
-  background-image: url("/images/ac-logo-white.png");
-}
-
-.pcLogo {
-  width: 140px;
-  background-image: url("/images/pc-logo.png");
-}
-
-.egLogo {
-  width: 100px;
-  background-image: url("/images/eg-logo.png");
-}
-
-.mooreLogo {
-  width: 80px;
-  background-image: url("/images/moore-logo.png");
 }

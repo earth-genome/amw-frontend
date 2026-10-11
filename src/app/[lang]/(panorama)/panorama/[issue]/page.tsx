@@ -155,6 +155,12 @@ const Page = async ({ params: { lang, issue } }: PageProps) => {
               )}
             />
             <HeroImage heroImage={report.heroImage} />
+            <ReportNav
+              dictionary={dictionary}
+              issueNumber={report.issueNumber}
+              items={navItems}
+              progressTargetId={REPORT_ANCHORS.highlightedAreas}
+            />
             <TextSection
               id={REPORT_ANCHORS.overview}
               section={report.introduction}
@@ -165,12 +171,6 @@ const Page = async ({ params: { lang, issue } }: PageProps) => {
               keyFindings={report.keyFindings}
               dateCoverage={report.dateCoverage}
               lang={lang}
-            />
-            <ReportNav
-              dictionary={dictionary}
-              issueNumber={report.issueNumber}
-              items={navItems}
-              progressTargetId={REPORT_ANCHORS.highlightedAreas}
             />
             <HighlightedAreas
               dictionary={dictionary}
