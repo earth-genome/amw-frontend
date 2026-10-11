@@ -26,9 +26,7 @@
 
 @media (max-width: 600px) {
   .highlightTitle {
-    /* shrinks on narrow screens, so long figures don't overflow */
-    font-size: clamp(48px, 18vw, 72px);
-    overflow-wrap: anywhere;
+    font-size: 72px;
   }
 }
 

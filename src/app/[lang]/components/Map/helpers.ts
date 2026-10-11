@@ -3,7 +3,9 @@ import { LngLatBounds } from "mapbox-gl";
 export type GeoJSONType = GeoJSON.Feature<GeoJSON.Polygon>;
 
 // This function converts map bounds to a GeoJSON Polygon representation.
-export function convertBoundsToGeoJSON(bounds: LngLatBounds): GeoJSONType {
+export function convertBoundsToGeoJSON(
+  bounds: Pick<LngLatBounds, "getSouthWest" | "getNorthEast">,
+): GeoJSONType {
   // Extract the southwest and northeast points of the bounds
   const sw = bounds.getSouthWest();
   const ne = bounds.getNorthEast();

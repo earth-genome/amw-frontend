@@ -131,19 +131,31 @@
   margin-bottom: 16px;
 }
 
-/* on mobile, the area summary flows below the card instead of being fixed on the map */
+/* the area summary flows below the card instead of being fixed on the map,
+   so the map on the right is kept clear. On desktop, it comes well after the card,
+   so the area can be seen on the map in between */
 .areaSummaryWrapper {
   position: relative;
   z-index: 1;
   max-width: 480px;
-  margin-top: 16px;
+  margin-top: 30vh;
   pointer-events: auto;
 }
 
+/* it keeps its width on desktop, on mobile it spans the card width */
 .areaSummaryWrapper .areaSummary {
   position: relative;
   inset: auto;
-  width: auto;
+}
+
+@media (max-width: 600px) {
+  .areaSummaryWrapper {
+    margin-top: 16px;
+  }
+
+  .areaSummaryWrapper .areaSummary {
+    width: auto;
+  }
 }
 
 .miningUpdateLabel {

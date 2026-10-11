@@ -2,11 +2,9 @@
 import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import AreaSummary from "@/app/[lang]/components/AreaSummary";
 import { useScrolly } from "@/app/[lang]/components/Panorama/ScrollyProvider";
-import { SCROLLY_MOBILE_BREAKPOINT } from "@/app/[lang]/components/Panorama/constants";
 import { Context } from "@/lib/Store";
 import { getColorsForYears, LAYER_YEARS } from "@/constants/map";
 import { MapParams } from "@/utils/mapParams";
-import useWindowSize from "@/hooks/useWindowSize";
 
 interface StepAreaSummaryProps {
   dictionary: { [key: string]: any };
@@ -15,7 +13,8 @@ interface StepAreaSummaryProps {
   summaryClassName?: string;
 }
 
-// on mobile, the area summary of the active step flows with the scroll, below its card
+// the area summary of the active step flows with the scroll, below its card, so the map
+// on the right is kept clear
 const StepAreaSummary = ({
   dictionary,
   params,
@@ -24,16 +23,12 @@ const StepAreaSummary = ({
 }: StepAreaSummaryProps) => {
   const [state] = useContext(Context)!;
   const { activeParams, hideMiningCalculator } = useScrolly();
-  const windowSize = useWindowSize();
   const yearsColors = useMemo(() => getColorsForYears(LAYER_YEARS), []);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [placeholderHeight, setPlaceholderHeight] = useState(0);
 
-  const isMobile =
-    windowSize !== undefined && windowSize.width <= SCROLLY_MOBILE_BREAKPOINT;
   // the store only holds the data of the active step's area
   const isShown =
-    isMobile &&
     activeParams === params &&
     !!params.areaId &&
     state.selectedArea?.value === params.areaId;
@@ -49,8 +44,6 @@ const StepAreaSummary = ({
     observer.observe(element);
     return () => observer.disconnect();
   }, [isShown]);
-
-  if (!isMobile) return null;
 
   return (
     <div

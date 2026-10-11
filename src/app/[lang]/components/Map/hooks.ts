@@ -37,11 +37,40 @@ export const useReorderLayers = (mapRef: RefObject<MapRef>) => {
   }, [mapRef]);
 };
 
-// current map bounds as GeoJSON, used by the minimap
+export interface BoundsPadding {
+  top?: number;
+  bottom?: number;
+  left?: number;
+  right?: number;
+}
+
+// current map bounds as GeoJSON, used by the minimap. The padding, in pixels, leaves out
+// the parts of the map covered by UI elements, so the bounds match the visible area
 export const getBoundsGeoJSON = (
   mapRef: RefObject<MapRef>,
+  padding?: BoundsPadding,
 ): GeoJSONType | undefined => {
-  const bounds = mapRef.current?.getBounds();
-  if (!bounds) return undefined;
-  return convertBoundsToGeoJSON(bounds);
+  const map = mapRef.current;
+  if (!map) return undefined;
+
+  if (!padding) {
+    const bounds = map.getBounds();
+    if (!bounds) return undefined;
+    return convertBoundsToGeoJSON(bounds);
+  }
+
+  const { width, height } = map.getContainer().getBoundingClientRect();
+  const { top = 0, bottom = 0, left = 0, right = 0 } = padding;
+  // fall back to the whole map if the padding leaves no room
+  const minX = left < width - right ? left : 0;
+  const maxX = left < width - right ? width - right : width;
+  const minY = top < height - bottom ? top : 0;
+  const maxY = top < height - bottom ? height - bottom : height;
+
+  const southWest = map.unproject([minX, maxY]);
+  const northEast = map.unproject([maxX, minY]);
+  return convertBoundsToGeoJSON({
+    getSouthWest: () => southWest,
+    getNorthEast: () => northEast,
+  });
 };

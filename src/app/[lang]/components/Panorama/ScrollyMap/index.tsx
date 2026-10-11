@@ -5,13 +5,11 @@ import React, {
   useCallback,
   useContext,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from "react";
 import Map, { NavigationControl } from "react-map-gl";
 import type { MapRef } from "react-map-gl";
-import AreaSummary from "@/app/[lang]/components/AreaSummary";
 import MiniMap from "@/app/[lang]/components/MiniMap";
 import MapLayers from "@/app/[lang]/components/Map/MapLayers";
 import Legend from "@/app/[lang]/components/Map/Legend";
@@ -28,7 +26,7 @@ import {
 import { GeoJSONType } from "@/app/[lang]/components/Map/helpers";
 import { useScrolly } from "@/app/[lang]/components/Panorama/ScrollyProvider";
 import { Context } from "@/lib/Store";
-import { getColorsForYears, LAYER_YEARS } from "@/constants/map";
+import { LAYER_YEARS } from "@/constants/map";
 import { hasMapPosition } from "@/utils/mapParams";
 import useWindowSize from "@/hooks/useWindowSize";
 import { SCROLLY_MOBILE_BREAKPOINT } from "@/app/[lang]/components/Panorama/constants";
@@ -71,35 +69,35 @@ interface ExploreBounds {
 const clamp = (value: number, min: number, max: number) =>
   Math.min(max, Math.max(min, value));
 
-// leaves room for the step cards on the left and the area summary on the right,
-// on mobile they flow with the scroll so the area can be centered
-const getCameraPadding = (width: number) =>
+type Padding = { top: number; bottom: number; left: number; right: number };
+
+const NO_PADDING: Padding = { top: 0, bottom: 0, left: 0, right: 0 };
+
+// padding of the map while following the steps with cards: on desktop the step cards and
+// area summaries cover the left of the map, so the camera is centered on the remaining area
+// on the right. On mobile they flow with the scroll over the whole map
+const getStepPadding = (width: number): Padding =>
+  width <= SCROLLY_MOBILE_BREAKPOINT
+    ? NO_PADDING
+    : { ...NO_PADDING, left: Math.min(560, Math.round(width * 0.4)) };
+
+// margins around the area, within the map padding
+const getAreaMargins = (width: number): Padding =>
   width <= SCROLLY_MOBILE_BREAKPOINT
     ? { top: 60, bottom: 60, left: 20, right: 20 }
-    : {
-        top: 80,
-        bottom: 80,
-        left: Math.min(560, Math.round(width * 0.4)),
-        right: width <= 1000 ? 40 : 440,
-      };
+    : { top: 80, bottom: 80, left: 40, right: 40 };
 
 // a barebones version of the main map, driven by the active scrollytelling step
 const ScrollyMap = ({ dictionary }: ScrollyMapProps) => {
   const [state, dispatch] = useContext(Context)!;
-  const {
-    activeParams,
-    activeLabel,
-    exploreState,
-    setExploreState,
-    hideMiningCalculator,
-  } = useScrolly();
+  const { activeParams, activeLabel, exploreState, setExploreState } =
+    useScrolly();
   const mapRef = useRef<MapRef>(null);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
   const [bounds, setBounds] = useState<GeoJSONType | undefined>(undefined);
   const windowSize = useWindowSize();
 
-  const { selectedArea, selectedAreaData, activeYear, isCumulative } = state;
-  // on mobile, the area summary is displayed in the scrollytelling steps
+  const { selectedAreaData, activeYear, isCumulative } = state;
   const isDesktop =
     windowSize !== undefined && windowSize.width > SCROLLY_MOBILE_BREAKPOINT;
 
@@ -130,19 +128,21 @@ const ScrollyMap = ({ dictionary }: ScrollyMapProps) => {
   const hintTimeoutRef = useRef<number>();
   const [isHintVisible, setIsHintVisible] = useState(false);
 
-  const yearsColors = useMemo(() => getColorsForYears(LAYER_YEARS), []);
   const reorderLayers = useReorderLayers(mapRef);
 
   // camera of the active step: the position from the map link, the selected area once
-  // its data is loaded, or the initial view when the step has no area
+  // its data is loaded, or the initial view when the step has no area. The padding is
+  // animated by the fly, so the camera is centered on the area not covered by the cards
   const getStoryCamera = () => {
     const map = mapRef.current?.getMap();
     if (!map) return undefined;
+    const width = window.innerWidth;
 
     if (activeParams && hasMapPosition(activeParams)) {
       return {
         center: [activeParams.lng, activeParams.lat] as [number, number],
         zoom: activeParams.zoom,
+        padding: getStepPadding(width),
       };
     }
 
@@ -152,19 +152,54 @@ const ScrollyMap = ({ dictionary }: ScrollyMapProps) => {
         !selectedAreaData.bbox
       )
         return undefined;
+
+      const padding = getStepPadding(width);
+      const margins = getAreaMargins(width);
+      // the zoom fits the area within the margins, in the part of the map left by the
+      // padding. cameraForBounds already accounts for the current padding of the map,
+      // so it only gets the difference with the padding the map will have after the fly
+      const currentPadding = map.getPadding();
+      const fitPadding = {
+        top: Math.max(0, margins.top + padding.top - currentPadding.top),
+        bottom: Math.max(
+          0,
+          margins.bottom + padding.bottom - currentPadding.bottom,
+        ),
+        left: Math.max(0, margins.left + padding.left - currentPadding.left),
+        right: Math.max(
+          0,
+          margins.right + padding.right - currentPadding.right,
+        ),
+      };
       const camera = map.cameraForBounds(selectedAreaData.bbox, {
-        padding: getCameraPadding(window.innerWidth),
+        padding: fitPadding,
       });
-      if (!camera?.center || camera.zoom === undefined) return undefined;
-      return { center: camera.center, zoom: camera.zoom };
+      if (camera?.zoom === undefined) return undefined;
+
+      // the center of the area, which the padding of the fly places in the middle of the
+      // part of the map left by the cards
+      const [west, south, east, north] = selectedAreaData.bbox;
+      const southWest = map.project([west, south]);
+      const northEast = map.project([east, north]);
+      const center = map.unproject([
+        (southWest.x + northEast.x) / 2,
+        (southWest.y + northEast.y) / 2,
+      ]);
+      return {
+        center: [center.lng, center.lat] as [number, number],
+        zoom: camera.zoom,
+        padding,
+      };
     }
 
+    // the intro of the highlighted areas is centered on the map
     return {
       center: [INITIAL_VIEW.longitude, INITIAL_VIEW.latitude] as [
         number,
         number,
       ],
       zoom: INITIAL_VIEW.zoom,
+      padding: NO_PADDING,
     };
   };
 
@@ -177,6 +212,26 @@ const ScrollyMap = ({ dictionary }: ScrollyMapProps) => {
     map.flyTo({ ...camera, bearing: 0, pitch: 0, duration, essential: true });
     return true;
   };
+
+  // bounds of the minimap, they leave out the padding of the map covered by the step
+  // cards on the left, except while exploring since the report content is hidden
+  const updateBounds = () => {
+    const map = mapRef.current;
+    if (!map) return;
+    setBounds(
+      getBoundsGeoJSON(
+        mapRef,
+        exploreStateRef.current === "exploring" ? undefined : map.getPadding(),
+      ),
+    );
+  };
+
+  // the report content is hidden or shown again without the map moving
+  useEffect(() => {
+    if (!isMapLoaded) return;
+    updateBounds();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [exploreState, isMapLoaded]);
 
   // move the camera when the active step changes, to an explicit position from the map
   // link or to the initial view when the step has no area
@@ -406,7 +461,7 @@ const ScrollyMap = ({ dictionary }: ScrollyMapProps) => {
           boxZoom={false}
           onLoad={() => setIsMapLoaded(true)}
           onMoveEnd={() => {
-            setBounds(getBoundsGeoJSON(mapRef));
+            updateBounds();
             constrainExploration();
           }}
           onIdle={reorderLayers}
@@ -431,16 +486,6 @@ const ScrollyMap = ({ dictionary }: ScrollyMapProps) => {
           boundsMarker="circle"
         />
       </div>
-
-      {selectedArea && isDesktop && (
-        <AreaSummary
-          dictionary={dictionary}
-          yearsColors={yearsColors}
-          isScrollytelling
-          hideMiningCalculator={hideMiningCalculator}
-          className={`${style.areaSummary} ${isStory ? "" : style.hidden}`}
-        />
-      )}
 
       {canExplore && isDesktop && (
         <div
