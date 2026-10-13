@@ -32,7 +32,13 @@ const BackPage = ({ dictionary, sections, siteUrl }: BackPageProps) => (
     </div>
 
     <div className={style.bottom}>
-      <Image className={style.amwLogo} src={Logo} alt="Amazon Mining Watch" />
+      <Image
+        className={style.amwLogo}
+        src={Logo}
+        alt="Amazon Mining Watch"
+        // lazy images below the viewport would never load in the print page
+        priority
+      />
       <div className={style.bottomRow}>
         <a href={siteUrl}>
           {siteUrl.replace(/^https?:\/\//, "")} ·{" "}

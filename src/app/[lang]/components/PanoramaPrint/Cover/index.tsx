@@ -26,7 +26,13 @@ const Cover = ({
     <div className={style.overlay} />
 
     <div className={style.top}>
-      <Image className={style.logo} src={Logo} alt="Amazon Mining Watch" />
+      <Image
+        className={style.logo}
+        src={Logo}
+        alt="Amazon Mining Watch"
+        // lazy images below the viewport would never load in the print page
+        priority
+      />
       <div className={style.eyebrow}>
         {dictionary?.panorama?.quarterly_report}
       </div>

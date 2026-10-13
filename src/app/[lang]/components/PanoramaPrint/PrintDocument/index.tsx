@@ -20,6 +20,20 @@ const PAGE_PADDING_TOP = 0.6 * 96;
 // space for the footer at the bottom of the flow pages
 const PAGE_FOOTER_HEIGHT = 0.8 * 96;
 
+// ms to wait for the fonts and the images before laying out the pages anyway, e.g. if
+// an image never loads
+const LAYOUT_WAIT_TIMEOUT = 10000;
+
+const waitAtMost = (promise: Promise<unknown>, timeout: number) =>
+  Promise.race([
+    promise.catch(() => undefined),
+    new Promise((resolve) => setTimeout(resolve, timeout)),
+  ]);
+
+// images that are still loading, to know where the layout is waiting
+const getPendingImages = () =>
+  Array.from(document.images).filter((image) => !image.complete);
+
 export interface PrintBlock {
   key: string;
   // "page": a page on its own, e.g. the cover. "flow": packed with the next blocks into
@@ -172,11 +186,19 @@ const PrintDocument = ({
     let isCancelled = false;
 
     const layOut = async () => {
-      await document.fonts.ready;
-      await Promise.all(
-        Array.from(document.images).map((image) =>
-          image.complete ? undefined : image.decode().catch(() => undefined),
-        ),
+      document.body.dataset.pdfProgress = "laying out the pages: fonts";
+      await waitAtMost(document.fonts.ready, LAYOUT_WAIT_TIMEOUT);
+
+      const pendingImages = getPendingImages();
+      document.body.dataset.pdfProgress = `laying out the pages: ${
+        pendingImages.length
+      } images (${pendingImages
+        .map((image) => image.currentSrc || image.src)
+        .join(", ")
+        .slice(0, 300)})`;
+      await waitAtMost(
+        Promise.all(pendingImages.map((image) => image.decode())),
+        LAYOUT_WAIT_TIMEOUT,
       );
       // wait for the charts, which are sized after they are mounted
       await new Promise((resolve) => setTimeout(resolve, 300));

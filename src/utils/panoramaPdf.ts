@@ -1,6 +1,6 @@
 import "server-only";
 import chromium from "@sparticuz/chromium";
-import puppeteer, { TimeoutError } from "puppeteer-core";
+import puppeteer from "puppeteer-core";
 import { BlobNotFoundError, del, head, list, put } from "@vercel/blob";
 import { getPanoramaPrintPath } from "@/cms/panorama";
 
@@ -14,7 +14,10 @@ const PDF_LAYOUT_VERSION = 1;
 // that generate the PDFs can run for up to 300s
 const PAGE_LOAD_TIMEOUT = 60000;
 const READY_TIMEOUT = 230000;
+const READY_POLL_INTERVAL = 500;
 const PROGRESS_LOG_INTERVAL = 10000;
+// for each call to the browser, e.g. when the page is busy rendering a map
+const PROTOCOL_TIMEOUT = 60000;
 // the CDN serves the previous PDF for up to this long after it's generated again
 const BLOB_CACHE_MAX_AGE = 60;
 // the Blob client retries failed requests, and doesn't stop on an abort signal when the
@@ -77,6 +80,7 @@ const launchBrowser = async () => {
     headless: !(
       localExecutablePath && process.env.PANORAMA_PDF_DEBUG === "true"
     ),
+    protocolTimeout: PROTOCOL_TIMEOUT,
   });
 };
 
@@ -141,18 +145,18 @@ export const renderPanoramaPdf = async (
       log(options, `${(await getProgress()) ?? "loading"}...`);
     }, PROGRESS_LOG_INTERVAL);
 
-    try {
-      await page.waitForFunction(
-        () => document.body.dataset.pdfReady === "true",
-        { timeout: READY_TIMEOUT, polling: 500 },
-      );
-    } catch (error) {
-      if (error instanceof TimeoutError) {
+    // polls the page with short calls, a waitForFunction is a single call to the browser
+    // that puppeteer cuts after its protocolTimeout
+    const deadline = Date.now() + READY_TIMEOUT;
+    while (
+      !(await page.evaluate(() => document.body.dataset.pdfReady === "true"))
+    ) {
+      if (Date.now() > deadline) {
         throw new Error(
           `Print page not ready after ${READY_TIMEOUT / 1000}s, at "${await getProgress()}"`,
         );
       }
-      throw error;
+      await new Promise((resolve) => setTimeout(resolve, READY_POLL_INTERVAL));
     }
 
     const pdf = await page.pdf({
