@@ -25,6 +25,18 @@ const cmsImagesRemotePatterns = [
  * @type {import('next').NextConfig}
  */
 const nextConfig = {
+  experimental: {
+    // the Chromium binary used to generate the Panorama PDFs is loaded at runtime
+    serverComponentsExternalPackages: ["@sparticuz/chromium", "puppeteer-core"],
+    outputFileTracingIncludes: {
+      "/api/panorama-pdf/[lang]/[issue]": [
+        "./node_modules/@sparticuz/chromium/bin/**",
+      ],
+      "/api/panorama-pdf/webhook": [
+        "./node_modules/@sparticuz/chromium/bin/**",
+      ],
+    },
+  },
   images: {
     remotePatterns: cmsImagesRemotePatterns,
   },

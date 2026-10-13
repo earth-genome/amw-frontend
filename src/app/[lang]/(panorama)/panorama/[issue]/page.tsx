@@ -1,16 +1,13 @@
 import { notFound } from "next/navigation";
-import { apiFetcher } from "@/cms/client";
 import {
+  fetchPanoramaOptional,
+  fetchPanoramaReport,
   getPanoramaHomePath,
   getPanoramaMediaUrl,
-  getPanoramaReportUrl,
-  PANORAMA_FETCH_OPTIONS,
   PANORAMA_HOME_URL,
   PANORAMA_REPORTS_LIST_URL,
   PanoramaHomeResponse,
   PanoramaReportsListResponse,
-  PanoramaReportsResponse,
-  parsePanoramaIssueParam,
 } from "@/cms/panorama";
 import { getDictionary } from "@/get-dictionary";
 import { getDataSnapshot } from "@/constants/map";
@@ -45,36 +42,9 @@ interface PageProps {
   };
 }
 
-const fetchReport = async (issue: string, lang: PERMITTED_LANGUAGES) => {
-  const issueNumber = parsePanoramaIssueParam(issue);
-  if (!issueNumber) return undefined;
-
-  const response = await apiFetcher<PanoramaReportsResponse>(
-    getPanoramaReportUrl(issueNumber),
-    { ...PANORAMA_FETCH_OPTIONS, locale: lang },
-  );
-  return response?.data?.[0];
-};
-
-// the home content (methodology, sign up, etc.) and issues list are not essential to the report
-const fetchOptional = async <T,>(
-  url: string,
-  lang: PERMITTED_LANGUAGES,
-): Promise<T | undefined> => {
-  try {
-    return await apiFetcher<T>(url, {
-      ...PANORAMA_FETCH_OPTIONS,
-      locale: lang,
-    });
-  } catch (error) {
-    console.error(`Error fetching ${url}`, error);
-    return undefined;
-  }
-};
-
 export async function generateMetadata({ params: { lang, issue } }: PageProps) {
   const [report, dictionary] = await Promise.all([
-    fetchReport(issue, lang),
+    fetchPanoramaReport(issue, lang),
     getDictionary(lang),
   ]);
   if (!report) return { title: dictionary?.home?.title };
@@ -87,9 +57,10 @@ export async function generateMetadata({ params: { lang, issue } }: PageProps) {
 const Page = async ({ params: { lang, issue } }: PageProps) => {
   const [report, homeResponse, reportsResponse, dictionary] = await Promise.all(
     [
-      fetchReport(issue, lang),
-      fetchOptional<PanoramaHomeResponse>(PANORAMA_HOME_URL, lang),
-      fetchOptional<PanoramaReportsListResponse>(
+      fetchPanoramaReport(issue, lang),
+      // the home content (methodology, sign up, etc.) and issues list are not essential to the report
+      fetchPanoramaOptional<PanoramaHomeResponse>(PANORAMA_HOME_URL, lang),
+      fetchPanoramaOptional<PanoramaReportsListResponse>(
         PANORAMA_REPORTS_LIST_URL,
         lang,
       ),
@@ -143,6 +114,7 @@ const Page = async ({ params: { lang, issue } }: PageProps) => {
           <main>
             <Hero
               dictionary={dictionary}
+              lang={lang}
               title={report.title}
               issueNumber={report.issueNumber}
               dateCoverage={report.dateCoverage}

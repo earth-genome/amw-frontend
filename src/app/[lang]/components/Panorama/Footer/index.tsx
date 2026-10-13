@@ -5,6 +5,7 @@ import RichText from "@/app/[lang]/components/Panorama/RichText";
 import Copyright from "@/app/[lang]/components/Panorama/Copyright";
 import {
   getPanoramaMediaUrl,
+  getPanoramaPdfPath,
   getPanoramaReportPath,
   PanoramaReportListItem,
   SignUp,
@@ -35,7 +36,10 @@ const Footer = ({
   currentIssueNumber,
   issuesHref,
 }: FooterProps) => {
-  const pdfUrl = getPanoramaMediaUrl(pdfReport?.url);
+  // the uploaded PDF, or the one generated from the print page
+  const pdfUrl =
+    getPanoramaMediaUrl(pdfReport?.url) ??
+    getPanoramaPdfPath(lang, currentIssueNumber);
 
   return (
     <footer className={`${shared.section} ${style.footer}`}>

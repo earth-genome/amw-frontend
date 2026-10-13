@@ -89,25 +89,20 @@ export const Context = createContext<
 export const getDefaultAreaType = () =>
   AREA_TYPES.find((at) => at.isDefault) ?? AREA_TYPES[0];
 
-const Store = ({
-  children,
+// also used to build static stores, e.g. for the areas of the Panorama print page
+export const getInitialState = ({
   lang,
-  isBaseRoute,
   isEmbed = false,
   dataSnapshot = DATA_UPDATED_AT,
-  syncQueryParams = true,
-}: Readonly<{
-  children: React.ReactNode;
+}: {
   lang: PERMITTED_LANGUAGES;
-  isBaseRoute: boolean;
   isEmbed?: boolean;
-  dataSnapshot?: string; // the main map snapshot by default, Panorama reports can use another
-  syncQueryParams?: boolean; // set to false for maps driven by something other than the URL, e.g. scrollytelling
-}>) => {
+  dataSnapshot?: string;
+}): IState => {
   const defaultAreaType = isEmbed
     ? AREA_TYPES.filter((d) => d.allowInEmbed)[0]
     : getDefaultAreaType();
-  const initialState: IState = {
+  return {
     map: null,
     lang: lang,
     isQueryChecked: false,
@@ -130,6 +125,24 @@ const Store = ({
     isEmbed: isEmbed,
     dataSnapshot,
   };
+};
+
+const Store = ({
+  children,
+  lang,
+  isBaseRoute,
+  isEmbed = false,
+  dataSnapshot = DATA_UPDATED_AT,
+  syncQueryParams = true,
+}: Readonly<{
+  children: React.ReactNode;
+  lang: PERMITTED_LANGUAGES;
+  isBaseRoute: boolean;
+  isEmbed?: boolean;
+  dataSnapshot?: string; // the main map snapshot by default, Panorama reports can use another
+  syncQueryParams?: boolean; // set to false for maps driven by something other than the URL, e.g. scrollytelling
+}>) => {
+  const initialState = getInitialState({ lang, isEmbed, dataSnapshot });
 
   const [state, dispatch] = useReducer(Reducer, initialState);
 

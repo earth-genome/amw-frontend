@@ -2,11 +2,16 @@ import shared from "@/app/[lang]/components/Panorama/panorama.module.css";
 import Link from "next/link";
 import style from "./style.module.css";
 import RichText from "@/app/[lang]/components/Panorama/RichText";
+import {
+  getPanoramaMediaUrl,
+  getPanoramaPdfPath,
+  StrapiMedia,
+} from "@/cms/panorama";
 import PartnerLogos from "@/app/[lang]/components/Panorama/PartnerLogos";
-import { getPanoramaMediaUrl, StrapiMedia } from "@/cms/panorama";
 
 interface HeroProps {
   dictionary: { [key: string]: any };
+  lang: string;
   title: string;
   issueNumber: number;
   dateCoverage: string;
@@ -19,6 +24,7 @@ interface HeroProps {
 
 const Hero = ({
   dictionary,
+  lang,
   title,
   issueNumber,
   dateCoverage,
@@ -28,7 +34,10 @@ const Hero = ({
   issuesHref,
   backgroundImageUrl,
 }: HeroProps) => {
-  const pdfUrl = getPanoramaMediaUrl(pdfReport?.url);
+  // the uploaded PDF, or the one generated from the print page
+  const pdfUrl =
+    getPanoramaMediaUrl(pdfReport?.url) ??
+    getPanoramaPdfPath(lang, issueNumber);
 
   return (
     <section
@@ -57,6 +66,8 @@ const Hero = ({
               href={pdfUrl}
               target="_blank"
               rel="noopener noreferrer"
+              // prefetching would generate the PDF
+              prefetch={false}
             >
               {dictionary?.panorama?.download_report}
             </Link>

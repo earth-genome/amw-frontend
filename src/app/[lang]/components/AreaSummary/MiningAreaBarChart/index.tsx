@@ -19,6 +19,8 @@ interface MiningAreaBarChartProps {
   yearsColors: string[];
   // removes the bars after the active year, instead of just making them lighter
   hideBarsAfterActiveYear?: boolean;
+  // labels only the first year and the last period, e.g. for narrow charts in print
+  xAxisEndLabelsOnly?: boolean;
 }
 
 const MiningAreaBarChart = ({
@@ -27,6 +29,7 @@ const MiningAreaBarChart = ({
   chartHeight = 100,
   yearsColors,
   hideBarsAfterActiveYear = false,
+  xAxisEndLabelsOnly = false,
 }: MiningAreaBarChartProps) => {
   const [state, dispatch] = useContext(Context)!;
   const containerRef = useRef<HTMLDivElement>(null);
@@ -230,18 +233,47 @@ const MiningAreaBarChart = ({
                   })}
 
                   {/* X-axis labels */}
-                  <text
-                    x={x0 + fullBarWidth / 2}
-                    y={height + margin.bottom}
-                    textAnchor="middle"
-                    className={styles.xAxisLabels}
-                    onMouseEnter={() => resetHoveredYear()}
-                  >
-                    {year}
-                  </text>
+                  {!xAxisEndLabelsOnly && (
+                    <text
+                      x={x0 + fullBarWidth / 2}
+                      y={height + margin.bottom}
+                      textAnchor="middle"
+                      className={styles.xAxisLabels}
+                      onMouseEnter={() => resetHoveredYear()}
+                    >
+                      {year}
+                    </text>
+                  )}
                 </g>
               );
             })}
+
+            {/* X-axis labels, only at the ends */}
+            {xAxisEndLabelsOnly && (
+              <>
+                <text
+                  x={outerXScale(groupedData[0][0])}
+                  y={height + margin.bottom}
+                  textAnchor="start"
+                  className={styles.xAxisLabels}
+                >
+                  {groupedData[0][0]}
+                </text>
+                <text
+                  x={
+                    outerXScale(groupedData[groupedData.length - 1][0])! +
+                    fullBarWidth
+                  }
+                  y={height + margin.bottom}
+                  textAnchor="end"
+                  className={styles.xAxisLabels}
+                >
+                  {formatLayerYear(
+                    d3.max(dataProcessed, (d) => d.admin_year) ?? 0,
+                  )}
+                </text>
+              </>
+            )}
           </g>
         </g>
       </svg>
