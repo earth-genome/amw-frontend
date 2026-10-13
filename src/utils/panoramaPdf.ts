@@ -95,14 +95,6 @@ export const renderPanoramaPdf = async (
     // a letter page wide, with a high resolution for the map snapshots
     await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 2 });
 
-    // preview deployments can be protected, see Vercel's "Protection Bypass for Automation"
-    const bypassSecret = process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
-    if (bypassSecret) {
-      await page.setExtraHTTPHeaders({
-        "x-vercel-protection-bypass": bypassSecret,
-      });
-    }
-
     // the errors of the print page, e.g. maps that fail to load
     page.on("pageerror", (error) =>
       log(options, `page error: ${(error as Error).message}`),
@@ -118,12 +110,29 @@ export const renderPanoramaPdf = async (
         .evaluate(() => document.body.dataset.pdfProgress)
         .catch(() => undefined);
 
+    // preview deployments can be protected, see Vercel's "Protection Bypass for
+    // Automation". The secret sets a cookie for the next requests of the page to the
+    // deployment, instead of a header that would also be sent to other sites, e.g. Mapbox
+    const bypassSecret = process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
+    const gotoUrl = bypassSecret
+      ? `${printUrl}?${new URLSearchParams({
+          "x-vercel-protection-bypass": bypassSecret,
+          "x-vercel-set-bypass-cookie": "true",
+        })}`
+      : printUrl;
+
     log(options, `rendering ${printUrl}`);
-    const response = await page.goto(printUrl, {
+    const response = await page.goto(gotoUrl, {
       waitUntil: "domcontentloaded",
       timeout: PAGE_LOAD_TIMEOUT,
     });
     if (response?.status() === 404) throw new PanoramaPdfNotFoundError();
+    if (response?.status() === 401 && !bypassSecret) {
+      throw new Error(
+        "Print page returned 401, the deployment is protected: enable Vercel's " +
+          '"Protection Bypass for Automation" to generate the PDFs',
+      );
+    }
     if (!response?.ok()) {
       throw new Error(`Print page returned ${response?.status()}`);
     }
