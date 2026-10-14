@@ -1,38 +1,12 @@
 .cover {
-  position: relative;
   height: 100%;
-  background-color: #173f35;
+  background-color: #0f1a12;
   color: #fff;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   padding: 0.6in;
   box-sizing: border-box;
-}
-
-.background {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/* darkens the background image, so the text stays readable */
-.overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to bottom,
-    rgba(15, 26, 18, 0.55),
-    rgba(15, 26, 18, 0.7) 60%,
-    rgba(15, 26, 18, 0.9)
-  );
-}
-
-.top,
-.bottom {
-  position: relative;
 }
 
 .top {
@@ -54,9 +28,10 @@
   color: var(--green-light);
 }
 
+/* an opaque color, transparency is slow to display in the PDF */
 .bottom {
   padding-bottom: 0.9in;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+  border-bottom: 1px solid #6b7a72;
   margin-bottom: 0.6in;
 }
 

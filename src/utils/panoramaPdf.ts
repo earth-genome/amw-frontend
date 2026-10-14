@@ -8,7 +8,7 @@ import { getPanoramaPrintPath } from "@/cms/panorama";
 // Vercel Blob, so they are only generated again when the reports change
 
 // bump it to generate all the stored PDFs again, e.g. after changing the print page
-const PDF_LAYOUT_VERSION = 1;
+const PDF_LAYOUT_VERSION = 3;
 
 // time for the print page to load, lay out its pages and render its maps, the functions
 // that generate the PDFs can run for up to 300s
@@ -172,6 +172,13 @@ export const renderPanoramaPdf = async (
 };
 
 // ================== STORAGE ==================
+
+// url of a stored PDF on the site, served from the Blob store through the rewrite in
+// next.config.js, so it has the domain and the favicon of the site
+export const getPanoramaPdfSiteUrl = (blobUrl: string, origin: string) => {
+  const storeId = process.env.BLOB_READ_WRITE_TOKEN?.split("_")[3];
+  return storeId ? `${origin}${new URL(blobUrl).pathname}` : blobUrl;
+};
 
 // url of the stored PDF of a report, if it was generated
 export const findStoredPanoramaPdf = async (

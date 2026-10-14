@@ -97,7 +97,6 @@ const AreaCard = ({
   const { areaData, activeYear, affectedAreaHa, periodAreaHa } = summary;
   const areaType = AREA_TYPES.find((d) => d.key === summary.areaTypeKey);
   const areaStatus = areaType?.renderStatus(areaData);
-  const isQuarter = activeYear % 100 !== 0;
   const illegalityAreas = areaData.illegality_areas;
   const hasAffectedArea = affectedAreaHa != null;
   const location = area.location || areaData.country;
@@ -145,9 +144,8 @@ const AreaCard = ({
                 {dictionary?.panorama?.hectares_short}
               </div>
               <div className={style.changeLabel}>
-                {isQuarter
-                  ? dictionary?.panorama?.new_mining_this_quarter
-                  : dictionary?.panorama?.new_mining_this_year}
+                {dictionary?.panorama?.new_mining_in}{" "}
+                {formatLayerYear(activeYear)}
               </div>
             </div>
           ) : null}

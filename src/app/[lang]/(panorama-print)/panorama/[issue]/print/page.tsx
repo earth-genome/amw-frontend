@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { i18n } from "@root/i18n-config";
-import { getPanoramaMediaUrl } from "@/cms/panorama";
 import { loadPanoramaPrintData } from "@/cms/panoramaPrint";
 import { getDictionary } from "@/get-dictionary";
 import { getDataSnapshot } from "@/constants/map";
@@ -87,9 +86,6 @@ const Page = async ({ params: { lang, issue } }: PageProps) => {
           title={report.title}
           issueNumber={report.issueNumber}
           dateCoverage={report.dateCoverage}
-          backgroundImageUrl={getPanoramaMediaUrl(
-            home?.hero?.backgroundImage?.url,
-          )}
         />
       ),
     },

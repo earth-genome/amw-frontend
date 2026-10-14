@@ -8,23 +8,16 @@ interface CoverProps {
   title: string;
   issueNumber: number;
   dateCoverage: string;
-  backgroundImageUrl?: string;
 }
 
+// a solid color, without images or transparency, which are slow to display in the PDF
 const Cover = ({
   dictionary,
   title,
   issueNumber,
   dateCoverage,
-  backgroundImageUrl,
 }: CoverProps) => (
   <section className={style.cover}>
-    {backgroundImageUrl && (
-      // eslint-disable-next-line @next/next/no-img-element
-      <img className={style.background} src={backgroundImageUrl} alt="" />
-    )}
-    <div className={style.overlay} />
-
     <div className={style.top}>
       <Image
         className={style.logo}

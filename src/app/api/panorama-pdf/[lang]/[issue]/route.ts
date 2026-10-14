@@ -4,6 +4,7 @@ import { parsePanoramaIssueParam } from "@/cms/panorama";
 import {
   findStoredPanoramaPdf,
   generateAndStorePanoramaPdf,
+  getPanoramaPdfSiteUrl,
   isPanoramaPdfStorageEnabled,
   PanoramaPdfNotFoundError,
   renderPanoramaPdf,
@@ -60,7 +61,7 @@ export async function GET(
     if (!stored) return await renderPdfResponse(options);
 
     const url = stored.url ?? (await generateAndStorePanoramaPdf(options));
-    return NextResponse.redirect(url, {
+    return NextResponse.redirect(getPanoramaPdfSiteUrl(url, options.origin), {
       status: 302,
       // the url of a stored PDF doesn't change when it's generated again
       headers: { "Cache-Control": "public, max-age=0, s-maxage=60" },
