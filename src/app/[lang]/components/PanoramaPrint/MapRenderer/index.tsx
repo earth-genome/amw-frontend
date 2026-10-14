@@ -54,11 +54,22 @@ const MapRenderer = ({ job, onSnapshot }: MapRendererProps) => {
       if (jobRef.current !== mapJob) return;
       jobRef.current = undefined;
       window.clearTimeout(snapshotTimeoutRef.current);
-      const canvas = mapRef.current?.getMap()?.getCanvas();
-      onSnapshot(
-        mapJob.mapId,
-        canvas ? canvas.toDataURL("image/jpeg", SNAPSHOT_QUALITY) : null,
-      );
+
+      let snapshot: string | null = null;
+      try {
+        const canvas = mapRef.current?.getMap()?.getCanvas();
+        snapshot = canvas
+          ? canvas.toDataURL("image/jpeg", SNAPSHOT_QUALITY)
+          : null;
+      } catch (error) {
+        // e.g. a tainted canvas or a lost WebGL context. The map is left empty, otherwise
+        // the job would never finish and the PDF would wait until it times out
+        console.error(
+          `Error taking the snapshot of map ${mapJob.mapId}`,
+          error,
+        );
+      }
+      onSnapshot(mapJob.mapId, snapshot);
     },
     [onSnapshot],
   );
