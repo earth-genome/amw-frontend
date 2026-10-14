@@ -4,6 +4,7 @@ import Reducer from "@/lib/Reducer";
 import { AreaSelectOption } from "@/app/[lang]/components/AreaSelect";
 import {
   AREA_TYPES,
+  DATA_UPDATED_AT,
   AreaType,
   LAYER_YEARS,
   PERMITTED_AREA_TYPES_KEYS,
@@ -38,6 +39,7 @@ export interface IState {
   activeYear: string;
   isCumulative: boolean;
   isEmbed: boolean;
+  dataSnapshot: string; // YYYYMMDD snapshot of the data
 }
 
 export type ActionType =
@@ -87,21 +89,20 @@ export const Context = createContext<
 export const getDefaultAreaType = () =>
   AREA_TYPES.find((at) => at.isDefault) ?? AREA_TYPES[0];
 
-const Store = ({
-  children,
+// also used to build static stores, e.g. for the areas of the Panorama print page
+export const getInitialState = ({
   lang,
-  isBaseRoute,
   isEmbed = false,
-}: Readonly<{
-  children: React.ReactNode;
+  dataSnapshot = DATA_UPDATED_AT,
+}: {
   lang: PERMITTED_LANGUAGES;
-  isBaseRoute: boolean;
   isEmbed?: boolean;
-}>) => {
+  dataSnapshot?: string;
+}): IState => {
   const defaultAreaType = isEmbed
     ? AREA_TYPES.filter((d) => d.allowInEmbed)[0]
     : getDefaultAreaType();
-  const initialState: IState = {
+  return {
     map: null,
     lang: lang,
     isQueryChecked: false,
@@ -122,14 +123,33 @@ const Store = ({
     activeYear: String(Math.max(...LAYER_YEARS)),
     isCumulative: true,
     isEmbed: isEmbed,
+    dataSnapshot,
   };
+};
+
+const Store = ({
+  children,
+  lang,
+  isBaseRoute,
+  isEmbed = false,
+  dataSnapshot = DATA_UPDATED_AT,
+  syncQueryParams = true,
+}: Readonly<{
+  children: React.ReactNode;
+  lang: PERMITTED_LANGUAGES;
+  isBaseRoute: boolean;
+  isEmbed?: boolean;
+  dataSnapshot?: string; // the main map snapshot by default, Panorama reports can use another
+  syncQueryParams?: boolean; // set to false for maps driven by something other than the URL, e.g. scrollytelling
+}>) => {
+  const initialState = getInitialState({ lang, isEmbed, dataSnapshot });
 
   const [state, dispatch] = useReducer(Reducer, initialState);
 
   useQueryParams({
     state,
     dispatch,
-    ignore: !isBaseRoute, // don't use query params in the content pages
+    ignore: !isBaseRoute || !syncQueryParams, // don't use query params in the content pages
   });
   useAreasData({ state, dispatch, lang });
 
