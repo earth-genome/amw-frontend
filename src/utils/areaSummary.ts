@@ -26,7 +26,27 @@ export const isMiningCalculatorHiddenFor = (
 // without the illegality levels with no mining
 export const filterIllegalityAreas = (
   illegalityAreas: IllegalityAreaData[] | undefined,
-) => illegalityAreas?.filter((d) => d.mining_affected_area_pct > 0);
+) => {
+  const filtered = illegalityAreas?.filter(
+    (d) => d.mining_affected_area_pct > 0,
+  );
+
+  if (!filtered?.length) {
+    // if there is no area, return an array with only a zero category,
+    // so it gets displayed as N/A. This covers the cases where mining
+    // was only detected after the illegality data cutoff data, and
+    // would be too complicated to fix in the preprocessing.
+    return [
+      {
+        admin_illegality_max: 0,
+        mining_affected_area: 0,
+        mining_affected_area_pct: 1,
+      },
+    ];
+  }
+
+  return filtered;
+};
 
 // mining areas in the timeseries of an area, at a year or quarter
 export const getTimeseriesValues = (
