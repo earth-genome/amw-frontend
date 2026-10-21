@@ -1,4 +1,5 @@
 import Image from "next/image";
+import shared from "@/app/[lang]/components/Panorama/panorama.module.css";
 import style from "./style.module.css";
 import RichText from "@/app/[lang]/components/Panorama/RichText";
 import PartnerLogos from "@/app/[lang]/components/Panorama/PartnerLogos";
@@ -7,14 +8,31 @@ import { TextSection as TextSectionData } from "@/cms/panorama";
 
 interface BackPageProps {
   dictionary: { [key: string]: any };
+  // the conclusion of the report, above the sections
+  conclusion?: TextSectionData | null;
   sections: (TextSectionData | null | undefined)[];
   siteUrl: string;
 }
 
-// about, methodology and acknowledgements of Panorama, with the partner logos
-const BackPage = ({ dictionary, sections, siteUrl }: BackPageProps) => (
+// the conclusion of the report, then about, methodology and acknowledgements of Panorama,
+// with the partner logos
+const BackPage = ({
+  dictionary,
+  conclusion,
+  sections,
+  siteUrl,
+}: BackPageProps) => (
   <section className={style.backPage}>
     <div>
+      {conclusion && (
+        <div className={style.conclusion}>
+          <h2 className={`${shared.heading} ${style.conclusionTitle}`}>
+            {conclusion.title || dictionary?.panorama?.conclusion}
+          </h2>
+          <RichText className={style.text} content={conclusion.text} />
+        </div>
+      )}
+
       {sections.map((section) =>
         section ? (
           <div key={section.id} className={style.section}>

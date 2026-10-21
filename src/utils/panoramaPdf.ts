@@ -8,7 +8,7 @@ import { getPanoramaPrintPath } from "@/cms/panorama";
 // Vercel Blob, so they are only generated again when the reports change
 
 // bump it to generate all the stored PDFs again, e.g. after changing the print page
-const PDF_LAYOUT_VERSION = 6;
+const PDF_LAYOUT_VERSION = 8;
 
 // time for the print page to load, lay out its pages and render its maps, the functions
 // that generate the PDFs can run for up to 300s
