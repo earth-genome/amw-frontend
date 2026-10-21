@@ -15,7 +15,9 @@ import AreaSummary from "@/app/[lang]/components/AreaSummary";
 import Footer from "@/app/[lang]/components/Footer";
 import { convertBoundsToGeoJSON, GeoJSONType } from "./helpers";
 import LegendWrapper from "@/app/[lang]/components/Map/LegendWrapper";
-import MapLayers from "@/app/[lang]/components/Map/MapLayers";
+import MapLayers, {
+  useStoreMapLayersProps,
+} from "@/app/[lang]/components/Map/MapLayers";
 import {
   INITIAL_VIEW,
   MAP_MIN_ZOOM,
@@ -124,6 +126,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
   const isMobile = windowSize?.width && windowSize.width <= 600;
 
   const reorderLayers = useReorderLayers(mapRef);
+  const mapLayersProps = useStoreMapLayersProps();
 
   const handleMouseMove = useCallback(
     (event: MapMouseEvent) => {
@@ -374,7 +377,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
           // "hotspots-fill",
         ]}
       >
-        <MapLayers />
+        <MapLayers {...mapLayersProps} />
 
         {!isMobile && !isEmbed && (
           <ScaleControl

@@ -4,6 +4,7 @@ import { Layer, Source } from "react-map-gl";
 import { Expression } from "mapbox-gl";
 import {
   AREA_IDS_TO_HIDE,
+  AREA_TYPES,
   generateSatelliteTiles,
   getColorsForYears,
   LAYER_YEARS,
@@ -12,27 +13,52 @@ import {
   MINING_VECTOR_TILES_LAYER,
   getAreaTilesUrl,
   getMiningVectorTilesUrl,
+  PERMITTED_AREA_TYPES_KEYS,
 } from "@/constants/map";
 import { Context } from "@/lib/Store";
 
-interface MapLayersProps {
+export interface MapLayersProps {
   // the outlines of all areas of the selected type, with the hover effect
   showAreasLayers?: boolean;
+  areaTypeKey: PERMITTED_AREA_TYPES_KEYS | undefined;
+  // highlighted area
+  selectedAreaId: string | undefined;
+  dataSnapshot: string;
+  // year or quarter of the satellite imagery and of the mines, e.g. "202504"
+  activeYear: string;
+  // shows the mines until the active year, instead of only those of the active year
+  isCumulative: boolean;
+  // shows only the mines of this year, e.g. while hovering the bar chart
+  hoveredYear?: number;
 }
 
-// all the sources and layers shared between the main map and the scrollytelling map,
-// driven by the map state in the Store
-const MapLayers = ({ showAreasLayers = true }: MapLayersProps) => {
+// the map layers props from the map state in the Store, for the maps of the site
+export const useStoreMapLayersProps = (): MapLayersProps => {
   const [state] = useContext(Context)!;
-  const {
-    selectedArea,
-    selectedAreaTypeKey,
-    selectedAreaType,
-    dataSnapshot,
-    hoveredYear,
-    activeYear,
-    isCumulative,
-  } = state;
+  return {
+    areaTypeKey: state.selectedAreaTypeKey,
+    selectedAreaId: state.selectedArea?.value,
+    dataSnapshot: state.dataSnapshot,
+    activeYear: state.activeYear,
+    isCumulative: state.isCumulative,
+    hoveredYear: state.hoveredYear,
+  };
+};
+
+// all the sources and layers shared between the main map, the scrollytelling map and the
+// maps of the print page
+const MapLayers = ({
+  showAreasLayers = true,
+  areaTypeKey: selectedAreaTypeKey,
+  selectedAreaId,
+  dataSnapshot,
+  activeYear,
+  isCumulative,
+  hoveredYear,
+}: MapLayersProps) => {
+  const selectedAreaType = AREA_TYPES.find(
+    (d) => d.key === selectedAreaTypeKey,
+  );
   const areasTilesUrl = selectedAreaType
     ? getAreaTilesUrl(selectedAreaType, dataSnapshot)
     : undefined;
@@ -192,14 +218,14 @@ const MapLayers = ({ showAreasLayers = true }: MapLayersProps) => {
       {areasTilesUrl &&
         selectedAreaType &&
         selectedAreaType.tilesLayer &&
-        selectedArea && (
+        selectedAreaId && (
           <>
             <Layer
               id={"selected-area-layer-fill"}
               key={`selected-area-layer-fill-${selectedAreaType.tilesLayer}`}
               source={"areas-vector-tiles"}
               source-layer={selectedAreaType.tilesLayer}
-              filter={["==", ["get", "id"], selectedArea.value]}
+              filter={["==", ["get", "id"], selectedAreaId]}
               type="fill"
               paint={{
                 "fill-color": "#22B573",
@@ -212,7 +238,7 @@ const MapLayers = ({ showAreasLayers = true }: MapLayersProps) => {
               key={`selected-area-layer-${selectedAreaType.tilesLayer}`}
               source={"areas-vector-tiles"}
               source-layer={selectedAreaType.tilesLayer}
-              filter={["==", ["get", "id"], selectedArea.value]}
+              filter={["==", ["get", "id"], selectedAreaId]}
               type="line"
               paint={{
                 "line-color": "#22B573",

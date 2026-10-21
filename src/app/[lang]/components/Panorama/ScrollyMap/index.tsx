@@ -13,7 +13,9 @@ import Map, { NavigationControl } from "react-map-gl";
 import type { MapRef } from "react-map-gl";
 import AreaSummary from "@/app/[lang]/components/AreaSummary";
 import MiniMap from "@/app/[lang]/components/MiniMap";
-import MapLayers from "@/app/[lang]/components/Map/MapLayers";
+import MapLayers, {
+  useStoreMapLayersProps,
+} from "@/app/[lang]/components/Map/MapLayers";
 import Legend from "@/app/[lang]/components/Map/Legend";
 import {
   INITIAL_VIEW,
@@ -132,6 +134,7 @@ const ScrollyMap = ({ dictionary }: ScrollyMapProps) => {
 
   const yearsColors = useMemo(() => getColorsForYears(LAYER_YEARS), []);
   const reorderLayers = useReorderLayers(mapRef);
+  const mapLayersProps = useStoreMapLayersProps();
 
   // camera of the active step: the position from the map link, the selected area once
   // its data is loaded, or the initial view when the step has no area
@@ -412,7 +415,7 @@ const ScrollyMap = ({ dictionary }: ScrollyMapProps) => {
           onIdle={reorderLayers}
         >
           {/* no area outlines nor hover effect, only the selected area */}
-          <MapLayers showAreasLayers={false} />
+          <MapLayers {...mapLayersProps} showAreasLayers={false} />
 
           {isExploring && canMoveMap && (
             <NavigationControl position="top-right" showCompass={false} />

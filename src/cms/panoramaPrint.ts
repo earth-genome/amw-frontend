@@ -17,12 +17,17 @@ import {
   PanoramaReport,
 } from "@/cms/panorama";
 import { AreaData, AreasData, AreasTimeseriesData } from "@/types/types";
-import { parseMapLink } from "@/utils/mapParams";
+import { hasMapPosition, MapPosition, parseMapLink } from "@/utils/mapParams";
 import { filterForMiningCalculator } from "@/utils/miningCalculator";
 import { fetchMiningCalculator } from "@/utils/miningCalculatorServer";
+import {
+  filterIllegalityAreas,
+  getTimeseriesValues,
+  isMiningCalculatorHiddenFor,
+} from "@/utils/areaSummary";
 
 // the area data needed by the print page, without the heavy mining locations
-export type PrintAreaData = Omit<AreaData, "locations_per_year">;
+type PrintAreaData = Omit<AreaData, "locations_per_year">;
 
 // the same data the area summary of the scrollytelling map displays
 export interface PrintAreaSummary {
@@ -38,6 +43,9 @@ export interface PrintAreaSummary {
   isMiningCalculatorHidden: boolean;
   economicCost: number | undefined;
   calculatorUrl: string | undefined;
+  // custom view of the map from the map link, like the scrollytelling map, instead of
+  // fitting the area
+  mapView: MapPosition | undefined;
 }
 
 export interface PrintArea {
@@ -129,6 +137,7 @@ const getAreaSummary = async (
   mapLink: string,
   loadAreaTypeData: ReturnType<typeof getAreaTypeDataLoader>,
   hideMiningCalculator: boolean,
+  fitToAreaBounds: boolean, // fits the map view to the bounds of the geojson area
 ): Promise<PrintAreaSummary | undefined> => {
   const params = parseMapLink(mapLink);
   const areaType = AREA_TYPES.find((d) => d.key === params.areaTypeKey);
@@ -144,11 +153,12 @@ const getAreaSummary = async (
   const isCumulative = params.isCumulative ?? true;
   const timeseries =
     areasTimeseriesData?.filter((d) => d?.id === params.areaId) ?? [];
-  const activeYearData = timeseries.find((d) => d.admin_year === activeYear);
 
   // same rules as the area summary: no calculator for countries, nor when hidden in the CMS
-  const isMiningCalculatorHidden =
-    hideMiningCalculator || areaType.key === "countries";
+  const isMiningCalculatorHidden = isMiningCalculatorHiddenFor(
+    areaType.key,
+    hideMiningCalculator,
+  );
   const { economicCost, calculatorUrl } = isMiningCalculatorHidden
     ? {}
     : await getEconomicCost(areaData, activeYear);
@@ -163,16 +173,17 @@ const getAreaSummary = async (
     areaData: {
       ...areaDataWithoutLocations,
       // removing areas which are zero pct, as in the area summary
-      illegality_areas: (areaData.illegality_areas ?? []).filter(
-        (d) => d.mining_affected_area_pct > 0,
-      ),
+      illegality_areas: filterIllegalityAreas(areaData.illegality_areas) ?? [],
     },
     timeseries,
-    affectedAreaHa: activeYearData?.intersected_area_ha_cumulative,
-    periodAreaHa: activeYearData?.intersected_area_ha,
+    ...getTimeseriesValues(timeseries, activeYear),
     isMiningCalculatorHidden,
     economicCost,
     calculatorUrl,
+    mapView:
+      !fitToAreaBounds && hasMapPosition(params)
+        ? { lng: params.lng, lat: params.lat, zoom: params.zoom }
+        : undefined,
   };
 };
 
@@ -209,6 +220,7 @@ export const loadPanoramaPrintData = async (
             area.mapLink,
             loadAreaTypeData,
             !!report.hideMiningCalculator,
+            true,
           ),
         })),
       ),

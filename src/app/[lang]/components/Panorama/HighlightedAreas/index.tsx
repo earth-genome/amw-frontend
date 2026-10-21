@@ -3,6 +3,7 @@ import React, { Fragment, useMemo } from "react";
 import shared from "@/app/[lang]/components/Panorama/panorama.module.css";
 import style from "./style.module.css";
 import RichText from "@/app/[lang]/components/Panorama/RichText";
+import MiningUpdate from "@/app/[lang]/components/Panorama/MiningUpdate";
 import MapLink from "@/app/[lang]/components/Panorama/MapLink";
 import ScrollyStep from "@/app/[lang]/components/Panorama/ScrollyStep";
 import StepAreaSummary from "@/app/[lang]/components/Panorama/StepAreaSummary";
@@ -112,14 +113,12 @@ const HighlightedAreas = ({
                   <div className={style.areaLocation}>{area.location}</div>
                 )}
                 <RichText className={style.areaText} content={area.text} />
-                {area.miningUpdate && (
-                  <div className={style.miningUpdate}>
-                    <span className={style.miningUpdateLabel}>
-                      {dictionary?.panorama?.mining_update}
-                    </span>
-                    <RichText content={area.miningUpdate} />
-                  </div>
-                )}
+                <MiningUpdate
+                  dictionary={dictionary}
+                  content={area.miningUpdate}
+                  className={style.miningUpdate}
+                  labelClassName={style.miningUpdateLabel}
+                />
                 <MapLink
                   mapLink={area.mapLink}
                   lang={lang}

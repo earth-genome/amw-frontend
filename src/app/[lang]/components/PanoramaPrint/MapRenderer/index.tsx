@@ -4,19 +4,23 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import Map from "react-map-gl";
 import type { ErrorEvent, MapRef } from "react-map-gl";
 import style from "./style.module.css";
-import MapLayers from "@/app/[lang]/components/Map/MapLayers";
+import MapLayers, {
+  MapLayersProps,
+} from "@/app/[lang]/components/Map/MapLayers";
 import {
   MAP_PROJECTION,
   SATELLITE_LAYERS,
 } from "@/app/[lang]/components/Map/config";
 import { useReorderLayers } from "@/app/[lang]/components/Map/hooks";
-import { Context, IState } from "@/lib/Store";
+import { MapPosition } from "@/utils/mapParams";
 
 export interface MapJob {
   mapId: string;
-  // store of the area, read by the map layers
-  state: IState;
+  // the layers of the map of the area
+  layers: MapLayersProps;
   bbox: [number, number, number, number];
+  // custom view, e.g. from the map link, otherwise the map fits the bbox
+  view?: MapPosition;
   // final size of the map in the page
   width: number;
   height: number;
@@ -33,8 +37,6 @@ const SNAPSHOT_DELAY = 600;
 // gives up on maps that don't finish loading, and keeps whatever was rendered
 const JOB_TIMEOUT = 15000;
 const SNAPSHOT_QUALITY = 0.92;
-
-const noop = () => {};
 
 // a single hidden map that renders the maps of the document one by one, resized to their
 // final size, and takes a snapshot of each. The map stays mounted, so its style is loaded
@@ -87,7 +89,17 @@ const MapRenderer = ({ job, onSnapshot }: MapRendererProps) => {
     jobRef.current = job;
     window.clearTimeout(snapshotTimeoutRef.current);
     map.resize();
-    map.fitBounds(job.bbox, { padding: FIT_PADDING, duration: 0 });
+    // the same camera as the scrollytelling map
+    if (job.view) {
+      map.jumpTo({
+        center: [job.view.lng, job.view.lat],
+        zoom: job.view.zoom,
+        bearing: 0,
+        pitch: 0,
+      });
+    } else {
+      map.fitBounds(job.bbox, { padding: FIT_PADDING, duration: 0 });
+    }
     // make sure an idle event follows, even if nothing changed
     map.triggerRepaint();
 
@@ -130,29 +142,27 @@ const MapRenderer = ({ job, onSnapshot }: MapRendererProps) => {
       style={{ width: currentJob.width, height: currentJob.height }}
       aria-hidden="true"
     >
-      <Context.Provider value={[currentJob.state, noop]}>
-        <Map
-          mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
-          ref={mapRef}
-          initialViewState={{
-            bounds: currentJob.bbox,
-            fitBoundsOptions: { padding: FIT_PADDING },
-          }}
-          projection={MAP_PROJECTION}
-          style={{ width: "100%", height: "100%" }}
-          mapStyle={SATELLITE_LAYERS["yearly"]}
-          interactive={false}
-          attributionControl={false}
-          preserveDrawingBuffer
-          fadeDuration={0}
-          onLoad={() => setIsLoaded(true)}
-          onError={handleError}
-          onIdle={handleIdle}
-        >
-          {/* no area outlines, only the selected area */}
-          <MapLayers showAreasLayers={false} />
-        </Map>
-      </Context.Provider>
+      <Map
+        mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
+        ref={mapRef}
+        initialViewState={{
+          bounds: currentJob.bbox,
+          fitBoundsOptions: { padding: FIT_PADDING },
+        }}
+        projection={MAP_PROJECTION}
+        style={{ width: "100%", height: "100%" }}
+        mapStyle={SATELLITE_LAYERS["yearly"]}
+        interactive={false}
+        attributionControl={false}
+        preserveDrawingBuffer
+        fadeDuration={0}
+        onLoad={() => setIsLoaded(true)}
+        onError={handleError}
+        onIdle={handleIdle}
+      >
+        {/* no area outlines, only the selected area */}
+        <MapLayers {...currentJob.layers} showAreasLayers={false} />
+      </Map>
     </div>
   );
 };

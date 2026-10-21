@@ -20,7 +20,7 @@
   top: calc(var(--top-navbar-height) + 48px + 16px);
   padding: 4px;
   border-radius: 8px;
-  background: #ffffffcc;
+  background: #f8f8f8;
   backdrop-filter: blur(30.75px);
   pointer-events: none;
 }

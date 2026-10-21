@@ -1,6 +1,7 @@
 import Image from "next/image";
 import style from "./style.module.css";
 import RichText from "@/app/[lang]/components/Panorama/RichText";
+import PartnerLogos from "@/app/[lang]/components/Panorama/PartnerLogos";
 import Logo from "@/app/[lang]/components/Nav/logo.svg";
 import { TextSection as TextSectionData } from "@/cms/panorama";
 
@@ -24,10 +25,7 @@ const BackPage = ({ dictionary, sections, siteUrl }: BackPageProps) => (
       )}
 
       <div className={style.logos}>
-        <span className={`${style.logo} ${style.acLogo}`} />
-        <span className={`${style.logo} ${style.pcLogo}`} />
-        <span className={`${style.logo} ${style.egLogo}`} />
-        <span className={`${style.logo} ${style.mooreLogo}`} />
+        <PartnerLogos className={style.partnerLogos} />
       </div>
     </div>
 
