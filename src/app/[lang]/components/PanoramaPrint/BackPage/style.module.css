@@ -10,19 +10,6 @@
   font-family: var(--body-text-font);
 }
 
-/* the conclusion of the report, separated from the sections about Panorama */
-.conclusion {
-  padding-bottom: 22px;
-  margin-bottom: 26px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
-}
-
-.conclusionTitle {
-  font-size: 30px;
-  color: #fff;
-  margin-bottom: 14px;
-}
-
 .section {
   margin-bottom: 26px;
 }

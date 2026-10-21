@@ -17,6 +17,7 @@ import {
 } from "@/app/[lang]/components/PanoramaPrint/Overview";
 import SectionHeader from "@/app/[lang]/components/PanoramaPrint/SectionHeader";
 import AreaCard from "@/app/[lang]/components/PanoramaPrint/AreaCard";
+import Conclusion from "@/app/[lang]/components/PanoramaPrint/Conclusion";
 import BackPage from "@/app/[lang]/components/PanoramaPrint/BackPage";
 
 // Force dynamic rendering
@@ -159,15 +160,24 @@ const Page = async ({ params: { lang, issue } }: PageProps) => {
         }),
       ),
     ]),
+    ...(report.conclusion
+      ? [
+          {
+            key: "conclusion",
+            type: "flow" as const,
+            // the areas keep their pages to themselves
+            breakBefore: true,
+            anchor: CONCLUSION_ANCHOR,
+            content: <Conclusion section={report.conclusion} />,
+          },
+        ]
+      : []),
     {
       key: "back",
       type: "page",
-      // the conclusion opens the back page
-      anchor: report.conclusion ? CONCLUSION_ANCHOR : undefined,
       content: (
         <BackPage
           dictionary={dictionary}
-          conclusion={report.conclusion}
           sections={[home?.intro, home?.methodology, home?.acknowledgements]}
           siteUrl={`${SITE_URL}/${lang}`}
         />
