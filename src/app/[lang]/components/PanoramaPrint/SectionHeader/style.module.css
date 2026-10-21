@@ -1,0 +1,32 @@
+.sectionHeader {
+  background: var(--green-dark);
+  color: #fff;
+  padding: 0.5in 0.6in 0.3in;
+  margin-bottom: 0.18in;
+}
+
+.eyebrow {
+  font-family: "Urbanist", sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #6be3a7;
+  margin-bottom: 8px;
+}
+
+.sectionHeader .title {
+  font-size: 30px;
+  max-width: 6.4in;
+  margin-bottom: 10px;
+}
+
+.sectionHeader .text p {
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.sectionHeader .text a {
+  color: #6be3a7;
+}

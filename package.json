@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "copy-scoreboard": "node scripts/copy-policy-scoreboard.js",
+    "minimap-countries": "node scripts/generate-minimap-countries.mjs",
     "knip": "knip"
   },
   "engines": {
@@ -19,9 +20,12 @@
     "@hotjar/browser": "^1.0.9",
     "@mapbox/mapbox-gl-geocoder": "^5.0.3",
     "@sentry/nextjs": "^10",
+    "@sparticuz/chromium": "153.0.0",
     "@turf/turf": "^7.2.0",
     "@types/d3": "^7.4.3",
     "@types/lodash.debounce": "^4.0.9",
+    "@vercel/blob": "2.8.1",
+    "@vercel/functions": "3.9.11",
     "antd": "^5.14.1",
     "d3": "^7.9.0",
     "gsap": "^3.12.5",
@@ -29,6 +33,7 @@
     "mapbox-gl": "3.11.1",
     "marked": "^12.0.0",
     "next": "14.2.35",
+    "puppeteer-core": "25.11.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-map-gl": "7.1.7",
@@ -44,7 +49,9 @@
     "eslint": "^8",
     "eslint-config-next": "14.1.0",
     "knip": "^5.85.0",
+    "topojson-client": "^3.1.0",
     "typescript": "^5.9.3",
+    "world-atlas": "^2.0.2",
     "xlsx": "^0.18.5"
   }
 }

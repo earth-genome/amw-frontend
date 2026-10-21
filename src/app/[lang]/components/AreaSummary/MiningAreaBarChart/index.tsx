@@ -1,5 +1,5 @@
 import { AreasTimeseriesData } from "@/types/types";
-import { useContext, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import * as d3 from "d3";
 import useChartDimensions from "@/hooks/useChartDimensions";
 import {
@@ -8,7 +8,7 @@ import {
   formatAreaNumber,
   numberToSignificantDigits,
 } from "@/utils/content";
-import { Context } from "@/lib/Store";
+import { PERMITTED_AREA_UNITS } from "@/app/[lang]/components/Footer";
 import styles from "./styles.module.css";
 import { AREA_SIGNIFICANT_DIGITS } from "@/constants/map";
 
@@ -17,6 +17,18 @@ interface MiningAreaBarChartProps {
   data: AreasTimeseriesData;
   chartHeight?: number;
   yearsColors: string[];
+  // removes the bars after the active year, instead of just making them lighter
+  hideBarsAfterActiveYear?: boolean;
+  // labels only the first year and the last period, e.g. for narrow charts in print
+  xAxisEndLabelsOnly?: boolean;
+  areaUnits: PERMITTED_AREA_UNITS;
+  lang: string;
+  // year or quarter displayed on the map, e.g. "202504"
+  activeYear: string;
+  // highlights the bars until the active year, instead of only the active year
+  isCumulative: boolean;
+  // hovered bar, undefined when leaving the chart, e.g. to show its year on the map
+  onHoverYear?: (_year: number | undefined) => void;
 }
 
 const MiningAreaBarChart = ({
@@ -24,8 +36,14 @@ const MiningAreaBarChart = ({
   dictionary,
   chartHeight = 100,
   yearsColors,
+  hideBarsAfterActiveYear = false,
+  xAxisEndLabelsOnly = false,
+  areaUnits,
+  lang,
+  activeYear,
+  isCumulative,
+  onHoverYear,
 }: MiningAreaBarChartProps) => {
-  const [state, dispatch] = useContext(Context)!;
   const containerRef = useRef<HTMLDivElement>(null);
   const { width: chartWidth } = useChartDimensions(containerRef);
   const [hoveredBar, setHoveredBar] = useState<{
@@ -37,8 +55,6 @@ const MiningAreaBarChart = ({
     x: number;
     y: number;
   } | null>(null);
-
-  const { areaUnits, lang, activeYear, isCumulative } = state;
 
   const margin = { top: 10, right: 0, bottom: 15, left: 40 };
   const width = chartWidth - margin.left - margin.right;
@@ -56,7 +72,7 @@ const MiningAreaBarChart = ({
     }));
 
     // add color and period change calculation
-    return [...dataWithPrecision].map((d, i) => ({
+    const dataWithColors = [...dataWithPrecision].map((d, i) => ({
       ...d,
       color: yearsColors[i],
       area_change_ha:
@@ -64,7 +80,12 @@ const MiningAreaBarChart = ({
           ? d.area_ha_significant - dataWithPrecision[i - 1].area_ha_significant
           : null,
     }));
-  }, [data, yearsColors]);
+
+    // filter after the colors are assigned, so they stay aligned with the years
+    return hideBarsAfterActiveYear
+      ? dataWithColors.filter((d) => d.admin_year <= Number(activeYear))
+      : dataWithColors;
+  }, [data, yearsColors, hideBarsAfterActiveYear, activeYear]);
 
   if (!dataProcessed?.length) return null;
 
@@ -101,11 +122,7 @@ const MiningAreaBarChart = ({
   const fullBarWidth = outerXScale.bandwidth();
   const quarterBarWidth = fullBarWidth / 4;
 
-  const resetHoveredYear = () =>
-    dispatch({
-      type: "SET_HOVERED_YEAR",
-      hoveredYear: undefined,
-    });
+  const resetHoveredYear = () => onHoverYear?.(undefined);
 
   return (
     <div ref={containerRef} onMouseLeave={() => resetHoveredYear()}>
@@ -209,10 +226,7 @@ const MiningAreaBarChart = ({
                             x: rect.left + rect.width / 2,
                             y: rect.top,
                           });
-                          dispatch({
-                            type: "SET_HOVERED_YEAR",
-                            hoveredYear: d.admin_year,
-                          });
+                          onHoverYear?.(d.admin_year);
                         }}
                         onMouseLeave={() => {
                           setHoveredBar(null);
@@ -222,18 +236,47 @@ const MiningAreaBarChart = ({
                   })}
 
                   {/* X-axis labels */}
-                  <text
-                    x={x0 + fullBarWidth / 2}
-                    y={height + margin.bottom}
-                    textAnchor="middle"
-                    className={styles.xAxisLabels}
-                    onMouseEnter={() => resetHoveredYear()}
-                  >
-                    {year}
-                  </text>
+                  {!xAxisEndLabelsOnly && (
+                    <text
+                      x={x0 + fullBarWidth / 2}
+                      y={height + margin.bottom}
+                      textAnchor="middle"
+                      className={styles.xAxisLabels}
+                      onMouseEnter={() => resetHoveredYear()}
+                    >
+                      {year}
+                    </text>
+                  )}
                 </g>
               );
             })}
+
+            {/* X-axis labels, only at the ends */}
+            {xAxisEndLabelsOnly && (
+              <>
+                <text
+                  x={outerXScale(groupedData[0][0])}
+                  y={height + margin.bottom}
+                  textAnchor="start"
+                  className={styles.xAxisLabels}
+                >
+                  {groupedData[0][0]}
+                </text>
+                <text
+                  x={
+                    outerXScale(groupedData[groupedData.length - 1][0])! +
+                    fullBarWidth
+                  }
+                  y={height + margin.bottom}
+                  textAnchor="end"
+                  className={styles.xAxisLabels}
+                >
+                  {formatLayerYear(
+                    d3.max(dataProcessed, (d) => d.admin_year) ?? 0,
+                  )}
+                </text>
+              </>
+            )}
           </g>
         </g>
       </svg>
