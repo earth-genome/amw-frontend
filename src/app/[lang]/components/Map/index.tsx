@@ -353,9 +353,11 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
     setIsGeocoderHidden,
   );
 
+  const maxYear = LAYER_YEARS[LAYER_YEARS.length - 1];
+
   // in case we're in an iframe embed, this sends a post message to the parent window,
   // for the mining calculator
-  const miningLocations = selectedAreaData?.locations;
+  const miningLocations = selectedAreaData?.locations_per_year?.[maxYear];
   useEffect(() => {
     if (!isEmbed) return;
     const miningLocationsFiltered = filterForMiningCalculator(miningLocations);
@@ -738,7 +740,7 @@ const MainMap: React.FC<MainMapProps> = ({ dictionary }) => {
         {selectedArea && !isEmbed && (
           <AreaSummary
             dictionary={dictionary}
-            maxYear={LAYER_YEARS[LAYER_YEARS.length - 1]}
+            maxYear={maxYear}
             yearsColors={yearsColors}
           />
         )}
