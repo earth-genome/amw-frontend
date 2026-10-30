@@ -1,4 +1,4 @@
-import { API_URL, StrapiResponse } from "@/cms/client";
+import { API_URL, apiFetcher, StrapiResponse } from "@/cms/client";
 
 // const PANORAMA_STRAPI_ORIGIN = "http://localhost:1337";
 // const API_URL = `${PANORAMA_STRAPI_ORIGIN}/api`;
@@ -59,6 +59,14 @@ export const getPanoramaHomePath = (lang: string) => `/${lang}/panorama`;
 // report pages are at /[lang]/panorama/issue-[issueNumber]
 export const getPanoramaReportPath = (lang: string, issueNumber: number) =>
   `/${lang}/panorama/issue-${issueNumber}`;
+
+// PDF version of a report, generated on demand from its print page
+export const getPanoramaPdfPath = (lang: string, issueNumber: number) =>
+  `/api/panorama-pdf/${lang}/issue-${issueNumber}`;
+
+// print-friendly page of a report, used to generate the PDF
+export const getPanoramaPrintPath = (lang: string, issueNumber: number) =>
+  `${getPanoramaReportPath(lang, issueNumber)}/print`;
 
 export const parsePanoramaIssueParam = (issue: string): number | undefined => {
   const match = issue.match(/^issue-(\d+)$/);
@@ -221,3 +229,33 @@ export type PanoramaReportsListResponse = StrapiResponse<
   PanoramaReportListItem[]
 >;
 export type PanoramaHomeResponse = StrapiResponse<PanoramaHome>;
+
+// ================== FETCHERS ==================
+
+export const fetchPanoramaReport = async (issue: string, lang: string) => {
+  const issueNumber = parsePanoramaIssueParam(issue);
+  if (!issueNumber) return undefined;
+
+  const response = await apiFetcher<PanoramaReportsResponse>(
+    getPanoramaReportUrl(issueNumber),
+    { ...PANORAMA_FETCH_OPTIONS, locale: lang },
+  );
+  return response?.data?.[0];
+};
+
+// for content that is not essential to the report, e.g. the home content (methodology,
+// sign up, etc.) and the issues list
+export const fetchPanoramaOptional = async <T>(
+  url: string,
+  lang: string,
+): Promise<T | undefined> => {
+  try {
+    return await apiFetcher<T>(url, {
+      ...PANORAMA_FETCH_OPTIONS,
+      locale: lang,
+    });
+  } catch (error) {
+    console.error(`Error fetching ${url}`, error);
+    return undefined;
+  }
+};

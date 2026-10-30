@@ -170,6 +170,13 @@
     "explore_hint": "Haga clic para explorar",
     "exploring": "Explorando",
     "back_to_report": "Volver al informe",
-    "esc": "Esc"
+    "esc": "Esc",
+    "contents": "Contenido",
+    "explore_every_detection": "Explore cada detección en el mapa interactivo",
+    "preparing_report": "Preparando el informe",
+    "hectares_short": "ha",
+    "new_mining_in": "nueva minería en",
+    "total_area_affected": "Área total afectada",
+    "mining_until": "Minería hasta"
   }
 }

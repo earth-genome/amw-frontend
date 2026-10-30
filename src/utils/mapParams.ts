@@ -85,9 +85,12 @@ export const getLocalMapHref = (
   }
 };
 
+// a map view set by its center and zoom, e.g. from a map link
+export type MapPosition = { lng: number; lat: number; zoom: number };
+
 export const hasMapPosition = (
   params: MapParams,
-): params is MapParams & { zoom: number; lng: number; lat: number } =>
+): params is MapParams & MapPosition =>
   params.zoom !== undefined &&
   params.lng !== undefined &&
   params.lat !== undefined;

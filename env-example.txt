@@ -19,3 +19,12 @@ MINING_CALCULATOR_BASE_URL=
 MINING_CALCULATOR_API_KEY=
 
 NEXT_PUBLIC_HOTJAR_SITE_ID=
+
+# Panorama PDFs: Vercel Blob store where they are kept, and secret of the Strapi webhook
+# that generates them again when a report is published ("Authorization: Bearer <secret>")
+BLOB_READ_WRITE_TOKEN=
+PANORAMA_PDF_WEBHOOK_SECRET=
+# local Chrome to generate them in development, e.g. on a Mac
+# "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", and true to watch it
+CHROMIUM_EXECUTABLE_PATH=
+PANORAMA_PDF_DEBUG=

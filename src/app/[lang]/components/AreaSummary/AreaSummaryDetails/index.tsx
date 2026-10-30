@@ -3,18 +3,16 @@ import style from "./style.module.css";
 import { AreasTimeseriesData } from "@/types/types";
 import Link from "next/link";
 import IllegalityBarChart from "@/app/[lang]/components/AreaSummary/IllegalityBarChart";
-import { ILLEGALITY_KEYS, PERMITTED_ILLEGALITY_KEYS } from "@/constants/map";
 import AreaSummaryTooltip from "@/app/[lang]/components/AreaSummary/AreaSummaryTooltip";
 import ExternalLink from "@/app/[lang]/components/Icons/ExternalLink";
 import { useContext } from "react";
 import { Context } from "@/lib/Store";
 import { formatLayerYear } from "@/utils/content";
-
-export type IllegalityAreaData = {
-  admin_illegality_max: number;
-  mining_affected_area: number;
-  mining_affected_area_pct: number;
-};
+import {
+  getEconomicCostDescription,
+  getIllegalityPercentages,
+  IllegalityAreaData,
+} from "@/utils/areaSummary";
 
 interface AreaSummaryDetailsProps {
   dictionary: { [key: string]: any };
@@ -45,10 +43,9 @@ const AreaSummaryDetails = ({
   hideBarsAfterActiveYear,
   isFloating,
 }: AreaSummaryDetailsProps) => {
-  // eslint-disable-next-line no-unused-vars
   const [state, dispatch] = useContext(Context)!;
 
-  const { areaUnits } = state;
+  const { areaUnits, lang, activeYear, isCumulative } = state;
 
   const economicCostText = calculatorIsLoading
     ? `${dictionary?.map_ui?.loading}...`
@@ -60,12 +57,7 @@ const AreaSummaryDetails = ({
     <AreaSummaryTooltip
       content={
         <div>
-          <p>
-            {dictionary?.map_ui?.economic_cost_calculator_intro}{" "}
-            {formatLayerYear(displayYear)}
-            {", "}
-            {dictionary?.map_ui?.economic_cost_calculator_ending}
-          </p>
+          <p>{getEconomicCostDescription(dictionary, displayYear)}</p>
         </div>
       }
     />
@@ -121,6 +113,14 @@ const AreaSummaryDetails = ({
             yearsColors={yearsColors}
             chartHeight={90}
             hideBarsAfterActiveYear={hideBarsAfterActiveYear}
+            areaUnits={areaUnits}
+            lang={lang}
+            activeYear={activeYear}
+            isCumulative={isCumulative}
+            // shows the mines of the hovered year on the map
+            onHoverYear={(hoveredYear) =>
+              dispatch({ type: "SET_HOVERED_YEAR", hoveredYear })
+            }
           />
         </div>
       ) : null}
@@ -162,16 +162,7 @@ const AreaSummaryDetails = ({
           </div>
           <IllegalityBarChart
             dictionary={dictionary}
-            percentages={illegalityAreas.map((d) => ({
-              value: d.mining_affected_area_pct,
-              key: d.admin_illegality_max,
-              label:
-                dictionary.illegality_legend?.[
-                  ILLEGALITY_KEYS?.[
-                    d.admin_illegality_max as PERMITTED_ILLEGALITY_KEYS
-                  ]
-                ],
-            }))}
+            percentages={getIllegalityPercentages(illegalityAreas, dictionary)}
           />
         </div>
       ) : null}

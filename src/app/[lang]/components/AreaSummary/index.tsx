@@ -6,18 +6,18 @@ import {
   displayAreaInUnits,
   formatLayerYear,
   formatAreaNumber,
-  formatCurrencyNumber,
 } from "@/utils/content";
-import AreaSummaryDetails, {
-  IllegalityAreaData,
-} from "@/app/[lang]/components/AreaSummary/AreaSummaryDetails";
+import AreaSummaryDetails from "@/app/[lang]/components/AreaSummary/AreaSummaryDetails";
 import { CloseCircleFilled } from "@ant-design/icons";
 import useMiningCalculator from "@/hooks/useMiningCalculator";
+import { AREA_SIGNIFICANT_DIGITS } from "@/constants/map";
 import {
-  AREA_SIGNIFICANT_DIGITS,
-  ECONOMIC_COST_SIGNIFICANT_DIGITS,
-  ENTIRE_AMAZON_AREA_ID,
-} from "@/constants/map";
+  filterIllegalityAreas,
+  formatEconomicCost,
+  getAreaTypeInfo,
+  getTimeseriesValues,
+  isMiningCalculatorHiddenFor,
+} from "@/utils/areaSummary";
 
 interface AreaProps {
   dictionary: { [key: string]: any };
@@ -50,10 +50,10 @@ const AreaSummary: React.FC<AreaProps> = ({
   const displayYear = Number(activeYear);
   // don't use mining calculator for countries because it is not reliable for such large areas,
   // nor when it is hidden, e.g. in a Panorama report
-  const isMiningCalculatorHidden =
-    hideMiningCalculator ||
-    !selectedAreaTypeKey ||
-    selectedAreaTypeKey === "countries";
+  const isMiningCalculatorHidden = isMiningCalculatorHiddenFor(
+    selectedAreaTypeKey,
+    hideMiningCalculator,
+  );
 
   const {
     calculatorData,
@@ -69,25 +69,25 @@ const AreaSummary: React.FC<AreaProps> = ({
   const [affectedAreaHa, economicCost] = useMemo(() => {
     // use the data that is pre-calculated in the timeseries,
     // and mining calculator data that is fetched on the fly
-
-    const displayYearAffectedArea = selectedAreaTimeseriesData?.find(
-      (d) => d.admin_year === displayYear,
-    )?.intersected_area_ha_cumulative;
+    const { affectedAreaHa: displayYearAffectedArea } = getTimeseriesValues(
+      selectedAreaTimeseriesData,
+      displayYear,
+    );
     return [displayYearAffectedArea, calculatorData?.totalImpact];
   }, [calculatorData?.totalImpact, displayYear, selectedAreaTimeseriesData]);
   const hasAffectedArea = affectedAreaHa != null;
 
   const {
-    country,
-    id: areaId,
     // description,
     illegality_areas: illegalityAreas,
   } = selectedAreaData ?? {};
-  const { showCountry, renderTitle, renderStatus } = selectedAreaType || {};
   const areaTitle =
-    selectedAreaData && renderTitle && renderTitle(selectedAreaData);
-  const areaStatus =
-    selectedAreaData && renderStatus && renderStatus(selectedAreaData);
+    selectedAreaData && selectedAreaType?.renderTitle(selectedAreaData);
+  const {
+    typeLabel,
+    country,
+    status: areaStatus,
+  } = getAreaTypeInfo(selectedAreaType, selectedAreaData, dictionary);
 
   const handleClose = () =>
     dispatch({ type: "SET_SELECTED_AREA_BY_ID", selectedAreaId: undefined });
@@ -98,10 +98,10 @@ const AreaSummary: React.FC<AreaProps> = ({
         <div>
           {/* <div className={style.areaYear}>{formatLayerYear(maxYear)}</div> */}
           {areaTitle && <div className={style.areaTitleText}>{areaTitle}</div>}
-          {selectedAreaType && areaId !== ENTIRE_AMAZON_AREA_ID ? (
+          {typeLabel ? (
             <div className={style.areaType}>
-              {dictionary?.map_ui?.[selectedAreaType?.dictionaryKeySingular]}
-              {showCountry && country && <span> - {country}</span>}
+              {typeLabel}
+              {country && <span> - {country}</span>}
             </div>
           ) : null}
           {areaStatus && (
@@ -152,11 +152,7 @@ const AreaSummary: React.FC<AreaProps> = ({
             hideMiningCalculator={isMiningCalculatorHidden}
             economicCost={
               economicCost
-                ? formatCurrencyNumber(
-                    economicCost,
-                    lang,
-                    ECONOMIC_COST_SIGNIFICANT_DIGITS,
-                  ) || undefined
+                ? formatEconomicCost(economicCost, lang) || undefined
                 : undefined
             }
             calculatorIsLoading={calculatorIsLoading}
@@ -164,11 +160,8 @@ const AreaSummary: React.FC<AreaProps> = ({
             selectedAreaTimeseriesData={selectedAreaTimeseriesData}
             // description={description}
             dictionary={dictionary}
-            illegalityAreas={illegalityAreas?.filter(
-              (d: IllegalityAreaData) =>
-                // removing areas which are zero pct
-                d.mining_affected_area_pct > 0,
-            )}
+            // removing areas which are zero pct
+            illegalityAreas={filterIllegalityAreas(illegalityAreas)}
             yearsColors={yearsColors}
             displayYear={displayYear}
             hideBarsAfterActiveYear={isScrollytelling}
