@@ -2,7 +2,7 @@ import { scaleSequential } from "d3-scale";
 import { interpolateRgbBasis } from "d3-interpolate";
 
 // data snapshot (YYYYMMDD) of the main map, Panorama reports can use a different one
-export const DATA_UPDATED_AT = "20261006";
+export const DATA_UPDATED_AT = "20261019";
 
 const getDataBaseUrl = (dataSnapshot: string) =>
   // "/website";
