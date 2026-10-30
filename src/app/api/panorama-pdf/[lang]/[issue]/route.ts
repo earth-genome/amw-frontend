@@ -5,8 +5,10 @@ import {
   findStoredPanoramaPdf,
   generateAndStorePanoramaPdf,
   getPanoramaPdfSiteUrl,
+  getPanoramaPdfVersion,
   isPanoramaPdfStorageEnabled,
   PanoramaPdfNotFoundError,
+  PanoramaPdfVersion,
   renderPanoramaPdf,
 } from "@/utils/panoramaPdf";
 
@@ -30,9 +32,12 @@ const renderPdfResponse = async (options: Options) => {
 };
 
 // looks for the stored PDF, undefined when the storage can't be reached
-const findStoredPdf = async ({ lang, issueNumber }: Options) => {
+const findStoredPdf = async (
+  { lang, issueNumber }: Options,
+  version: PanoramaPdfVersion,
+) => {
   try {
-    return { url: await findStoredPanoramaPdf(lang, issueNumber) };
+    return { url: await findStoredPanoramaPdf(lang, issueNumber, version) };
   } catch (error) {
     console.error(`[panorama-pdf] ${lang} issue ${issueNumber}:`, error);
     return undefined;
@@ -53,18 +58,25 @@ export async function GET(
   const options = { origin: request.nextUrl.origin, lang, issueNumber };
 
   try {
+    // the browser is only launched for the reports that exist
+    const version = await getPanoramaPdfVersion(lang, issueNumber);
+    if (!version) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+
     // without storage, e.g. in development, the PDF is generated on every request
     if (!isPanoramaPdfStorageEnabled()) return await renderPdfResponse(options);
 
-    const stored = await findStoredPdf(options);
+    const stored = await findStoredPdf(options, version);
     // the storage can't be reached, so the PDF is still available
     if (!stored) return await renderPdfResponse(options);
 
-    const url = stored.url ?? (await generateAndStorePanoramaPdf(options));
+    const url =
+      stored.url ?? (await generateAndStorePanoramaPdf(options, version));
     return NextResponse.redirect(getPanoramaPdfSiteUrl(url, options.origin), {
       status: 302,
-      // the url of a stored PDF doesn't change when it's generated again
-      headers: { "Cache-Control": "public, max-age=0, s-maxage=60" },
+      // the url changes with the content of the report, and the previous PDFs are deleted
+      headers: { "Cache-Control": "no-store" },
     });
   } catch (error) {
     if (error instanceof PanoramaPdfNotFoundError) {

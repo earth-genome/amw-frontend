@@ -2,7 +2,14 @@ import "server-only";
 import chromium from "@sparticuz/chromium";
 import puppeteer from "puppeteer-core";
 import { BlobNotFoundError, del, head, list, put } from "@vercel/blob";
-import { getPanoramaPrintPath } from "@/cms/panorama";
+import {
+  fetchPanoramaOptional,
+  fetchPanoramaReport,
+  getPanoramaPrintPath,
+  PANORAMA_HOME_URL,
+  PanoramaHomeResponse,
+} from "@/cms/panorama";
+import { getDataSnapshot, LAYER_YEARS } from "@/constants/map";
 
 // generates the PDFs of the Panorama reports from their print pages, and stores them in
 // Vercel Blob, so they are only generated again when the reports change
@@ -18,8 +25,9 @@ const READY_POLL_INTERVAL = 500;
 const PROGRESS_LOG_INTERVAL = 10000;
 // for each call to the browser, e.g. when the page is busy rendering a map
 const PROTOCOL_TIMEOUT = 60000;
-// the CDN serves the previous PDF for up to this long after it's generated again
-const BLOB_CACHE_MAX_AGE = 60;
+// the content of a stored PDF never changes at its url, which has the version of the
+// content it was rendered from
+const BLOB_CACHE_MAX_AGE = 30 * 24 * 60 * 60;
 // the Blob client retries failed requests, and doesn't stop on an abort signal when the
 // connection hangs, so they could otherwise take minutes
 const BLOB_LOOKUP_TIMEOUT = 10000;
@@ -30,6 +38,14 @@ interface PanoramaPdfOptions {
   origin: string;
   lang: string;
   issueNumber: number;
+}
+
+// the content a PDF is rendered from, the stored PDFs are generated again when it changes
+export interface PanoramaPdfVersion {
+  // the latest update of the report or the home, to know which of two PDFs is newer, in ms
+  contentTime: number;
+  // path segment of the stored PDF
+  id: string;
 }
 
 // the print page of the report doesn't exist
@@ -46,8 +62,24 @@ const getPdfFilename = (lang: string, issueNumber: number) =>
 const getBlobPrefix = (lang: string) =>
   `panorama-pdf/${process.env.VERCEL_ENV ?? "development"}/v${PDF_LAYOUT_VERSION}/${lang}/`;
 
-const getBlobPathname = (lang: string, issueNumber: number) =>
-  `${getBlobPrefix(lang)}${getPdfFilename(lang, issueNumber)}`;
+// the versions of the PDF of a report, e.g. "panorama-pdf/production/v1/en/issue-1/"
+const getIssuePrefix = (lang: string, issueNumber: number) =>
+  `${getBlobPrefix(lang)}issue-${issueNumber}/`;
+
+// e.g. ".../en/issue-1/<version>/amazon-mining-watch-panorama-issue-1-en.pdf", the file name
+// is kept for the downloads
+const getBlobPathname = (
+  lang: string,
+  issueNumber: number,
+  version: PanoramaPdfVersion,
+) =>
+  `${getIssuePrefix(lang, issueNumber)}${version.id}/${getPdfFilename(lang, issueNumber)}`;
+
+// the content time of a stored PDF, from the start of its version
+const getStoredContentTime = (issuePrefix: string, pathname: string) => {
+  const match = pathname.slice(issuePrefix.length).match(/^(\d+)-/);
+  return match ? Number(match[1]) : 0;
+};
 
 const withTimeout = <T>(promise: Promise<T>, timeout: number): Promise<T> =>
   new Promise<T>((resolve, reject) => {
@@ -180,14 +212,51 @@ export const getPanoramaPdfSiteUrl = (blobUrl: string, origin: string) => {
   return storeId ? `${origin}${new URL(blobUrl).pathname}` : blobUrl;
 };
 
-// url of the stored PDF of a report, if it was generated
+// digits of a Strapi date, e.g. "20261021085652123"
+const toDigits = (date: string | null | undefined) =>
+  date?.replace(/\D/g, "") || "none";
+
+// the version of the content of a report's PDF, undefined when the report doesn't exist, so
+// a PDF is never rendered for it. The version changes when the report or the home (the back
+// page) are updated, and with the data the maps follow, e.g. after a data update
+export const getPanoramaPdfVersion = async (
+  lang: string,
+  issueNumber: number,
+): Promise<PanoramaPdfVersion | undefined> => {
+  const [report, home] = await Promise.all([
+    fetchPanoramaReport(`issue-${issueNumber}`, lang),
+    fetchPanoramaOptional<PanoramaHomeResponse>(PANORAMA_HOME_URL, lang),
+  ]);
+  if (!report) return undefined;
+
+  const homeUpdatedAt = home?.data?.updatedAt;
+  const contentTime = Math.max(
+    Date.parse(report.updatedAt) || 0,
+    (homeUpdatedAt && Date.parse(homeUpdatedAt)) || 0,
+  );
+  return {
+    contentTime,
+    id: [
+      contentTime,
+      `r${toDigits(report.updatedAt)}`,
+      `h${toDigits(homeUpdatedAt)}`,
+      // the snapshot of the map data, the main map one when the report has none
+      `d${getDataSnapshot(report.dataSnapshot)}`,
+      // the year of the maps whose links have none
+      `y${LAYER_YEARS[LAYER_YEARS.length - 1]}`,
+    ].join("-"),
+  };
+};
+
+// url of the stored PDF of a version of a report, if it was generated
 export const findStoredPanoramaPdf = async (
   lang: string,
   issueNumber: number,
+  version: PanoramaPdfVersion,
 ): Promise<string | undefined> => {
   try {
     const blob = await withTimeout(
-      head(getBlobPathname(lang, issueNumber)),
+      head(getBlobPathname(lang, issueNumber, version)),
       BLOB_LOOKUP_TIMEOUT,
     );
     return blob.url;
@@ -197,47 +266,78 @@ export const findStoredPanoramaPdf = async (
   }
 };
 
-// generates the PDF of a report and stores it, replacing the previous one
+// generates the PDF of a version of a report and stores it, replacing the previous versions
 export const generateAndStorePanoramaPdf = async (
   options: PanoramaPdfOptions,
+  version: PanoramaPdfVersion,
 ): Promise<string> => {
   const { lang, issueNumber } = options;
   const pdf = await renderPanoramaPdf(options);
+
+  const issuePrefix = getIssuePrefix(lang, issueNumber);
+  const getContentTime = (pathname: string) =>
+    getStoredContentTime(issuePrefix, pathname);
+  const { blobs } = await withTimeout(
+    list({ prefix: issuePrefix }),
+    BLOB_LOOKUP_TIMEOUT,
+  );
+
+  // renders can overlap, e.g. when a report is published twice in a row. A render of older
+  // content that finishes last doesn't replace the newer PDF
+  const newerBlob = blobs
+    .filter((blob) => getContentTime(blob.pathname) > version.contentTime)
+    .sort((a, b) => getContentTime(b.pathname) - getContentTime(a.pathname))[0];
+  if (newerBlob) {
+    log(options, `not stored, a newer PDF is stored at ${newerBlob.url}`);
+    return newerBlob.url;
+  }
+
+  const pathname = getBlobPathname(lang, issueNumber, version);
   const blob = await withTimeout(
-    put(getBlobPathname(lang, issueNumber), pdf, {
+    put(pathname, pdf, {
       access: "public",
       contentType: "application/pdf",
       addRandomSuffix: false,
+      // the same path is the same content
       allowOverwrite: true,
       cacheControlMaxAge: BLOB_CACHE_MAX_AGE,
     }),
     BLOB_WRITE_TIMEOUT,
   );
   log(options, `stored at ${blob.url}`);
+
+  // the previous versions, e.g. older content, or the same content with older map data
+  const previousBlobs = blobs.filter(
+    (stored) =>
+      stored.pathname !== pathname &&
+      getContentTime(stored.pathname) <= version.contentTime,
+  );
+  if (previousBlobs.length) {
+    try {
+      await withTimeout(
+        del(previousBlobs.map((stored) => stored.url)),
+        BLOB_WRITE_TIMEOUT,
+      );
+      log(options, `deleted ${previousBlobs.length} previous PDFs`);
+    } catch (error) {
+      // the new PDF is stored, the previous ones are only left in the storage
+      console.error(`[panorama-pdf] ${lang} issue ${issueNumber}:`, error);
+    }
+  }
   return blob.url;
 };
 
-// deletes the stored PDF of a report, or all of a language when no issue is given, so
-// they are generated again the next time they are downloaded
+// deletes the stored PDFs of a report, or all of a language when no issue is given
 export const deleteStoredPanoramaPdfs = async (
   lang: string,
   issueNumber?: number,
 ) => {
-  if (issueNumber) {
-    await withTimeout(
-      del(getBlobPathname(lang, issueNumber)),
-      BLOB_WRITE_TIMEOUT,
-    );
-    log({ lang, issueNumber }, "deleted");
-    return;
-  }
-
-  const { blobs } = await withTimeout(
-    list({ prefix: getBlobPrefix(lang) }),
-    BLOB_LOOKUP_TIMEOUT,
-  );
+  const prefix = issueNumber
+    ? getIssuePrefix(lang, issueNumber)
+    : getBlobPrefix(lang);
+  const { blobs } = await withTimeout(list({ prefix }), BLOB_LOOKUP_TIMEOUT);
   if (blobs.length) {
     await withTimeout(del(blobs.map((blob) => blob.url)), BLOB_WRITE_TIMEOUT);
   }
-  console.log(`[panorama-pdf] ${lang}: deleted ${blobs.length} PDFs`);
+  console.log(`[panorama-pdf] ${prefix}: deleted ${blobs.length} PDFs`);
 };

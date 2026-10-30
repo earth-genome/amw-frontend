@@ -5,6 +5,7 @@ import { i18n } from "@root/i18n-config";
 import {
   deleteStoredPanoramaPdfs,
   generateAndStorePanoramaPdf,
+  getPanoramaPdfVersion,
   isPanoramaPdfStorageEnabled,
 } from "@/utils/panoramaPdf";
 
@@ -41,7 +42,8 @@ const isAuthorized = (request: NextRequest, secret: string) => {
 // - a report is published, or a published report is updated: its PDF is generated again
 // - a report is unpublished or deleted: its PDF is deleted
 // - the Panorama home is published (the back page of the PDFs): the PDFs of the language
-//   are deleted, and generated again the next time they are downloaded
+//   are deleted. They have its update time in their version, so they are generated again the
+//   next time they are downloaded anyway
 export async function POST(request: NextRequest) {
   const secret = process.env.PANORAMA_PDF_WEBHOOK_SECRET;
   if (!secret || !isPanoramaPdfStorageEnabled()) {
@@ -80,14 +82,18 @@ export async function POST(request: NextRequest) {
   if (isModel(payload, "panorama-report") && entry?.issueNumber) {
     const issueNumber = Number(entry.issueNumber);
     if (isPublished) {
-      return run(
-        generateAndStorePanoramaPdf({
-          origin: request.nextUrl.origin,
-          lang,
-          issueNumber,
-        }),
-        "generating",
-      );
+      const options = { origin: request.nextUrl.origin, lang, issueNumber };
+      const generate = async () => {
+        const version = await getPanoramaPdfVersion(lang, issueNumber);
+        if (!version) {
+          console.log(
+            `[panorama-pdf] ${lang} issue ${issueNumber}: report not found, not generated`,
+          );
+          return;
+        }
+        await generateAndStorePanoramaPdf(options, version);
+      };
+      return run(generate(), "generating");
     }
     if (isRemoved) {
       return run(deleteStoredPanoramaPdfs(lang, issueNumber), "deleting");
