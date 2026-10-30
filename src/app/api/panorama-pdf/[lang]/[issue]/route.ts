@@ -1,14 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { i18n } from "@root/i18n-config";
-import { parsePanoramaIssueParam } from "@/cms/panorama";
+import { fetchPanoramaReport, parsePanoramaIssueParam } from "@/cms/panorama";
 import {
   findStoredPanoramaPdf,
   generateAndStorePanoramaPdf,
   getPanoramaPdfSiteUrl,
-  getPanoramaPdfVersion,
   isPanoramaPdfStorageEnabled,
   PanoramaPdfNotFoundError,
-  PanoramaPdfVersion,
   renderPanoramaPdf,
 } from "@/utils/panoramaPdf";
 
@@ -32,12 +30,9 @@ const renderPdfResponse = async (options: Options) => {
 };
 
 // looks for the stored PDF, undefined when the storage can't be reached
-const findStoredPdf = async (
-  { lang, issueNumber }: Options,
-  version: PanoramaPdfVersion,
-) => {
+const findStoredPdf = async ({ lang, issueNumber }: Options) => {
   try {
-    return { url: await findStoredPanoramaPdf(lang, issueNumber, version) };
+    return { url: await findStoredPanoramaPdf(lang, issueNumber) };
   } catch (error) {
     console.error(`[panorama-pdf] ${lang} issue ${issueNumber}:`, error);
     return undefined;
@@ -59,24 +54,22 @@ export async function GET(
 
   try {
     // the browser is only launched for the reports that exist
-    const version = await getPanoramaPdfVersion(lang, issueNumber);
-    if (!version) {
+    if (!(await fetchPanoramaReport(issue, lang))) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
 
     // without storage, e.g. in development, the PDF is generated on every request
     if (!isPanoramaPdfStorageEnabled()) return await renderPdfResponse(options);
 
-    const stored = await findStoredPdf(options, version);
+    const stored = await findStoredPdf(options);
     // the storage can't be reached, so the PDF is still available
     if (!stored) return await renderPdfResponse(options);
 
-    const url =
-      stored.url ?? (await generateAndStorePanoramaPdf(options, version));
+    const url = stored.url ?? (await generateAndStorePanoramaPdf(options));
     return NextResponse.redirect(getPanoramaPdfSiteUrl(url, options.origin), {
       status: 302,
-      // the url changes with the content of the report, and the previous PDFs are deleted
-      headers: { "Cache-Control": "no-store" },
+      // the url of a stored PDF doesn't change when it's generated again
+      headers: { "Cache-Control": "public, max-age=0, s-maxage=60" },
     });
   } catch (error) {
     if (error instanceof PanoramaPdfNotFoundError) {
