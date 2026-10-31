@@ -22,6 +22,10 @@ repo root, regardless of the current working directory):
 
 Notes
 -----
+* Scores (the "XX_Evaluation" values) are always taken from the "Database"
+  sheet (SCORES_SHEET below), which is the source of truth. The language
+  sheets (SHEETS below) supply only the texts: Question, Justification and
+  Sources (plus Dimension / Categories / Category ID).
 * Country columns are located by their "XX_Evaluation" header, not by
   position, so reordering the countries in the workbook does not break the
   export. The CSV column order is always the one in COUNTRIES below.
@@ -38,9 +42,15 @@ Notes
   English sheet), as in the published CSVs.
 * Numeric scores are written as 1 / 0.5 / 0. Any other number is written
   as-is and reported as a warning. Any non-numeric (textual) evaluation is
-  written as-is (trimmed), and reported on the console.
-* Scores are cross-checked between the three language sheets; any mismatch
-  is printed as a warning (the CSVs are still written).
+  written as-is (trimmed), and reported on the console. These checks are
+  done on the "Database" sheet, since that is where the exported scores
+  come from.
+* The scores in each language sheet (including English) are cross-checked
+  against the "Database" sheet; any mismatch is printed as a warning. The
+  CSVs are still written, always with the "Database" scores.
+* Questions present in the "Database" sheet but missing from a language
+  sheet (or the other way round) are reported as a warning. A question that
+  is in a language sheet but not in "Database" is exported with blank scores.
 * With --strict, any warning (while reading or cross-checking) makes the
   script exit with code 1 after the CSVs are written.
 """
@@ -67,6 +77,11 @@ SHEETS: dict[str, str] = {
     "es": "Translated to spanish",
     "pt": "Translated to portuguese",
 }
+
+# The sheet that supplies the scores ("XX_Evaluation") for every CSV. It is
+# the source of truth; the scores in the SHEETS above are only cross-checked
+# against it.
+SCORES_SHEET = "Database"
 
 # Default output directory. The script lives in the repo root, so this is
 # resolved relative to the script's own location, not the current directory.
@@ -228,32 +243,32 @@ def parse_eval_header(header: str) -> str | None:
     return None
 
 
+def find_column(header: list[str], out_name: str, sheet_name: str) -> int:
+    """Locate one fixed column by alias; stop if missing or ambiguous."""
+    norm = [h.strip().lower() for h in header]
+    aliases = FIXED_COLUMNS[out_name]
+    matches = [i for i, h in enumerate(norm) if h in aliases]
+    if not matches:
+        sys.exit(f"ERROR: column '{out_name}' not found in sheet "
+                 f"'{sheet_name}'. Header: {header}")
+    if len(matches) > 1:
+        found = ", ".join(f"{col_letter(i)} {header[i]!r}" for i in matches)
+        sys.exit(f"ERROR: column '{out_name}' is ambiguous in sheet "
+                 f"'{sheet_name}' - it matches several columns: {found}")
+    return matches[0]
+
+
 def find_fixed_columns(header: list[str], sheet_name: str) -> dict[str, int]:
     """Locate the fixed columns by alias; stop if missing or ambiguous."""
-    norm = [h.strip().lower() for h in header]
-    fixed_idx: dict[str, int] = {}
-    for out_name, aliases in FIXED_COLUMNS.items():
-        matches = [i for i, h in enumerate(norm) if h in aliases]
-        if not matches:
-            sys.exit(f"ERROR: column '{out_name}' not found in sheet "
-                     f"'{sheet_name}'. Header: {header}")
-        if len(matches) > 1:
-            found = ", ".join(f"{col_letter(i)} {header[i]!r}" for i in matches)
-            sys.exit(f"ERROR: column '{out_name}' is ambiguous in sheet "
-                     f"'{sheet_name}' - it matches several columns: {found}")
-        fixed_idx[out_name] = matches[0]
-    return fixed_idx
+    return {out_name: find_column(header, out_name, sheet_name)
+            for out_name in FIXED_COLUMNS}
 
 
-def find_country_columns(header: list[str], lang: str, sheet_name: str,
-                         fixed_idx: dict[str, int],
-                         report: Report) -> dict[str, dict[str, int]]:
+def find_eval_columns(header: list[str], tag: str, sheet_name: str,
+                      report: Report) -> dict[str, int]:
     """
-    Return {country_code: {"Evaluation": i, "Justification": i, "Sources": i}}.
-
-    Evaluation columns are found by their "XX_Evaluation" header. The two
-    columns right after each one are the Justification and the Sources,
-    identified by keyword (in either order).
+    Return {country_code: column index} of the "XX_Evaluation" columns.
+    Stops on duplicated or missing countries; warns about unlisted ones.
     """
     evals: dict[str, list[int]] = {}
     for i, h in enumerate(header):
@@ -275,7 +290,7 @@ def find_country_columns(header: list[str], lang: str, sheet_name: str,
     known = {code for code, _ in COUNTRIES}
     unlisted = sorted(set(evals) - known)
     if unlisted:
-        report.warn(f"[{lang}] sheet '{sheet_name}' has evaluation column(s) "
+        report.warn(f"[{tag}] sheet '{sheet_name}' has evaluation column(s) "
                     f"for country code(s) {unlisted} that are not in "
                     f"COUNTRIES; they are NOT exported.")
 
@@ -284,9 +299,24 @@ def find_country_columns(header: list[str], lang: str, sheet_name: str,
         sys.exit(f"ERROR: evaluation column(s) for {missing} not found in "
                  f"sheet '{sheet_name}'. Header: {header}")
 
+    return {code: evals[code][0] for code, _ in COUNTRIES}
+
+
+def find_country_columns(header: list[str], lang: str, sheet_name: str,
+                         fixed_idx: dict[str, int],
+                         report: Report) -> dict[str, dict[str, int]]:
+    """
+    Return {country_code: {"Evaluation": i, "Justification": i, "Sources": i}}.
+
+    Evaluation columns are found by their "XX_Evaluation" header. The two
+    columns right after each one are the Justification and the Sources,
+    identified by keyword (in either order).
+    """
+    evals = find_eval_columns(header, lang, sheet_name, report)
+
     columns: dict[str, dict[str, int]] = {}
     for code, _ in COUNTRIES:
-        eval_i = evals[code][0]
+        eval_i = evals[code]
         # Country blocks: Evaluation, then Justification and Sources in the
         # next two columns (either order, identified by keyword).
         block = [eval_i + k for k in range(1, len(BLOCK_KEYWORDS) + 1)]
@@ -331,9 +361,61 @@ def find_country_columns(header: list[str], lang: str, sheet_name: str,
 # Sheet reading
 # --------------------------------------------------------------------------- #
 
+def read_scores(wb, sheet_name: str,
+                report: Report) -> dict[int, dict[str, str]]:
+    """
+    Return {question_number: {"<Country>_Evaluation": score}} from the
+    scores sheet (the source of truth for every CSV).
+    """
+    if sheet_name not in wb.sheetnames:
+        sys.exit(f"ERROR: scores sheet '{sheet_name}' not found. "
+                 f"Available sheets: {wb.sheetnames}")
+
+    rows = wb[sheet_name].iter_rows(values_only=True)
+    header = [("" if h is None else str(h)) for h in next(rows)]
+
+    # Only the question number and the evaluation columns are needed here;
+    # the texts come from the language sheets.
+    q_idx = find_column(header, "Question Number", sheet_name)
+    eval_idx = find_eval_columns(header, sheet_name, sheet_name, report)
+
+    allowed = ", ".join(sorted(ALLOWED_SCORES, key=float))
+    scores: dict[int, dict[str, str]] = {}
+    for row_number, row in enumerate(rows, start=2):
+        row = list(row) + [None] * (len(header) - len(row))
+        q = parse_question_number(row[q_idx])
+        if q is None:
+            continue  # blank / footer rows
+        if q in scores:
+            report.warn(f"[{sheet_name}] duplicate question {q} at row "
+                        f"{row_number}; keeping the first one.")
+            continue
+
+        record: dict[str, str] = {}
+        for code, country in COUNTRIES:
+            score, numeric = clean_score(row[eval_idx[code]])
+            if not numeric:
+                report.note(f"[{sheet_name}] Q{q} {country}: textual "
+                            f"evaluation {score!r}")
+            elif score and score not in ALLOWED_SCORES:
+                report.warn(f"[{sheet_name}] Q{q} {country}: unexpected score "
+                            f"{score!r} (row {row_number}; allowed: {allowed})")
+            record[f"{country}_Evaluation"] = score
+        scores[q] = record
+
+    if not scores:
+        sys.exit(f"ERROR: no question rows found in sheet '{sheet_name}'.")
+    return scores
+
+
 def read_sheet(wb, lang: str, sheet_name: str,
                report: Report) -> dict[int, dict[str, str]]:
-    """Return {question_number: {csv_column: value}} for one language sheet."""
+    """
+    Return {question_number: {csv_column: value}} for one language sheet.
+
+    The "<Country>_Evaluation" values read here are the sheet's own scores,
+    used only for the cross-check; the exported scores come from SCORES_SHEET.
+    """
     if sheet_name not in wb.sheetnames:
         sys.exit(f"ERROR: sheet '{sheet_name}' ({lang}) not found. "
                  f"Available sheets: {wb.sheetnames}")
@@ -348,7 +430,6 @@ def read_sheet(wb, lang: str, sheet_name: str,
     # keyword, in the two columns after it)
     country_cols = find_country_columns(header, lang, sheet_name, fixed_idx, report)
 
-    allowed = ", ".join(sorted(ALLOWED_SCORES, key=float))
     data: dict[int, dict[str, str]] = {}
     for row_number, row in enumerate(rows, start=2):
         row = list(row) + [None] * (len(header) - len(row))
@@ -369,13 +450,8 @@ def read_sheet(wb, lang: str, sheet_name: str,
         }
         for code, country in COUNTRIES:
             cols = country_cols[code]
-            score, numeric = clean_score(row[cols["Evaluation"]])
-            if not numeric:
-                report.note(f"[{lang}] Q{q} {country}: textual evaluation "
-                            f"{score!r}")
-            elif score and score not in ALLOWED_SCORES:
-                report.warn(f"[{lang}] Q{q} {country}: unexpected score "
-                            f"{score!r} (row {row_number}; allowed: {allowed})")
+            # Sheet's own score: only compared against SCORES_SHEET.
+            score, _ = clean_score(row[cols["Evaluation"]])
             record[f"{country}_Evaluation"] = score
             record[f"{country}_Justification"] = clean_text(row[cols["Justification"]])
             record[f"{country}_Sources"] = clean_text(row[cols["Sources"]])
@@ -391,31 +467,38 @@ def read_sheet(wb, lang: str, sheet_name: str,
 # --------------------------------------------------------------------------- #
 
 def cross_check(all_data: dict[str, dict[int, dict[str, str]]],
+                scores: dict[int, dict[str, str]],
                 report: Report) -> None:
-    """Warn about questions / scores that differ between languages."""
+    """
+    Warn about questions / scores in the language sheets that differ from
+    SCORES_SHEET, and about Category IDs that differ from REFERENCE_LANG.
+    """
     ref = all_data[REFERENCE_LANG]
     for lang, data in all_data.items():
-        if lang == REFERENCE_LANG:
-            continue
-        only_ref = sorted(set(ref) - set(data))
-        only_lang = sorted(set(data) - set(ref))
-        if only_ref:
+        only_scores = sorted(set(scores) - set(data))
+        only_lang = sorted(set(data) - set(scores))
+        if only_scores:
             report.warn(f"[{lang}] questions missing (present in "
-                        f"{REFERENCE_LANG}): {only_ref}")
+                        f"{SCORES_SHEET}): {only_scores}")
         if only_lang:
             report.warn(f"[{lang}] extra questions (absent in "
-                        f"{REFERENCE_LANG}): {only_lang}")
-        for q in sorted(set(ref) & set(data)):
-            if ref[q]["Category ID"] != data[q]["Category ID"]:
-                report.warn(f"[{lang}] Q{q} Category ID "
-                            f"{data[q]['Category ID']!r} != {REFERENCE_LANG} "
-                            f"{ref[q]['Category ID']!r}")
+                        f"{SCORES_SHEET}, exported with blank scores): "
+                        f"{only_lang}")
+
+        if lang != REFERENCE_LANG:
+            for q in sorted(set(ref) & set(data)):
+                if ref[q]["Category ID"] != data[q]["Category ID"]:
+                    report.warn(f"[{lang}] Q{q} Category ID "
+                                f"{data[q]['Category ID']!r} != {REFERENCE_LANG} "
+                                f"{ref[q]['Category ID']!r}")
+
+        for q in sorted(set(scores) & set(data)):
             for _, country in COUNTRIES:
                 col = f"{country}_Evaluation"
-                if ref[q][col] != data[q][col]:
+                if scores[q][col] != data[q][col]:
                     report.warn(f"[{lang}] Q{q} {country}: score "
-                                f"{data[q][col]!r} but {REFERENCE_LANG} has "
-                                f"{ref[q][col]!r}")
+                                f"{data[q][col]!r} but {SCORES_SHEET} has "
+                                f"{scores[q][col]!r}")
 
 
 # --------------------------------------------------------------------------- #
@@ -432,7 +515,8 @@ def csv_columns() -> list[str]:
 
 
 def write_csv(path: Path, data: dict[int, dict[str, str]],
-              reference: dict[int, dict[str, str]]) -> None:
+              reference: dict[int, dict[str, str]],
+              scores: dict[int, dict[str, str]]) -> None:
     columns = csv_columns()
     with path.open("w", encoding="utf-8", newline="") as fh:
         writer = csv.writer(fh, lineterminator="\n", quoting=csv.QUOTE_MINIMAL)
@@ -443,6 +527,11 @@ def write_csv(path: Path, data: dict[int, dict[str, str]],
             if q in reference:
                 record["Dimension"] = reference[q]["Dimension"]
                 record["Categories"] = reference[q]["Categories"]
+            # Scores always from SCORES_SHEET (blank if the question is not
+            # there; already reported by cross_check)
+            for _, country in COUNTRIES:
+                col = f"{country}_Evaluation"
+                record[col] = scores.get(q, {}).get(col, "")
             writer.writerow([record[c] for c in columns])
 
 
@@ -474,18 +563,19 @@ def main() -> None:
     # parse in normal mode. data_only=True: use cached values, not formulas.
     wb = openpyxl.load_workbook(args.xlsx, read_only=True, data_only=True)
     try:
+        scores = read_scores(wb, SCORES_SHEET, report)
         all_data = {lang: read_sheet(wb, lang, name, report)
                     for lang, name in SHEETS.items()}
     finally:
         wb.close()
 
-    cross_check(all_data, report)
+    cross_check(all_data, scores, report)
 
     args.outdir.mkdir(parents=True, exist_ok=True)
     reference = all_data[REFERENCE_LANG]
     for lang, data in all_data.items():
         out = args.outdir / f"{args.prefix}_{lang}.csv"
-        write_csv(out, data, reference)
+        write_csv(out, data, reference, scores)
         print(f"Wrote {out}  ({len(data)} questions)")
 
     if report.warnings:
