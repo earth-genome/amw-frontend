@@ -27,10 +27,32 @@ const DetailPanel = ({
   children,
 }: DetailPanelProps) => {
   const [mounted, setMounted] = useState(false);
+  const [reportExists, setReportExists] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Check that the PDF actually exists before showing the report button
+  useEffect(() => {
+    setReportExists(false);
+
+    if (!reportLink) return;
+
+    const controller = new AbortController();
+
+    fetch(reportLink, { method: "HEAD", signal: controller.signal })
+      .then((res) => {
+        const contentType = res.headers.get("content-type") ?? "";
+        setReportExists(res.ok && contentType.includes("application/pdf"));
+      })
+      .catch(() => {
+        // Network error or aborted request: keep the button hidden
+        if (!controller.signal.aborted) setReportExists(false);
+      });
+
+    return () => controller.abort();
+  }, [reportLink]);
 
   useEffect(() => {
     if (isOpen) {
@@ -57,7 +79,7 @@ const DetailPanel = ({
             {backLabel}
           </button>
           <h1>{title}</h1>
-          {reportLink && (
+          {reportLink && reportExists && (
             <Link href={reportLink}>
               <ConfigProvider
                 theme={{
