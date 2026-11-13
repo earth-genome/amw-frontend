@@ -124,7 +124,7 @@
     "criteria": "criteria",
     "score": "Score",
     "sources": "Sources",
-    "country_rankings_desc": "Countries are evaluated across three key dimensions: legal frameworks, mining policies, and investigation and enforcement. Each dimension is worth up to five points, for a total possible score of 15. Click on “Details” to view the full analysis for each country.",
+    "country_rankings_desc": "Countries are evaluated across three key dimensions: legal frameworks, mining policies, and oversight, control, and punitive framework. Each dimension is worth up to five points, for a total possible score of 15. Click on “Details” to view the full analysis for each country.",
     "assessment_dimensions_desc": "Each assessment dimension is made up of multiple categories and criteria. Visit the details page for each dimension to see how the score is calculated.",
     "country_overall_score_desc_1": "'s overall score is ",
     "country_overall_score_desc_2": " out of ",

@@ -23,7 +23,7 @@ export interface PolicyDimension {
 export const DIMENSION_COLORS: Record<DimensionName, string> = {
   "I. Legal Frameworks": "#4CAF50",
   "II. Mining policies": "#2196F3",
-  "III. Investigation and enforcement": "#FF9800",
+  "III. Oversight, Control, and Punitive Framework": "#FF9800",
 };
 export const MAX_VALUE_DIMENSION = 5;
 
@@ -229,23 +229,23 @@ export const POLICY_DIMENSIONS: PolicyDimension[] = [
     ],
   },
   {
-    slug: "investigation-and-enforcement",
-    key: "III. Investigation and enforcement",
-    name_en: "III. Investigation and Enforcement",
-    name_es: "III. Investigación y ejecución",
-    name_pt: "III. Investigação e aplicação da lei",
+    slug: "oversight-control-and-punitive-framework",
+    key: "III. Oversight, Control, and Punitive Framework",
+    name_en: "III. Oversight, Control, and Punitive Framework",
+    name_es: "III. Fiscalización, Control y Marco Punitivo",
+    name_pt: "III. Fiscalização, Controle e marco punitivo",
     overview_en:
-      "The Investigation and Enforcement dimension focuses on the critical aspects of accountability and the enforcement of mining laws and regulations. It examines the capacity and effectiveness of the state in ensuring compliance, investigating illicit activities, and holding perpetrators accountable. The evaluation is structured around five categories:",
+      "The Oversight, Control, and Punitive Framework dimension focuses on the critical aspects of accountability and the enforcement of mining laws and regulations. It examines the capacity and effectiveness of the state in ensuring compliance, investigating illicit activities, and holding perpetrators accountable. The evaluation is structured around five categories:",
     overview_es:
-      "La dimensión de Investigación y Ejecución se centra en los aspectos críticos de la rendición de cuentas y la aplicación de las leyes y regulaciones mineras. Examina la capacidad y efectividad del Estado para garantizar el cumplimiento, investigar actividades ilícitas y responsabilizar a los infractores. La evaluación se estructura en torno a cinco categorías:",
+      "La dimensión de Fiscalización, Control y Marco Punitivo se centra en los aspectos críticos de la rendición de cuentas y la aplicación de las leyes y regulaciones mineras. Examina la capacidad y efectividad del Estado para garantizar el cumplimiento, investigar actividades ilícitas y responsabilizar a los infractores. La evaluación se estructura en torno a cinco categorías:",
     overview_pt:
-      "A dimensão de Investigação e Aplicação da Lei concentra-se nos aspectos críticos da responsabilização e da aplicação das leis e regulamentações de mineração. Examina a capacidade e eficácia do Estado em garantir o cumprimento, investigar atividades ilícitas e responsabilizar os infratores. A avaliação está estruturada em torno de cinco categorias:",
+      "A dimensão de Fiscalização, Controle e Marco Punitivo concentra-se nos aspectos críticos da responsabilização e da aplicação das leis e regulamentações de mineração. Examina a capacidade e eficácia do Estado em garantir o cumprimento, investigar atividades ilícitas e responsabilizar os infratores. A avaliação está estruturada em torno de cinco categorias:",
     desc_en:
-      "Investigation and enforcement is the strongest dimension overall, with **Peru**, **Colombia** and **Brazil** demonstrating well-developed institutional and legal mechanisms. This reflects years of experience dealing with illegal mining at scale, particularly in the Amazon basin. However, **Suriname** and **Venezuela** remain dramatically below the regional leaders, and even high-performing countries show systematic weaknesses in gold supply chain transparency and digital infrastructure.",
+      "Oversight, control, and punitive framework is the strongest dimension overall, with **Peru**, **Colombia** and **Brazil** demonstrating well-developed institutional and legal mechanisms. This reflects years of experience dealing with illegal mining at scale, particularly in the Amazon basin. However, **Suriname** and **Venezuela** remain dramatically below the regional leaders, and even high-performing countries show systematic weaknesses in gold supply chain transparency and digital infrastructure.",
     desc_es:
-      "La investigación y la aplicación de la ley constituyen, en general, el aspecto más sólido, ya que **Perú**, **Colombia** y **Brasil** cuentan con mecanismos institucionales y jurídicos bien desarrollados. Esto refleja años de experiencia en la lucha contra la minería ilegal a gran escala, especialmente en la cuenca del Amazonas. Sin embargo, **Surinam** y **Venezuela** siguen estando muy por debajo de los líderes regionales, e incluso los países con mejores resultados muestran deficiencias sistemáticas en cuanto a la transparencia de la cadena de suministro del oro y la infraestructura digital.",
+      "La fiscalización, el control y el marco punitivo constituyen, en general, el aspecto más sólido, ya que **Perú**, **Colombia** y **Brasil** cuentan con mecanismos institucionales y jurídicos bien desarrollados. Esto refleja años de experiencia en la lucha contra la minería ilegal a gran escala, especialmente en la cuenca del Amazonas. Sin embargo, **Surinam** y **Venezuela** siguen estando muy por debajo de los líderes regionales, e incluso los países con mejores resultados muestran deficiencias sistemáticas en cuanto a la transparencia de la cadena de suministro del oro y la infraestructura digital.",
     desc_pt:
-      "A investigação e a fiscalização constituem, em geral, o ponto mais forte, com **Peru**, **Colômbia** e **Brasil** apresentando mecanismos institucionais e jurídicos bem desenvolvidos. Isso reflete anos de experiência no combate à mineração ilegal em grande escala, particularmente na Bacia Amazônica. No entanto, **Suriname** e **Venezuela** permanecem muito aquém dos líderes regionais, e mesmo os países com melhor desempenho apresentam deficiências sistemáticas na transparência da cadeia de abastecimento de ouro e na infraestrutura digital.",
+      "A fiscalização, o controle e o marco punitivo constituem, em geral, o ponto mais forte, com **Peru**, **Colômbia** e **Brasil** apresentando mecanismos institucionais e jurídicos bem desenvolvidos. Isso reflete anos de experiência no combate à mineração ilegal em grande escala, particularmente na Bacia Amazônica. No entanto, **Suriname** e **Venezuela** permanecem muito aquém dos líderes regionais, e mesmo os países com melhor desempenho apresentam deficiências sistemáticas na transparência da cadeia de abastecimento de ouro e na infraestrutura digital.",
     categories_en: [
       {
         id: "K",
