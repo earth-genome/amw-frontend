@@ -1,8 +1,12 @@
+/* it fills its page when laid out, so the content is centered vertically */
 .sectionHeader {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-sizing: border-box;
   background: var(--green-dark);
   color: #fff;
-  padding: 0.5in 0.6in 0.3in;
-  margin-bottom: 0.18in;
+  padding: 0.6in;
 }
 
 .eyebrow {

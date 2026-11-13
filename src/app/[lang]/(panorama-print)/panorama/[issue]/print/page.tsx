@@ -14,6 +14,7 @@ import {
   ContentsItem,
   Introduction,
   KeyFindings,
+  MainTakeaways,
 } from "@/app/[lang]/components/PanoramaPrint/Overview";
 import SectionHeader from "@/app/[lang]/components/PanoramaPrint/SectionHeader";
 import AreaCard from "@/app/[lang]/components/PanoramaPrint/AreaCard";
@@ -103,6 +104,20 @@ const Page = async ({ params: { lang, issue } }: PageProps) => {
           },
         ]
       : []),
+    ...(report.mainTakeaways
+      ? [
+          {
+            key: "main-takeaways",
+            type: "flow" as const,
+            content: (
+              <MainTakeaways
+                mainTakeaways={report.mainTakeaways}
+                dateCoverage={report.dateCoverage}
+              />
+            ),
+          },
+        ]
+      : []),
     ...(report.keyFindings
       ? [
           {
@@ -127,6 +142,9 @@ const Page = async ({ params: { lang, issue } }: PageProps) => {
         type: "flow",
         breakBefore: true,
         fullWidth: true,
+        // a dark page of its own, between the sections
+        grow: true,
+        darkPage: true,
         anchor: getSectionAnchor(sectionIndex),
         content: (
           <SectionHeader
@@ -138,13 +156,13 @@ const Page = async ({ params: { lang, issue } }: PageProps) => {
           />
         ),
       },
-      // an area per page, the first one below the section header, and its map fills the
-      // rest of the page
+      // an area per page, after the section header page, and its map fills the rest of
+      // the page
       ...section.areas.map(
         (area, areaIndex): PrintBlock => ({
           key: `area-${area.id}`,
           type: "flow",
-          breakBefore: areaIndex > 0,
+          breakBefore: true,
           grow: true,
           content: (
             <AreaCard

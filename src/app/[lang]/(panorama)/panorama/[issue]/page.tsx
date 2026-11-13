@@ -19,6 +19,7 @@ import ScrollyContent from "@/app/[lang]/components/Panorama/ScrollyContent";
 import Hero from "@/app/[lang]/components/Panorama/Hero";
 import HeroImage from "@/app/[lang]/components/Panorama/HeroImage";
 import TextSection from "@/app/[lang]/components/Panorama/TextSection";
+import MainTakeaways from "@/app/[lang]/components/Panorama/MainTakeaways";
 import KeyFindings from "@/app/[lang]/components/Panorama/KeyFindings";
 import HighlightedAreas from "@/app/[lang]/components/Panorama/HighlightedAreas";
 import ViewMapCta from "@/app/[lang]/components/Panorama/ViewMapCta";
@@ -79,6 +80,14 @@ const Page = async ({ params: { lang, issue } }: PageProps) => {
     ...(report.introduction
       ? [{ id: REPORT_ANCHORS.overview, label: dictionary?.panorama?.overview }]
       : []),
+    ...(report.mainTakeaways
+      ? [
+          {
+            id: REPORT_ANCHORS.mainTakeaways,
+            label: dictionary?.panorama?.main_takeaways,
+          },
+        ]
+      : []),
     ...(report.keyFindings
       ? [
           {
@@ -136,6 +145,11 @@ const Page = async ({ params: { lang, issue } }: PageProps) => {
             <TextSection
               id={REPORT_ANCHORS.overview}
               section={report.introduction}
+            />
+            <MainTakeaways
+              id={REPORT_ANCHORS.mainTakeaways}
+              mainTakeaways={report.mainTakeaways}
+              dateCoverage={report.dateCoverage}
             />
             <KeyFindings
               id={REPORT_ANCHORS.keyFindings}

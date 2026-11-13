@@ -17,6 +17,75 @@
   line-height: 1.6;
 }
 
+.mainTakeaways {
+  padding-bottom: 28px;
+}
+
+.mainTakeawaysHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #d5d9d6;
+}
+
+.mainTakeaways .title {
+  font-size: 30px;
+  color: #0f1a12;
+}
+
+.mainTakeaways .mainTakeawaysDate {
+  margin-bottom: 0;
+  white-space: nowrap;
+}
+
+.takeaways {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.takeaway {
+  display: grid;
+  grid-template-columns: 0.5in 1fr;
+  padding: 12px 0;
+  border-bottom: 1px solid #d5d9d6;
+}
+
+.mainTakeaways .takeawayNumber {
+  font-size: 22px;
+  line-height: 1.2;
+  color: var(--green-light);
+}
+
+/* the title runs into the first paragraph of the text */
+.takeawayBody > div,
+.takeawayBody > div > p:first-child {
+  display: inline;
+}
+
+.mainTakeaways .takeawayBody p {
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.takeawayTitle {
+  font-family: "Urbanist", sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f1a12;
+}
+
+.mainTakeaways .takeawaysText {
+  margin-top: 14px;
+}
+
+.mainTakeaways .takeawaysText p {
+  font-size: 14px;
+  line-height: 1.6;
+}
+
 .keyFindings {
   padding-bottom: 28px;
 }

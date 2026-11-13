@@ -8,7 +8,7 @@ interface SectionHeaderProps {
   text: string | null;
 }
 
-// dark band at the top of the page that starts a section
+// dark page that starts a section, its content centered in the page
 const SectionHeader = ({ eyebrow, title, text }: SectionHeaderProps) => (
   <section className={style.sectionHeader}>
     <div className={style.eyebrow}>{eyebrow}</div>

@@ -17,10 +17,10 @@ export const getPanoramaReportUrl = (issueNumber: number) =>
     "populate[pdfReport]=true",
     "populate[heroImage][populate][image]=true",
     "populate[introduction]=true",
+    "populate[mainTakeaways][populate][takeaways]=true",
     "populate[keyFindings][populate][highlights]=true",
     "populate[keyFindings][populate][breakdown]=true",
-    // NOTE: beforeAndAfter images are not displayed for now, so they are not populated
-    "populate[highlightedAreas][populate][sections][populate][areas]=true",
+    "populate[highlightedAreas][populate][sections][populate][areas][populate][beforeAndAfter]=true",
     "populate[conclusion]=true",
   ]);
 
@@ -52,6 +52,30 @@ const STRAPI_ORIGIN = (() => {
 export const getPanoramaMediaUrl = (url: string | null | undefined) => {
   if (!url) return undefined;
   return url.startsWith("/") ? `${STRAPI_ORIGIN}${url}` : url;
+};
+
+// url of the iframe of a Planet before/after slider, from the link of its story, e.g.
+// "https://www.planet.com/stories/brazil_er-guariba_1-w0aPSeCvR" becomes
+// "https://www.planet.com/compare/?id=brazil_er-guariba_1-w0aPSeCvR". Compare links are
+// kept as they are, and other links are not embedded
+export const getPlanetCompareUrl = (
+  link: string | null | undefined,
+): string | undefined => {
+  if (!link) return undefined;
+  try {
+    const url = new URL(link.trim());
+    if (url.protocol !== "https:" || !/(^|\.)planet\.com$/.test(url.hostname))
+      return undefined;
+    if (/^\/compare\/?$/.test(url.pathname)) {
+      return url.searchParams.get("id") ? url.href : undefined;
+    }
+    const storyId = url.pathname.match(/^\/stories\/([^/]+)\/?$/)?.[1];
+    return storyId
+      ? `https://www.planet.com/compare/?id=${storyId}`
+      : undefined;
+  } catch (_e) {
+    return undefined;
+  }
 };
 
 export const getPanoramaHomePath = (lang: string) => `/${lang}/panorama`;
@@ -110,6 +134,20 @@ export interface ImageWithCaption {
   caption: string | null;
 }
 
+interface Takeaway {
+  id: number;
+  title: string;
+  text: string | null;
+}
+
+export interface MainTakeaways {
+  id: number;
+  title: string;
+  takeaways: Takeaway[];
+  // closing paragraph after the takeaways, in markdown
+  text: string | null;
+}
+
 interface Highlight {
   id: number;
   title: string;
@@ -134,6 +172,13 @@ export interface KeyFindings {
   breakdownText?: string | null;
 }
 
+// Planet before/after imagery slider of an area, shown in a modal window
+export interface BeforeAfter {
+  id: number;
+  // link of the Planet story, e.g. "https://www.planet.com/stories/brazil_er-guariba_1-w0aPSeCvR"
+  embedUrl: string;
+}
+
 interface Area {
   id: number;
   title: string;
@@ -141,6 +186,7 @@ interface Area {
   text: string | null;
   miningUpdate: string | null;
   mapLink: string;
+  beforeAndAfter?: BeforeAfter | null;
 }
 
 interface AreaSection {
@@ -196,6 +242,7 @@ export interface PanoramaReport extends StrapiDocument {
   pdfReport: StrapiMedia | null;
   heroImage: ImageWithCaption | null;
   introduction: TextSection | null;
+  mainTakeaways?: MainTakeaways | null;
   keyFindings: KeyFindings | null;
   highlightedAreas: HighlightedAreas | null;
   conclusion: TextSection | null;

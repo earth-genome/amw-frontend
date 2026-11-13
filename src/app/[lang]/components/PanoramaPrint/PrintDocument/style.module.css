@@ -88,6 +88,17 @@
   color: #666;
 }
 
+/* e.g. the section headers, the footer is light to be readable on the dark background */
+.pageDark {
+  background: var(--green-dark);
+  color: #fff;
+}
+
+.pageDark .footer {
+  border-top-color: rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 0.75);
+}
+
 /* the page size is set in the print layout */
 @media print {
   .document {
