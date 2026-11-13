@@ -5,6 +5,7 @@ import style from "./style.module.css";
 import RichText from "@/app/[lang]/components/Panorama/RichText";
 import MiningUpdate from "@/app/[lang]/components/Panorama/MiningUpdate";
 import MapLink from "@/app/[lang]/components/Panorama/MapLink";
+import BeforeAfter from "@/app/[lang]/components/Panorama/BeforeAfter";
 import ScrollyStep from "@/app/[lang]/components/Panorama/ScrollyStep";
 import StepAreaSummary from "@/app/[lang]/components/Panorama/StepAreaSummary";
 import { HighlightedAreas as HighlightedAreasData } from "@/cms/panorama";
@@ -119,11 +120,19 @@ const HighlightedAreas = ({
                   className={style.miningUpdate}
                   labelClassName={style.miningUpdateLabel}
                 />
-                <MapLink
-                  mapLink={area.mapLink}
-                  lang={lang}
-                  label={dictionary?.panorama?.see_on_map}
-                />
+                <div className={`${shared.buttons} ${style.areaButtons}`}>
+                  <MapLink
+                    className={`${shared.button} ${style.mapButton}`}
+                    mapLink={area.mapLink}
+                    lang={lang}
+                    label={dictionary?.panorama?.see_on_map}
+                  />
+                  <BeforeAfter
+                    dictionary={dictionary}
+                    beforeAndAfter={area.beforeAndAfter}
+                    title={area.title}
+                  />
+                </div>
               </article>
               <StepAreaSummary
                 dictionary={dictionary}

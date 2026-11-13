@@ -4,8 +4,11 @@ import RichText from "@/app/[lang]/components/Panorama/RichText";
 import PageNumber from "@/app/[lang]/components/PanoramaPrint/PageNumber";
 import {
   KeyFindings as KeyFindingsData,
+  MainTakeaways as MainTakeawaysData,
   TextSection as TextSectionData,
 } from "@/cms/panorama";
+
+const padNumber = (n: number) => String(n).padStart(2, "0");
 
 export const Introduction = ({
   dictionary,
@@ -21,6 +24,48 @@ export const Introduction = ({
     <RichText className={style.introText} content={introduction.text} />
   </section>
 );
+
+// numbered takeaways, with the title of each one in bold before its text
+export const MainTakeaways = ({
+  mainTakeaways,
+  dateCoverage,
+}: {
+  mainTakeaways: MainTakeawaysData;
+  dateCoverage: string;
+}) => {
+  const { title, takeaways, text } = mainTakeaways;
+
+  return (
+    <section className={style.mainTakeaways}>
+      <div className={style.mainTakeawaysHeader}>
+        <h2 className={`${shared.heading} ${style.title}`}>{title}</h2>
+        <div className={`${style.eyebrow} ${style.mainTakeawaysDate}`}>
+          {dateCoverage}
+        </div>
+      </div>
+
+      {takeaways?.length ? (
+        <ol className={style.takeaways}>
+          {takeaways.map((takeaway, i) => (
+            <li key={takeaway.id} className={style.takeaway}>
+              <div className={`${shared.heading} ${style.takeawayNumber}`}>
+                {padNumber(i + 1)}
+              </div>
+              <div className={style.takeawayBody}>
+                <strong className={style.takeawayTitle}>
+                  {takeaway.title}
+                </strong>{" "}
+                <RichText content={takeaway.text} />
+              </div>
+            </li>
+          ))}
+        </ol>
+      ) : null}
+
+      <RichText className={style.takeawaysText} content={text} />
+    </section>
+  );
+};
 
 export const KeyFindings = ({
   keyFindings,

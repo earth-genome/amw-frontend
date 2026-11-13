@@ -2,6 +2,7 @@
 
 export const REPORT_ANCHORS = {
   overview: "overview",
+  mainTakeaways: "main-takeaways",
   keyFindings: "key-findings",
   highlightedAreas: "highlighted-areas",
   conclusion: "conclusion",

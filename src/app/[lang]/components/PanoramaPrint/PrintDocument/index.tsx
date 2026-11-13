@@ -46,6 +46,8 @@ export interface PrintBlock {
   fullWidth?: boolean;
   // takes the space left at the bottom of its page, e.g. for a map that fills the page
   grow?: boolean;
+  // its page has a dark background, also behind the footer, e.g. the section headers
+  darkPage?: boolean;
   // id to get the page number of the block, e.g. for the contents
   anchor?: string;
   content: ReactNode;
@@ -291,7 +293,14 @@ const PrintDocument = ({
                 {blocks[page.blockIndexes[0]].content}
               </div>
             ) : (
-              <div key={pageIndex} className={style.page}>
+              <div
+                key={pageIndex}
+                className={`${style.page} ${
+                  page.blockIndexes.some((i) => blocks[i].darkPage)
+                    ? style.pageDark
+                    : ""
+                }`}
+              >
                 <div
                   className={style.pageBody}
                   style={{
