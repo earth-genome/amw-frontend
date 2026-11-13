@@ -1,0 +1,91 @@
+.mainTakeaways {
+  background: #0f1a12;
+  padding: 100px 0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1.6fr;
+  column-gap: 60px;
+  row-gap: 32px;
+}
+
+@media (max-width: 800px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.mainTakeaways .eyebrow {
+  color: var(--green-light);
+}
+
+.mainTakeaways .title {
+  font-size: 48px;
+}
+
+@media (max-width: 600px) {
+  .mainTakeaways .title {
+    font-size: 36px;
+  }
+}
+
+.takeaways {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.takeaway {
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  column-gap: 12px;
+  padding: 32px 0 40px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+@media (max-width: 600px) {
+  .takeaway {
+    grid-template-columns: 56px 1fr;
+    padding: 24px 0 28px 0;
+  }
+}
+
+.number {
+  font-family: "Urbanist", sans-serif;
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--green-light);
+}
+
+@media (max-width: 600px) {
+  .number {
+    font-size: 30px;
+  }
+}
+
+.takeawayTitle {
+  font-family: "Urbanist", sans-serif;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.25;
+  margin: 0 0 8px 0;
+}
+
+.mainTakeaways .takeawayText p {
+  font-size: 17px;
+  line-height: 1.75;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.mainTakeaways .text {
+  margin-top: 48px;
+}
+
+.mainTakeaways .text p {
+  font-size: 18px;
+  line-height: 1.75;
+  color: rgba(255, 255, 255, 0.85);
+}

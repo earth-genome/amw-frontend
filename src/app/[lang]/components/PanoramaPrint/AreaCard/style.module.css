@@ -1,0 +1,142 @@
+/* fills the space it's given on its page, the map takes what's left */
+.areaCard {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  border-top: 2px solid #0f1a12;
+  padding: 16px 0 12px;
+  font-family: var(--body-text-font);
+  color: #0f1a12;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 0.3in;
+  margin-bottom: 12px;
+}
+
+.areaCard .eyebrow {
+  font-family: "Urbanist", sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--green-normal);
+  margin-bottom: 6px;
+}
+
+.areaCard .title {
+  font-size: 28px;
+  color: #0f1a12;
+  margin-bottom: 6px;
+}
+
+.meta {
+  font-size: 12px;
+  color: #555;
+}
+
+.location {
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+}
+
+.change {
+  flex-shrink: 0;
+  text-align: right;
+}
+
+.changeValue {
+  font-family: "Urbanist", sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.changeLabel {
+  font-size: 11px;
+  color: #555;
+}
+
+/* the map gets at least this height below a section header, and grows on its own page */
+.map {
+  flex: 1 1 auto;
+  min-height: 2in;
+  max-height: 5.6in;
+}
+
+/* the fields of the area summary, below the map */
+.summary {
+  display: grid;
+  grid-template-columns: 2.5in 2in 1fr;
+  column-gap: 0.25in;
+  margin-top: 14px;
+  padding: 12px 0;
+  border-top: 1px solid #dcdcdc;
+  border-bottom: 1px solid #dcdcdc;
+}
+
+.summary > div {
+  min-width: 0;
+}
+
+.label {
+  font-family: "Urbanist", sans-serif;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #555;
+  margin-bottom: 6px;
+}
+
+.figures {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.figure {
+  font-family: "Urbanist", sans-serif;
+  font-size: 24px;
+  font-weight: 800;
+  text-transform: uppercase;
+  line-height: 1.1;
+}
+
+.caption {
+  margin-top: 4px;
+  font-size: 10px;
+  line-height: 1.4;
+  color: #555;
+}
+
+.caption a {
+  color: var(--green-normal);
+}
+
+.texts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 0.4in;
+  padding-top: 12px;
+}
+
+.areaCard .text p {
+  font-size: 12px;
+  line-height: 1.55;
+  margin-bottom: 0.6em;
+}
+
+.areaCard .text a {
+  color: var(--green-normal);
+}
+
+.miningUpdateLabel {
+  float: left;
+  margin-right: 4px;
+  font-size: 12px;
+  line-height: 1.55;
+  font-weight: 700;
+}

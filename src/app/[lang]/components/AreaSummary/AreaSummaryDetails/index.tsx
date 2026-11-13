@@ -3,18 +3,16 @@ import style from "./style.module.css";
 import { AreasTimeseriesData } from "@/types/types";
 import Link from "next/link";
 import IllegalityBarChart from "@/app/[lang]/components/AreaSummary/IllegalityBarChart";
-import { ILLEGALITY_KEYS, PERMITTED_ILLEGALITY_KEYS } from "@/constants/map";
 import AreaSummaryTooltip from "@/app/[lang]/components/AreaSummary/AreaSummaryTooltip";
 import ExternalLink from "@/app/[lang]/components/Icons/ExternalLink";
 import { useContext } from "react";
 import { Context } from "@/lib/Store";
 import { formatLayerYear } from "@/utils/content";
-
-export type IllegalityAreaData = {
-  admin_illegality_max: number;
-  mining_affected_area: number;
-  mining_affected_area_pct: number;
-};
+import {
+  getEconomicCostDescription,
+  getIllegalityPercentages,
+  IllegalityAreaData,
+} from "@/utils/areaSummary";
 
 interface AreaSummaryDetailsProps {
   dictionary: { [key: string]: any };
@@ -26,7 +24,9 @@ interface AreaSummaryDetailsProps {
   hideMiningCalculator: boolean;
   description?: string;
   yearsColors: string[];
-  maxYear: number;
+  displayYear: number;
+  hideBarsAfterActiveYear?: boolean;
+  isFloating?: boolean;
 }
 
 const AreaSummaryDetails = ({
@@ -39,12 +39,13 @@ const AreaSummaryDetails = ({
   description,
   illegalityAreas,
   yearsColors,
-  maxYear,
+  displayYear,
+  hideBarsAfterActiveYear,
+  isFloating,
 }: AreaSummaryDetailsProps) => {
-  // eslint-disable-next-line no-unused-vars
   const [state, dispatch] = useContext(Context)!;
 
-  const { areaUnits } = state;
+  const { areaUnits, lang, activeYear, isCumulative } = state;
 
   const economicCostText = calculatorIsLoading
     ? `${dictionary?.map_ui?.loading}...`
@@ -56,11 +57,7 @@ const AreaSummaryDetails = ({
     <AreaSummaryTooltip
       content={
         <div>
-          <p>
-            {dictionary?.map_ui?.economic_cost_calculator_intro}{" "}
-            {formatLayerYear(maxYear)}{", "}
-            {dictionary?.map_ui?.economic_cost_calculator_ending}
-          </p>
+          <p>{getEconomicCostDescription(dictionary, displayYear)}</p>
         </div>
       }
     />
@@ -93,7 +90,17 @@ const AreaSummaryDetails = ({
     );
 
   return (
-    <div className={style.wrapper}>
+    <div
+      className={style.wrapper}
+      style={
+        isFloating
+          ? {
+              borderBottomLeftRadius: 12,
+              borderBottomRightRadius: 12,
+            }
+          : {}
+      }
+    >
       {selectedAreaTimeseriesData?.length ? (
         <div>
           <div className={style.label}>
@@ -105,6 +112,15 @@ const AreaSummaryDetails = ({
             data={selectedAreaTimeseriesData}
             yearsColors={yearsColors}
             chartHeight={90}
+            hideBarsAfterActiveYear={hideBarsAfterActiveYear}
+            areaUnits={areaUnits}
+            lang={lang}
+            activeYear={activeYear}
+            isCumulative={isCumulative}
+            // shows the mines of the hovered year on the map
+            onHoverYear={(hoveredYear) =>
+              dispatch({ type: "SET_HOVERED_YEAR", hoveredYear })
+            }
           />
         </div>
       ) : null}
@@ -113,7 +129,7 @@ const AreaSummaryDetails = ({
         <div>
           <div className={style.label}>
             <div>
-              {dictionary?.map_ui?.economic_cost} {formatLayerYear(maxYear)}
+              {dictionary?.map_ui?.economic_cost} {formatLayerYear(displayYear)}
             </div>
             <div>
               <EconomicCostTooltip />
@@ -146,16 +162,7 @@ const AreaSummaryDetails = ({
           </div>
           <IllegalityBarChart
             dictionary={dictionary}
-            percentages={illegalityAreas.map((d) => ({
-              value: d.mining_affected_area_pct,
-              key: d.admin_illegality_max,
-              label:
-                dictionary.illegality_legend?.[
-                  ILLEGALITY_KEYS?.[
-                    d.admin_illegality_max as PERMITTED_ILLEGALITY_KEYS
-                  ]
-                ],
-            }))}
+            percentages={getIllegalityPercentages(illegalityAreas, dictionary)}
           />
         </div>
       ) : null}

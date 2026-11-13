@@ -25,7 +25,8 @@
     padding: 0 5px;
   }
 
-  .newsletter-link {
+  .newsletter-link,
+  .extra-link {
     display: none !important;
   }
 }

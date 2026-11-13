@@ -1,0 +1,20 @@
+/* the pages are laid out in letter size by the print document */
+@page {
+  size: letter;
+  margin: 0;
+}
+
+html,
+body {
+  margin: 0;
+  background: #8a8f8b;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+@media print {
+  html,
+  body {
+    background: #fff;
+  }
+}

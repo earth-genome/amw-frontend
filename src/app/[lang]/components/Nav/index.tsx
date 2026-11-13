@@ -11,9 +11,18 @@ import ExternalLink from "@/app/[lang]/components/Icons/ExternalLink";
 import { ROUTES } from "@/constants/routes";
 import { LanguageSwitcher, MenuLanguageList } from "./LanguageSwitcher";
 
+interface NavLink {
+  path: string; // relative to the locale, e.g. "/panorama#issues"
+  label: string;
+}
+
 interface NavProps {
   children?: ReactNode;
   dictionary: { [key: string]: any };
+  // links displayed before the newsletter link, e.g. for the Panorama pages
+  extraLinks?: NavLink[];
+  // hides the policy scoreboard link in the top bar, it is still in the menu
+  hidePolicyScoreboardLink?: boolean;
 }
 
 const getLocaleFromPathname = (pathname: string) => {
@@ -21,7 +30,12 @@ const getLocaleFromPathname = (pathname: string) => {
   return localeMatch ? localeMatch[1] : "en"; // default to 'en' if no match
 };
 
-const Nav: React.FC<NavProps> = ({ children, dictionary }) => {
+const Nav: React.FC<NavProps> = ({
+  children,
+  dictionary,
+  extraLinks,
+  hidePolicyScoreboardLink = false,
+}) => {
   const pathname = usePathname();
   const locale = getLocaleFromPathname(pathname);
   const [showMenu, setShowMenu] = useState(false);
@@ -48,9 +62,9 @@ const Nav: React.FC<NavProps> = ({ children, dictionary }) => {
       label: dictionary.menu.policy_scoreboard,
     },
     {
-      href: `https://panorama.amazonminingwatch.org`,
+      href: `/${locale}/${ROUTES["panorama"].url}`,
       label: dictionary.menu.panorama,
-      isExternal: true,
+      isExternal: false,
     },
     { href: `/${locale}/faq`, label: dictionary.menu.faq },
     { href: `/${locale}/contact`, label: dictionary.menu.contact },
@@ -90,6 +104,15 @@ const Nav: React.FC<NavProps> = ({ children, dictionary }) => {
 
       {!showMenu && (
         <>
+          {extraLinks?.map((link) => (
+            <Link
+              key={link.path}
+              className="menu-link extra-link"
+              href={`/${locale}${link.path}`}
+            >
+              {link.label}
+            </Link>
+          ))}
           {/* <a
             className="menu-link"
             href="#how-to-use"
@@ -116,16 +139,18 @@ const Nav: React.FC<NavProps> = ({ children, dictionary }) => {
             </Link>
           )}
 
-          <Link
-            className="menu-link"
-            href={`/${locale}/amazon-mining-policy-scoreboard`}
-            onClick={() => {
-              setShowMenu(false);
-              setMenuOpen(false);
-            }}
-          >
-            {dictionary.menu.policy_scoreboard_short}
-          </Link>
+          {!hidePolicyScoreboardLink && (
+            <Link
+              className="menu-link"
+              href={`/${locale}/amazon-mining-policy-scoreboard`}
+              onClick={() => {
+                setShowMenu(false);
+                setMenuOpen(false);
+              }}
+            >
+              {dictionary.menu.policy_scoreboard_short}
+            </Link>
+          )}
         </>
       )}
 

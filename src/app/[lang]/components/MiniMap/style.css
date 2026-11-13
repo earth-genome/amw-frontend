@@ -7,3 +7,9 @@
     right: 0px;
   }
 }
+/* the countries are cut at the rounded corners */
+.mini-map svg {
+  display: block;
+  border-radius: 6px;
+  overflow: hidden;
+}

@@ -1,0 +1,92 @@
+.reportNav {
+  position: sticky;
+  top: var(--top-navbar-height);
+  z-index: 10; /* above the report sections and the scrollytelling map */
+  display: flex;
+  align-items: stretch;
+  height: 48px;
+  padding: 0 24px;
+  background: #0f1a12;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  box-sizing: border-box;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  padding-right: 24px;
+  margin-right: 8px;
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+  margin-top: 12px;
+  margin-bottom: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--green-light);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+@media (max-width: 800px) {
+  .title {
+    display: none;
+  }
+}
+
+.items {
+  display: flex;
+  align-items: stretch;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-x: auto;
+  /* hide scrollbar */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.items::-webkit-scrollbar {
+  display: none;
+}
+
+.items li {
+  display: flex;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  transition:
+    color 0.2s ease-in-out,
+    border-color 0.2s ease-in-out;
+}
+
+.item:hover {
+  color: #fff;
+}
+
+.itemActive {
+  color: #fff;
+  border-bottom-color: var(--green-light);
+}
+
+.progress {
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  height: 2px;
+  background: var(--green-light);
+  pointer-events: none;
+}
