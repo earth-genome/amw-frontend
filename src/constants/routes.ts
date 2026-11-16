@@ -5,4 +5,7 @@ export const ROUTES = {
   panorama: {
     url: "panorama",
   },
+  "data-code-and-methods": {
+    url: "data-code-and-methods",
+  },
 };

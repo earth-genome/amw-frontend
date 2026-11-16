@@ -75,7 +75,14 @@
     "period_end_tooltip": "As imagens de satélite exibem o período de tempo mais recente selecionado.",
     "total_area_affected": "Área total afetada pela mineração até",
     "no_mining": "Nenhuma mineração detectada",
-    "no_results_found": "Nenhum resultado encontrado"
+    "no_results_found": "Nenhum resultado encontrado",
+    "download_data": "Baixar dados",
+    "download_geojson_hint": "para SIG / mapeamento",
+    "download_geojson_description": "Polígono da área com dados de mineração como propriedades",
+    "download_csv_hint": "para planilhas",
+    "download_csv_description": "Área minerada por período e ilegalidade",
+    "download_full_dataset": "Conjunto de dados completo",
+    "download_error": "Ocorreu um erro ao baixar os dados. Tente novamente"
   },
   "types_of_mining": {
     "hotspot": "Ponto crítico",

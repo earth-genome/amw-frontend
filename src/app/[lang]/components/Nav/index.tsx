@@ -54,7 +54,7 @@ const Nav: React.FC<NavProps> = ({
     // { href: `/${locale}/results`, label: dictionary.menu.results },
     { href: `/${locale}/case-studies`, label: dictionary.menu.case_studies },
     {
-      href: `/${locale}/data-code-and-methods`,
+      href: `/${locale}/${ROUTES["data-code-and-methods"].url}`,
       label: dictionary.menu.data_code_and_methods,
     },
     {

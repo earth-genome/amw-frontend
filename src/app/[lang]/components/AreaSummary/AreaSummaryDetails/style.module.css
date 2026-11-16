@@ -20,6 +20,12 @@
   }
 }
 
+.wrapperWithFooter {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  padding-bottom: 12px;
+}
+
 .label {
   font-weight: 700;
   font-size: 14px;

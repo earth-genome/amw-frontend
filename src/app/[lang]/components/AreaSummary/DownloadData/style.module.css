@@ -1,0 +1,97 @@
+.button {
+  width: 100%;
+  background: var(--green-dark);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.button:hover {
+  opacity: 90%;
+}
+
+.button:disabled {
+  cursor: progress;
+  opacity: 80%;
+}
+
+.arrow {
+  font-size: 13px;
+}
+
+.menu :global(.ant-dropdown-menu) {
+  /* the items fill the width, and the methods item the bottom of the menu */
+  padding: 4px 0 0 !important;
+  overflow: hidden;
+  box-shadow:
+    0 6px 16px rgba(0, 0, 0, 0.12),
+    0 3px 6px -4px rgba(0, 0, 0, 0.12);
+}
+
+.menu :global(.ant-dropdown-menu-item) {
+  padding: 6px 20px !important;
+  border-radius: 0 !important;
+}
+
+.menu :global(.ant-dropdown-menu-item-divider) {
+  margin: 4px 0 !important;
+}
+
+.item {
+  color: var(--green-dark);
+  line-height: 1.35;
+}
+
+.itemFormat {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.itemHint {
+  font-size: 13px;
+  font-weight: 400;
+  opacity: 75%;
+}
+
+.menu :global(.ant-dropdown-menu-item).methodsItem {
+  background: #e6efea;
+  border-radius: 0;
+  padding: 12px 20px !important;
+}
+
+.menu :global(.ant-dropdown-menu-item).methodsItem:hover {
+  background: #d9e7df;
+}
+
+.menu :global(.ant-dropdown-menu-item-divider):has(+ .methodsItem) {
+  margin-bottom: 0 !important;
+}
+
+.methodsLink {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--green-dark) !important;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.methodsLink span:last-child {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.itemDescription {
+  font-size: 13px;
+  font-weight: 400;
+}

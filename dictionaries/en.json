@@ -75,7 +75,14 @@
     "period_end_tooltip": "Satellite imagery displays the most recent time period selected.",
     "total_area_affected": "Total area affected by mining until",
     "no_mining": "No mining detected",
-    "no_results_found": "No results found"
+    "no_results_found": "No results found",
+    "download_data": "Download data",
+    "download_geojson_hint": "for GIS / mapping",
+    "download_geojson_description": "Area polygon with mining data as properties",
+    "download_csv_hint": "for spreadsheets",
+    "download_csv_description": "Mined area by period and illegality",
+    "download_full_dataset": "Full dataset for analysis",
+    "download_error": "There was an error downloading the data. Try again"
   },
   "types_of_mining": {
     "hotspot": "Hotspot",

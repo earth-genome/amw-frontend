@@ -8,6 +8,7 @@ import {
   formatAreaNumber,
 } from "@/utils/content";
 import AreaSummaryDetails from "@/app/[lang]/components/AreaSummary/AreaSummaryDetails";
+import DownloadData from "@/app/[lang]/components/AreaSummary/DownloadData";
 import { CloseCircleFilled } from "@ant-design/icons";
 import useMiningCalculator from "@/hooks/useMiningCalculator";
 import { AREA_SIGNIFICANT_DIGITS } from "@/constants/map";
@@ -45,6 +46,7 @@ const AreaSummary: React.FC<AreaProps> = ({
     selectedAreaTypeKey,
     lang,
     activeYear,
+    dataSnapshot,
   } = state;
   // the total affected area is displayed until the selected year/quarter
   const displayYear = Number(activeYear);
@@ -76,6 +78,12 @@ const AreaSummary: React.FC<AreaProps> = ({
     return [displayYearAffectedArea, calculatorData?.totalImpact];
   }, [calculatorData?.totalImpact, displayYear, selectedAreaTimeseriesData]);
   const hasAffectedArea = affectedAreaHa != null;
+  // the data download is only in the main map, not in the scrollytelling
+  const showDownloadData =
+    hasAffectedArea &&
+    !isScrollytelling &&
+    !!selectedAreaData &&
+    !!selectedAreaType;
 
   const {
     // description,
@@ -166,6 +174,21 @@ const AreaSummary: React.FC<AreaProps> = ({
             displayYear={displayYear}
             hideBarsAfterActiveYear={isScrollytelling}
             isFloating={isScrollytelling}
+            // the footer below has the bottom radius
+            hasFooter={showDownloadData}
+          />
+        </div>
+      )}
+      {showDownloadData && (
+        <div className={style.areaFooter}>
+          <DownloadData
+            data={{
+              areaData: selectedAreaData,
+              areaType: selectedAreaType,
+              timeseries: selectedAreaTimeseriesData,
+              dataSnapshot,
+              dictionary,
+            }}
           />
         </div>
       )}

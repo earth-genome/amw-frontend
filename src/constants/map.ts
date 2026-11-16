@@ -4,6 +4,9 @@ import { interpolateRgbBasis } from "d3-interpolate";
 // data snapshot (YYYYMMDD) of the main map, Panorama reports can use a different one
 export const DATA_UPDATED_AT = "20261019";
 
+// when the illegality data was last updated (matches mining-detector repo)
+export const ILLEGALITY_DATA_UPDATED_AT = "202503"
+
 const getDataBaseUrl = (dataSnapshot: string) =>
   // "/website";
   `${process.env.NEXT_PUBLIC_DATA_URL}/${dataSnapshot}`;
