@@ -14,7 +14,8 @@
     "policy_scoreboard_short": "Policy Scoreboard",
     "panorama": "Panorama Report",
     "faq": "FAQ",
-    "contact": "Contact"
+    "contact": "Contact",
+    "privacy_policy": "Privacy Policy"
   },
   "intro": {
     "title": "TRACK MINING IN THE RAINFOREST",
@@ -200,5 +201,54 @@
     "new_mining_in": "new mining in",
     "total_area_affected": "Total area affected",
     "mining_until": "Mining until"
+  },
+  "methodology_form": {
+    "data_button_label": "Get the data from **Source Cooperative**",
+    "code_button_label": "Get the code from **GitHub**",
+    "title_data": "Access the data",
+    "title_code": "Access the code",
+    "intro": "Tell us a bit about yourself before you continue. This helps us understand who uses Amazon Mining Watch and improve it.",
+    "required_note": "Required fields",
+    "name": "Name",
+    "name_placeholder": "Your full name",
+    "email": "Email",
+    "email_placeholder": "you@example.org",
+    "organization": "Organization",
+    "organization_placeholder": "Your organization, or \"Independent\"",
+    "organization_type": "Type of organization",
+    "organization_type_placeholder": "Select",
+    "organization_types": {
+      "research_academia": "Research / academia",
+      "ngo_civil_society": "NGO / civil society",
+      "government_public_sector": "Government / public sector",
+      "journalism_media": "Journalism / media",
+      "private_sector": "Private sector",
+      "indigenous_community_organization": "Indigenous or community organization",
+      "student": "Student",
+      "other": "Other"
+    },
+    "country": "Country",
+    "country_placeholder": "Select",
+    "intended_use": "How do you plan to use it?",
+    "intended_use_placeholder": "e.g. research on mining in protected areas",
+    "contact_consent": "You can email me about data updates",
+    "privacy_note": "We only use this information to understand who uses Amazon Mining Watch and, if you agree, to send you updates.",
+    "privacy_link": "Read our privacy policy",
+    "optional": "optional",
+    "submit": "Continue",
+    "cancel": "Cancel",
+    "success_title": "Thank you!",
+    "success_text": "Your browser blocked the new tab. Use the link below to continue.",
+    "continue_data": "Continue to the data",
+    "continue_code": "Continue to the code",
+    "errors": {
+      "required": "This field is required",
+      "too_long": "This is too long",
+      "invalid_email": "Enter a valid email address",
+      "invalid_option": "Select one of the options",
+      "invalid_value": "This value is not valid",
+      "rate_limited": "Too many attempts. Please try again in a few minutes.",
+      "generic": "Something went wrong and we couldn't save your information. Please try again."
+    }
   }
 }

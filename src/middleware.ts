@@ -3,6 +3,9 @@ import type { NextRequest } from "next/server";
 
 import { i18n } from "@root/i18n-config";
 import { HIDE_PANORAMA_REPORT } from "@/constants/features";
+import { rateLimit } from "@/lib/rateLimit";
+
+const METHODOLOGY_CONTACT_API = "/api/methodology-contact";
 
 export function middleware(request: NextRequest) {
   const cookie = request.cookies.get("NEXT_LOCALE");
@@ -12,6 +15,17 @@ export function middleware(request: NextRequest) {
   // the stored PDFs of the Panorama reports are hidden until they are released
   if (HIDE_PANORAMA_REPORT && pathname.startsWith("/panorama-pdf/")) {
     return new NextResponse("Not found", { status: 404 });
+  }
+
+  // Rate limit the download contact form
+  if (pathname === METHODOLOGY_CONTACT_API) {
+    return rateLimit(request, {
+      name: "methodology-contact",
+      windows: [
+        { limit: 5, windowMs: 10 * 60 * 1000 }, // 5 per 10 minutes
+        { limit: 20, windowMs: 60 * 60 * 1000 }, // 20 per hour
+      ],
+    });
   }
 
   //console.log("Middleware running for:", pathname);
@@ -69,5 +83,8 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  matcher: [
+    "/((?!api|_next/static|_next/image|favicon.ico).*)",
+    "/api/methodology-contact",
+  ],
 };

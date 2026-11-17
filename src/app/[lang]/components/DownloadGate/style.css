@@ -1,0 +1,92 @@
+.download-gate-modal .ant-modal-title {
+  font-family: "Urbanist", sans-serif;
+  font-weight: 900;
+  font-size: 22px;
+  color: var(--green-dark);
+}
+
+.download-gate-intro,
+.download-gate-success p {
+  font-family: var(--body-text-font);
+  font-size: 15px;
+  line-height: 1.5;
+  color: #333;
+  margin: 0 0 12px;
+}
+
+.download-gate-required-note {
+  font-family: var(--body-text-font);
+  font-size: 13px;
+  color: #666;
+  margin: 0 0;
+}
+
+.download-gate-asterisk {
+  color: #ff4d4f;
+}
+
+.download-gate-modal .ant-form-item {
+  margin-bottom: 14px;
+}
+
+.download-gate-optional {
+  color: #888;
+  font-size: 12px;
+  margin-left: 2px;
+}
+
+.download-gate-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+@media (max-width: 520px) {
+  .download-gate-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}
+
+/* Honeypot: off-screen rather than display:none, which some bots detect */
+.download-gate-hp {
+  position: absolute;
+  left: -10000px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.download-gate-privacy {
+  font-family: var(--body-text-font);
+  font-size: 13px;
+  line-height: 1.5;
+  color: #666;
+  margin: 0 0 8px;
+}
+
+.download-gate-alert {
+  margin-bottom: 16px;
+}
+
+.download-gate-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.download-gate-success {
+  padding: 8px 0 12px;
+}
+
+.download-gate-button {
+  margin: 24px 0;
+}
+
+/* .amw-btn is styled for links, reset the button defaults */
+button.amw-btn {
+  border: 0;
+  cursor: pointer;
+  font-family: inherit;
+  line-height: inherit;
+}
