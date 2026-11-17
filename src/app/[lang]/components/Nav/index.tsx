@@ -9,6 +9,7 @@ import React, { ReactNode, Suspense, useEffect, useRef, useState } from "react";
 import "./style.css";
 import ExternalLink from "@/app/[lang]/components/Icons/ExternalLink";
 import { ROUTES } from "@/constants/routes";
+import { HIDE_PANORAMA_REPORT } from "@/constants/features";
 import { LanguageSwitcher, MenuLanguageList } from "./LanguageSwitcher";
 
 interface NavLink {
@@ -61,11 +62,16 @@ const Nav: React.FC<NavProps> = ({
       href: `/${locale}/${ROUTES["policy-scoreboard"].url}`,
       label: dictionary.menu.policy_scoreboard,
     },
-    {
-      href: `/${locale}/${ROUTES["panorama"].url}`,
-      label: dictionary.menu.panorama,
-      isExternal: false,
-    },
+    // hidden until the Panorama reports are released
+    ...(HIDE_PANORAMA_REPORT
+      ? []
+      : [
+          {
+            href: `/${locale}/${ROUTES["panorama"].url}`,
+            label: dictionary.menu.panorama,
+            isExternal: false,
+          },
+        ]),
     { href: `/${locale}/faq`, label: dictionary.menu.faq },
     { href: `/${locale}/contact`, label: dictionary.menu.contact },
   ];

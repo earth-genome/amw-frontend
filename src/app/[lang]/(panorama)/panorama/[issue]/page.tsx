@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { HIDE_PANORAMA_REPORT } from "@/constants/features";
 import {
   fetchPanoramaOptional,
   fetchPanoramaReport,
@@ -44,6 +45,8 @@ interface PageProps {
 }
 
 export async function generateMetadata({ params: { lang, issue } }: PageProps) {
+  // the Panorama reports are hidden until they are released
+  if (HIDE_PANORAMA_REPORT) notFound();
   const [report, dictionary] = await Promise.all([
     fetchPanoramaReport(issue, lang),
     getDictionary(lang),
@@ -56,6 +59,8 @@ export async function generateMetadata({ params: { lang, issue } }: PageProps) {
 }
 
 const Page = async ({ params: { lang, issue } }: PageProps) => {
+  // the Panorama reports are hidden until they are released
+  if (HIDE_PANORAMA_REPORT) notFound();
   const [report, homeResponse, reportsResponse, dictionary] = await Promise.all(
     [
       fetchPanoramaReport(issue, lang),

@@ -2,11 +2,17 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 import { i18n } from "@root/i18n-config";
+import { HIDE_PANORAMA_REPORT } from "@/constants/features";
 
 export function middleware(request: NextRequest) {
   const cookie = request.cookies.get("NEXT_LOCALE");
   const cookieLocale = cookie?.value;
   const pathname = request.nextUrl.pathname;
+
+  // the stored PDFs of the Panorama reports are hidden until they are released
+  if (HIDE_PANORAMA_REPORT && pathname.startsWith("/panorama-pdf/")) {
+    return new NextResponse("Not found", { status: 404 });
+  }
 
   //console.log("Middleware running for:", pathname);
   //console.log("Current NEXT_LOCALE cookie:", cookieLocale);

@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { HIDE_PANORAMA_REPORT } from "@/constants/features";
 import type { Metadata } from "next";
 import { i18n } from "@root/i18n-config";
 import { loadPanoramaPrintData } from "@/cms/panoramaPrint";
@@ -40,6 +41,8 @@ const getSectionAnchor = (index: number) => `section-${index}`;
 export async function generateMetadata({
   params: { lang },
 }: PageProps): Promise<Metadata> {
+  // the Panorama reports are hidden until they are released
+  if (HIDE_PANORAMA_REPORT) notFound();
   const dictionary = await getDictionary(lang);
   return {
     title: `${dictionary?.panorama?.panorama} - ${dictionary?.home?.title}`,
@@ -50,6 +53,8 @@ export async function generateMetadata({
 
 // print version of a Panorama report, laid out in letter pages to generate its PDF
 const Page = async ({ params: { lang, issue } }: PageProps) => {
+  // the Panorama reports are hidden until they are released
+  if (HIDE_PANORAMA_REPORT) notFound();
   if (!(i18n.locales as readonly string[]).includes(lang)) notFound();
 
   const [data, dictionary] = await Promise.all([
