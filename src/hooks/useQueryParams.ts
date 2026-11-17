@@ -2,20 +2,14 @@ import { useEffect } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { getDefaultAreaType, IState } from "@/lib/Store";
 import { slugify } from "@/utils/slugify";
-import {
-  AREA_TYPES,
-  ENTIRE_AMAZON_AREA_ID,
-  LAYER_YEARS,
-} from "@/constants/map";
+import { ENTIRE_AMAZON_AREA_ID } from "@/constants/map";
+import { parseMapParams } from "@/utils/mapParams";
 
 interface Props {
   state: IState;
   dispatch: React.Dispatch<any>;
   ignore: boolean;
 }
-
-const getIsValidAreaTypeKey = (key: string | null): key is string =>
-  !!key && AREA_TYPES.some((at) => at.key === key);
 
 export const useQueryParams = ({ state, dispatch, ignore }: Props) => {
   const router = useRouter();
@@ -115,10 +109,14 @@ export const useQueryParams = ({ state, dispatch, ignore }: Props) => {
   useEffect(() => {
     if (ignore) return;
 
-    const areaTypeKeyParam = searchParams.get("areaType");
-    const isValidAreaTypeKey = getIsValidAreaTypeKey(areaTypeKeyParam);
+    const {
+      areaTypeKey: areaTypeKeyParam,
+      areaId: pendingAreaId,
+      activeYear: activeYearParam,
+      isCumulative: cumulativeParam,
+    } = parseMapParams(searchParams);
 
-    if (!isValidAreaTypeKey) {
+    if (!areaTypeKeyParam) {
       // if invalid area type, clear query, set defaults, and return early
       router.replace(pathname);
       dispatch({
@@ -144,8 +142,6 @@ export const useQueryParams = ({ state, dispatch, ignore }: Props) => {
       });
     }
 
-    const pendingAreaId = searchParams.get("areaId");
-
     if (pendingAreaId && pendingAreaId !== state.selectedArea?.value) {
       dispatch({
         type: "SET_PENDING_SELECTED_AREA_ID",
@@ -154,9 +150,7 @@ export const useQueryParams = ({ state, dispatch, ignore }: Props) => {
     }
 
     // restore activeYear from URL params, falling back to legacy "yearEnd" for old shared links
-    const activeYearParam =
-      searchParams.get("activeYear") ?? searchParams.get("yearEnd");
-    if (activeYearParam && LAYER_YEARS.includes(Number(activeYearParam))) {
+    if (activeYearParam) {
       dispatch({
         type: "SET_ACTIVE_YEAR",
         activeYear: activeYearParam,
@@ -164,8 +158,7 @@ export const useQueryParams = ({ state, dispatch, ignore }: Props) => {
     }
 
     // restore isCumulative from URL params
-    const cumulativeParam = searchParams.get("cumulative");
-    if (cumulativeParam === "false") {
+    if (cumulativeParam === false) {
       dispatch({
         type: "SET_IS_CUMULATIVE",
         isCumulative: false,

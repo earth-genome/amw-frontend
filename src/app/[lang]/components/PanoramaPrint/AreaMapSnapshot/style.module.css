@@ -1,0 +1,27 @@
+.areaMap {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background: #1d2b22;
+}
+
+.image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.miniMap {
+  position: absolute;
+  left: 14px;
+  bottom: 14px;
+}
+
+.attribution {
+  position: absolute;
+  right: 6px;
+  bottom: 4px;
+  font-size: 7px;
+  color: rgba(255, 255, 255, 0.8);
+}

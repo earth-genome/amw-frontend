@@ -1,0 +1,29 @@
+.heroImage {
+  height: 70vh;
+  min-height: 400px;
+  background: #173f35;
+  overflow: hidden;
+}
+
+/* fills the section, see the fill prop of next/image */
+.image {
+  object-fit: cover;
+}
+
+.caption {
+  position: absolute;
+  top: 16px;
+  right: 40px;
+  max-width: 60%;
+  text-align: right;
+  font-size: 13px;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+@media (max-width: 600px) {
+  .caption {
+    right: 20px;
+    max-width: calc(100% - 40px);
+  }
+}

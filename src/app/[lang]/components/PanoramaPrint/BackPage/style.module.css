@@ -1,0 +1,72 @@
+.backPage {
+  height: 100%;
+  box-sizing: border-box;
+  padding: 0.6in;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: #143d38;
+  color: #fff;
+  font-family: var(--body-text-font);
+}
+
+.section {
+  margin-bottom: 26px;
+}
+
+.eyebrow {
+  font-family: "Urbanist", sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #6be3a7;
+  margin-bottom: 10px;
+}
+
+.backPage .text p {
+  font-size: 13px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.backPage .text a,
+.bottomRow a {
+  color: #fff;
+}
+
+/* the partner logos of the Panorama pages, in a box */
+.logos {
+  margin-top: 10px;
+  padding: 20px 24px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 6px;
+}
+
+/* opaque and smaller in print, transparency is slow to display in the PDF */
+.backPage .partnerLogos {
+  gap: 28px;
+}
+
+.backPage .partnerLogos > * {
+  height: 36px;
+  opacity: 1;
+}
+
+.amwLogo {
+  width: 1.5in;
+  height: auto;
+  margin-bottom: 12px;
+}
+
+.bottomRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.bottomRow a {
+  text-decoration: none;
+}

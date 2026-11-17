@@ -4,6 +4,7 @@ import Reducer from "@/lib/Reducer";
 import { AreaSelectOption } from "@/app/[lang]/components/AreaSelect";
 import {
   AREA_TYPES,
+  DATA_UPDATED_AT,
   AreaType,
   LAYER_YEARS,
   PERMITTED_AREA_TYPES_KEYS,
@@ -38,6 +39,7 @@ export interface IState {
   activeYear: string;
   isCumulative: boolean;
   isEmbed: boolean;
+  dataSnapshot: string; // YYYYMMDD snapshot of the data
 }
 
 export type ActionType =
@@ -92,11 +94,15 @@ const Store = ({
   lang,
   isBaseRoute,
   isEmbed = false,
+  dataSnapshot = DATA_UPDATED_AT,
+  syncQueryParams = true,
 }: Readonly<{
   children: React.ReactNode;
   lang: PERMITTED_LANGUAGES;
   isBaseRoute: boolean;
   isEmbed?: boolean;
+  dataSnapshot?: string; // the main map snapshot by default, Panorama reports can use another
+  syncQueryParams?: boolean; // set to false for maps driven by something other than the URL, e.g. scrollytelling
 }>) => {
   const defaultAreaType = isEmbed
     ? AREA_TYPES.filter((d) => d.allowInEmbed)[0]
@@ -122,6 +128,7 @@ const Store = ({
     activeYear: String(Math.max(...LAYER_YEARS)),
     isCumulative: true,
     isEmbed: isEmbed,
+    dataSnapshot,
   };
 
   const [state, dispatch] = useReducer(Reducer, initialState);
@@ -129,7 +136,7 @@ const Store = ({
   useQueryParams({
     state,
     dispatch,
-    ignore: !isBaseRoute, // don't use query params in the content pages
+    ignore: !isBaseRoute || !syncQueryParams, // don't use query params in the content pages
   });
   useAreasData({ state, dispatch, lang });
 

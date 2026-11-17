@@ -9,11 +9,21 @@ import React, { ReactNode, Suspense, useEffect, useRef, useState } from "react";
 import "./style.css";
 import ExternalLink from "@/app/[lang]/components/Icons/ExternalLink";
 import { ROUTES } from "@/constants/routes";
+import { HIDE_PANORAMA_REPORT } from "@/constants/features";
 import { LanguageSwitcher, MenuLanguageList } from "./LanguageSwitcher";
+
+interface NavLink {
+  path: string; // relative to the locale, e.g. "/panorama#issues"
+  label: string;
+}
 
 interface NavProps {
   children?: ReactNode;
   dictionary: { [key: string]: any };
+  // links displayed before the newsletter link, e.g. for the Panorama pages
+  extraLinks?: NavLink[];
+  // hides the policy scoreboard link in the top bar, it is still in the menu
+  hidePolicyScoreboardLink?: boolean;
 }
 
 const getLocaleFromPathname = (pathname: string) => {
@@ -21,7 +31,12 @@ const getLocaleFromPathname = (pathname: string) => {
   return localeMatch ? localeMatch[1] : "en"; // default to 'en' if no match
 };
 
-const Nav: React.FC<NavProps> = ({ children, dictionary }) => {
+const Nav: React.FC<NavProps> = ({
+  children,
+  dictionary,
+  extraLinks,
+  hidePolicyScoreboardLink = false,
+}) => {
   const pathname = usePathname();
   const locale = getLocaleFromPathname(pathname);
   const [showMenu, setShowMenu] = useState(false);
@@ -40,18 +55,23 @@ const Nav: React.FC<NavProps> = ({ children, dictionary }) => {
     // { href: `/${locale}/results`, label: dictionary.menu.results },
     { href: `/${locale}/case-studies`, label: dictionary.menu.case_studies },
     {
-      href: `/${locale}/data-code-and-methods`,
+      href: `/${locale}/${ROUTES["data-code-and-methods"].url}`,
       label: dictionary.menu.data_code_and_methods,
     },
     {
       href: `/${locale}/${ROUTES["policy-scoreboard"].url}`,
       label: dictionary.menu.policy_scoreboard,
     },
-    {
-      href: `https://panorama.amazonminingwatch.org`,
-      label: dictionary.menu.panorama,
-      isExternal: true,
-    },
+    // hidden until the Panorama reports are released
+    ...(HIDE_PANORAMA_REPORT
+      ? []
+      : [
+          {
+            href: `/${locale}/${ROUTES["panorama"].url}`,
+            label: dictionary.menu.panorama,
+            isExternal: false,
+          },
+        ]),
     { href: `/${locale}/faq`, label: dictionary.menu.faq },
     { href: `/${locale}/contact`, label: dictionary.menu.contact },
     { href: `/${locale}/privacy-policy`, label: dictionary.menu.privacy_policy },
@@ -91,6 +111,15 @@ const Nav: React.FC<NavProps> = ({ children, dictionary }) => {
 
       {!showMenu && (
         <>
+          {extraLinks?.map((link) => (
+            <Link
+              key={link.path}
+              className="menu-link extra-link"
+              href={`/${locale}${link.path}`}
+            >
+              {link.label}
+            </Link>
+          ))}
           {/* <a
             className="menu-link"
             href="#how-to-use"
@@ -117,16 +146,18 @@ const Nav: React.FC<NavProps> = ({ children, dictionary }) => {
             </Link>
           )}
 
-          <Link
-            className="menu-link"
-            href={`/${locale}/amazon-mining-policy-scoreboard`}
-            onClick={() => {
-              setShowMenu(false);
-              setMenuOpen(false);
-            }}
-          >
-            {dictionary.menu.policy_scoreboard_short}
-          </Link>
+          {!hidePolicyScoreboardLink && (
+            <Link
+              className="menu-link"
+              href={`/${locale}/amazon-mining-policy-scoreboard`}
+              onClick={() => {
+                setShowMenu(false);
+                setMenuOpen(false);
+              }}
+            >
+              {dictionary.menu.policy_scoreboard_short}
+            </Link>
+          )}
         </>
       )}
 
