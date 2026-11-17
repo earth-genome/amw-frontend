@@ -96,3 +96,9 @@
   font-size: 13px;
   font-weight: 400;
 }
+
+.itemLink {
+  display: block;
+  color: inherit !important;
+  text-decoration: none !important;
+}

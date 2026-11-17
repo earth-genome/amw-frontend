@@ -7,6 +7,7 @@ import type { MenuProps } from "antd";
 import style from "./style.module.css";
 import { Context } from "@/lib/Store";
 import { ROUTES } from "@/constants/routes";
+import { ENTIRE_AMAZON_AREA_ID } from "@/constants/map";
 import { fetchAreaGeometry } from "@/utils/areaGeometry";
 import { fetchAreaMines } from "@/utils/areaMines";
 import {
@@ -30,6 +31,11 @@ const DownloadData = ({ data }: DownloadDataProps) => {
   const { lang } = state;
   const [open, setOpen] = useState(false);
   const [isLoadingGeoJSON, setIsLoadingGeoJSON] = useState(false);
+  // the mines of the whole Amazon  links to the methods page, with the full dataset
+  const methodsUrl = `/${lang}/${ROUTES["data-code-and-methods"].url}`;
+  const isEntireAmazon =
+    data.areaType.key === "countries" &&
+    data.areaData.id === ENTIRE_AMAZON_AREA_ID;
 
   const downloadGeoJSON = async () => {
     const { areaType, areaData, dataSnapshot } = data;
@@ -69,6 +75,8 @@ const DownloadData = ({ data }: DownloadDataProps) => {
     format: string,
     hint: string | undefined,
     description: string | undefined,
+    // shows an arrow, when the item links to a page
+    isLink = false,
   ) => (
     <div className={style.item}>
       <div className={style.itemTitle}>
@@ -76,21 +84,37 @@ const DownloadData = ({ data }: DownloadDataProps) => {
         {hint && <span className={style.itemHint}> - {hint}</span>}
       </div>
       {description && (
-        <div className={style.itemDescription}>{description}</div>
+        <div className={style.itemDescription}>
+          {description} {isLink && <span aria-hidden="true">→</span>}
+        </div>
       )}
     </div>
   );
 
   const items: MenuProps["items"] = [
-    {
-      key: "geojson",
-      disabled: isLoadingGeoJSON,
-      label: renderItem(
-        "GeoJSON",
-        dictionary?.map_ui?.download_geojson_hint,
-        dictionary?.map_ui?.download_geojson_description,
-      ),
-    },
+    isEntireAmazon
+      ? {
+          key: "geojson",
+          label: (
+            <Link href={methodsUrl} className={style.itemLink}>
+              {renderItem(
+                "GeoJSON",
+                dictionary?.map_ui?.download_geojson_hint,
+                dictionary?.map_ui?.download_geojson_external_description,
+                true,
+              )}
+            </Link>
+          ),
+        }
+      : {
+          key: "geojson",
+          disabled: isLoadingGeoJSON,
+          label: renderItem(
+            "GeoJSON",
+            dictionary?.map_ui?.download_geojson_hint,
+            dictionary?.map_ui?.download_geojson_description,
+          ),
+        },
     { type: "divider" },
     {
       key: "csv",
@@ -106,10 +130,7 @@ const DownloadData = ({ data }: DownloadDataProps) => {
       key: "methods",
       className: style.methodsItem,
       label: (
-        <Link
-          href={`/${lang}/${ROUTES["data-code-and-methods"].url}`}
-          className={style.methodsLink}
-        >
+        <Link href={methodsUrl} className={style.methodsLink}>
           <span>{dictionary?.map_ui?.download_full_dataset}</span>
           <span aria-hidden="true">→</span>
         </Link>
@@ -119,7 +140,9 @@ const DownloadData = ({ data }: DownloadDataProps) => {
 
   const handleClick: MenuProps["onClick"] = ({ key }) => {
     setOpen(false);
-    if ((key as DownloadFormat) === "geojson") downloadGeoJSON();
+    // the link of the entire Amazon opens by itself
+    if ((key as DownloadFormat) === "geojson" && !isEntireAmazon)
+      downloadGeoJSON();
     else if ((key as DownloadFormat) === "csv") downloadCSV();
   };
 

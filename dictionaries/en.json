@@ -80,6 +80,7 @@
     "download_data_short": "Data",
     "download_geojson_hint": "for GIS / mapping",
     "download_geojson_description": "Mining polygons in the area, by detection period",
+    "download_geojson_external_description": "Available in the full dataset",
     "download_csv_hint": "for spreadsheets",
     "download_csv_description": "Mined area by period and illegality",
     "download_full_dataset": "Full dataset for analysis",

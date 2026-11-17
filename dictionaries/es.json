@@ -80,6 +80,7 @@
     "download_data_short": "Datos",
     "download_geojson_hint": "para SIG / mapeo",
     "download_geojson_description": "Polígonos de minería en el área, por período de detección",
+    "download_geojson_external_description": "Disponible en el conjunto de datos completo",
     "download_csv_hint": "para hojas de cálculo",
     "download_csv_description": "Área minada por período e ilegalidad",
     "download_full_dataset": "Conjunto de datos completo para análisis",
