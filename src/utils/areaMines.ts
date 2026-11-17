@@ -54,9 +54,9 @@ const OUTSIDE_TOLERANCE = 1e-12;
 
 export interface MineProperties {
   // year or quarter of the detection, e.g. 201900 or 202601
-  detection_period_number: number;
+  onset_period_number: number;
   // e.g. "2019" or "2026 Q1"
-  detection_period_name: string;
+  onset_period_name: string;
 }
 
 // a mine, or a piece of it, with its bbox
@@ -395,8 +395,8 @@ export const fetchAreaMines = async (
           precision: COORDINATES_PRECISION,
         }),
         properties: {
-          detection_period_number: mine.properties.year,
-          detection_period_name: formatLayerYear(mine.properties.year),
+          onset_period_number: mine.properties.year,
+          onset_period_name: formatLayerYear(mine.properties.year),
         },
       }))
   );
