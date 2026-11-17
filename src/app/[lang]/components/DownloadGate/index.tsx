@@ -70,7 +70,9 @@ const openInNewTab = (href: string): boolean => {
 
 interface PendingRequest {
   resource: Resource;
-  href: string;
+  // Runs once access is granted. Returns false if the browser blocked it (e.g. the
+  // new tab), then the person can run it again from the success screen
+  onAccess: () => boolean | void;
 }
 
 interface DownloadGateContextValue {
@@ -119,7 +121,7 @@ export const DownloadGateProvider = ({
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   // Set when access is granted but the browser blocked the new tab
-  const [blockedHref, setBlockedHref] = useState<string | null>(null);
+  const [blocked, setBlocked] = useState(false);
 
   const errorMessage = useCallback(
     (code: ErrorCode | string) =>
@@ -131,10 +133,10 @@ export const DownloadGateProvider = ({
   const requestAccess = useCallback((request: PendingRequest) => {
     setSubmitError(null);
     if (hasSubmitted()) {
-      if (openInNewTab(request.href)) return;
-      setBlockedHref(request.href);
+      if (request.onAccess() !== false) return;
+      setBlocked(true);
     } else {
-      setBlockedHref(null);
+      setBlocked(false);
     }
     setPending(request);
   }, []);
@@ -142,7 +144,7 @@ export const DownloadGateProvider = ({
   const close = () => {
     setPending(null);
     setSubmitError(null);
-    setBlockedHref(null);
+    setBlocked(false);
   };
 
   const countryOptions = useMemo(() => {
@@ -250,10 +252,10 @@ export const DownloadGateProvider = ({
       }
 
       form.resetFields();
-      if (openInNewTab(pending.href)) {
+      if (pending.onAccess() !== false) {
         close();
       } else {
-        setBlockedHref(pending.href);
+        setBlocked(true);
       }
     } catch (_e) {
       setSubmitError(dictionary.errors.generic);
@@ -291,19 +293,19 @@ export const DownloadGateProvider = ({
         <Modal
           open={pending !== null}
           onCancel={close}
-          title={blockedHref ? dictionary.success_title : title}
+          title={blocked ? dictionary.success_title : title}
           footer={null}
           width={520}
           className="download-gate-modal"
         >
-          {blockedHref ? (
+          {blocked ? (
             <div className="download-gate-success">
               <p>{dictionary.success_text}</p>
               <button
                 type="button"
                 className="amw-btn"
                 onClick={() => {
-                  openInNewTab(blockedHref);
+                  pending?.onAccess();
                   close();
                 }}
               >
@@ -457,6 +459,18 @@ export const DownloadGateProvider = ({
   );
 };
 
+// Gates a download behind the form: `onAccess` runs right away if the form was
+// already submitted in this browser, otherwise once it is submitted
+export const useDownloadGate = () => {
+  const context = useContext(DownloadGateContext);
+  if (!context) {
+    throw new Error(
+      "useDownloadGate must be used within a DownloadGateProvider",
+    );
+  }
+  return context.requestAccess;
+};
+
 interface GatedDownloadButtonProps {
   resource: Resource;
   href: string;
@@ -476,7 +490,12 @@ export const GatedDownloadButton = ({
       <button
         type="button"
         className="amw-btn"
-        onClick={() => context?.requestAccess({ resource, href })}
+        onClick={() =>
+          context?.requestAccess({
+            resource,
+            onAccess: () => openInNewTab(href),
+          })
+        }
         dangerouslySetInnerHTML={{ __html: labelHtml }}
       />
     </p>

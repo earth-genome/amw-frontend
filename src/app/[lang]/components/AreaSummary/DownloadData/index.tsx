@@ -6,6 +6,10 @@ import { ArrowDownOutlined, LoadingOutlined } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import style from "./style.module.css";
 import { Context } from "@/lib/Store";
+import {
+  DownloadGateProvider,
+  useDownloadGate,
+} from "@/app/[lang]/components/DownloadGate";
 import { ROUTES } from "@/constants/routes";
 import { ENTIRE_AMAZON_AREA_ID } from "@/constants/map";
 import { fetchAreaGeometry } from "@/utils/areaGeometry";
@@ -29,11 +33,13 @@ type GeoJSONFormat = Exclude<DownloadFormat, "csv">;
 
 // dropdown to download the data of the selected area: GeoJSONs of its mines and of its
 // boundary, and a CSV
-const DownloadData = ({ data }: DownloadDataProps) => {
+const DownloadDataDropdown = ({ data }: DownloadDataProps) => {
   const { dictionary } = data;
   const [state] = useContext(Context)!;
   const { lang } = state;
   const [open, setOpen] = useState(false);
+  // the downloads only run once the download form is submitted
+  const requestAccess = useDownloadGate();
   // the GeoJSON being built, if any
   const [loadingFormat, setLoadingFormat] = useState<GeoJSONFormat>();
   const isLoading = !!loadingFormat;
@@ -181,13 +187,25 @@ const DownloadData = ({ data }: DownloadDataProps) => {
     },
   ];
 
+  const downloads: Record<DownloadFormat, () => void> = {
+    mines: downloadMinesGeoJSON,
+    area: downloadAreaGeoJSON,
+    csv: downloadCSV,
+  };
+
   const handleClick: MenuProps["onClick"] = ({ key }) => {
     setOpen(false);
-    // the link of the entire Amazon opens by itself
-    const format = key as DownloadFormat;
-    if (format === "mines" && !isEntireAmazon) downloadMinesGeoJSON();
-    else if (format === "area") downloadAreaGeoJSON();
-    else if (format === "csv") downloadCSV();
+    // the link of the entire Amazon opens by itself, and the methods page has its own gate
+    if (key === "mines" && isEntireAmazon) return;
+    const download = downloads[key as DownloadFormat];
+    if (!download) return;
+    // shows the download form first, unless it was already submitted
+    requestAccess({
+      resource: "data",
+      onAccess: () => {
+        download();
+      },
+    });
   };
 
   return (
@@ -228,6 +246,21 @@ const DownloadData = ({ data }: DownloadDataProps) => {
         </button>
       </Dropdown>
     </ConfigProvider>
+  );
+};
+
+// the download form, shown before the first download
+const DownloadData = ({ data }: DownloadDataProps) => {
+  const [state] = useContext(Context)!;
+  const { lang } = state;
+
+  return (
+    <DownloadGateProvider
+      dictionary={data.dictionary?.methodology_form}
+      lang={lang}
+    >
+      <DownloadDataDropdown data={data} />
+    </DownloadGateProvider>
   );
 };
 
