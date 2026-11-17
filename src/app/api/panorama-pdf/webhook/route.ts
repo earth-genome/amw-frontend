@@ -2,6 +2,7 @@ import { timingSafeEqual } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { waitUntil } from "@vercel/functions";
 import { i18n } from "@root/i18n-config";
+import { HIDE_PANORAMA_REPORT } from "@/constants/features";
 import {
   deleteStoredPanoramaPdfs,
   generateAndStorePanoramaPdf,
@@ -43,6 +44,10 @@ const isAuthorized = (request: NextRequest, secret: string) => {
 // - the Panorama home is published (the back page of the PDFs): the PDFs of the language
 //   are deleted, and generated again the next time they are downloaded
 export async function POST(request: NextRequest) {
+  // the Panorama reports are hidden until they are released
+  if (HIDE_PANORAMA_REPORT) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
   const secret = process.env.PANORAMA_PDF_WEBHOOK_SECRET;
   if (!secret || !isPanoramaPdfStorageEnabled()) {
     return NextResponse.json(

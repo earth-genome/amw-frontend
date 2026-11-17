@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { i18n } from "@root/i18n-config";
+import { HIDE_PANORAMA_REPORT } from "@/constants/features";
 import { fetchPanoramaReport, parsePanoramaIssueParam } from "@/cms/panorama";
 import {
   findStoredPanoramaPdf,
@@ -45,6 +46,10 @@ export async function GET(
   request: NextRequest,
   { params }: { params: { lang: string; issue: string } },
 ) {
+  // the Panorama reports are hidden until they are released
+  if (HIDE_PANORAMA_REPORT) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
   const { lang, issue } = params;
   const issueNumber = parsePanoramaIssueParam(issue);
   if (!(i18n.locales as readonly string[]).includes(lang) || !issueNumber) {

@@ -8,6 +8,7 @@ import {
   formatAreaNumber,
 } from "@/utils/content";
 import AreaSummaryDetails from "@/app/[lang]/components/AreaSummary/AreaSummaryDetails";
+import DownloadData from "@/app/[lang]/components/AreaSummary/DownloadData";
 import { CloseCircleFilled } from "@ant-design/icons";
 import useMiningCalculator from "@/hooks/useMiningCalculator";
 import { AREA_SIGNIFICANT_DIGITS } from "@/constants/map";
@@ -45,6 +46,7 @@ const AreaSummary: React.FC<AreaProps> = ({
     selectedAreaTypeKey,
     lang,
     activeYear,
+    dataSnapshot,
   } = state;
   // the total affected area is displayed until the selected year/quarter
   const displayYear = Number(activeYear);
@@ -76,6 +78,12 @@ const AreaSummary: React.FC<AreaProps> = ({
     return [displayYearAffectedArea, calculatorData?.totalImpact];
   }, [calculatorData?.totalImpact, displayYear, selectedAreaTimeseriesData]);
   const hasAffectedArea = affectedAreaHa != null;
+  // the data download is only in the main map, not in the scrollytelling
+  const showDownloadData =
+    hasAffectedArea &&
+    !isScrollytelling &&
+    !!selectedAreaData &&
+    !!selectedAreaType;
 
   const {
     // description,
@@ -135,14 +143,27 @@ const AreaSummary: React.FC<AreaProps> = ({
         <div>
           {dictionary.map_ui.total_area_affected} {formatLayerYear(displayYear)}
         </div>
-        <div className={style.areaKm}>
-          {hasAffectedArea
-            ? `${formatAreaNumber(
-                displayAreaInUnits(affectedAreaHa, areaUnits),
-                lang,
-                AREA_SIGNIFICANT_DIGITS,
-              )} ${dictionary?.map_ui?.[`${areaUnits}Abbrev`] ?? ""}`
-            : dictionary.map_ui.no_mining}
+        <div className={style.areaKmRow}>
+          <div className={style.areaKm}>
+            {hasAffectedArea
+              ? `${formatAreaNumber(
+                  displayAreaInUnits(affectedAreaHa, areaUnits),
+                  lang,
+                  AREA_SIGNIFICANT_DIGITS,
+                )} ${dictionary?.map_ui?.[`${areaUnits}Abbrev`] ?? ""}`
+              : dictionary.map_ui.no_mining}
+          </div>
+          {showDownloadData && (
+            <DownloadData
+              data={{
+                areaData: selectedAreaData,
+                areaType: selectedAreaType,
+                timeseries: selectedAreaTimeseriesData,
+                dataSnapshot,
+                dictionary,
+              }}
+            />
+          )}
         </div>
       </div>
       {/* we don't show economic cost nor illegality if there are no mining impacts */}

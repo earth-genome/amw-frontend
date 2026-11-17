@@ -1,4 +1,6 @@
+import { notFound } from "next/navigation";
 import { apiFetcher } from "@/cms/client";
+import { HIDE_PANORAMA_REPORT } from "@/constants/features";
 import {
   getPanoramaReportUrl,
   PANORAMA_FETCH_OPTIONS,
@@ -54,6 +56,8 @@ const fetchLatestReport = async (
 };
 
 export async function generateMetadata({ params: { lang } }: PageProps) {
+  // the Panorama reports are hidden until they are released
+  if (HIDE_PANORAMA_REPORT) notFound();
   const [homeResponse, dictionary] = await Promise.all([
     fetchHome(lang).catch(() => undefined),
     getDictionary(lang),
@@ -66,6 +70,8 @@ export async function generateMetadata({ params: { lang } }: PageProps) {
 }
 
 const Page = async ({ params: { lang } }: PageProps) => {
+  // the Panorama reports are hidden until they are released
+  if (HIDE_PANORAMA_REPORT) notFound();
   const [homeResponse, reportsResponse, dictionary] = await Promise.all([
     fetchHome(lang),
     apiFetcher<PanoramaReportsListResponse>(PANORAMA_REPORTS_LIST_URL, {
