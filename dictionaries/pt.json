@@ -14,7 +14,8 @@
     "policy_scoreboard_short": "Rastreador de políticas",
     "panorama": "Relatório Panorama",
     "faq": "FAQ",
-    "contact": "Contato"
+    "contact": "Contato",
+    "privacy_policy": "Política de privacidade"
   },
   "intro": {
     "title": "RASTREANDO A MINERAÇÃO E O GARIMPO NA AMAZÔNIA",
@@ -141,5 +142,54 @@
     "contact_info": "Informações de contato disponíveis em",
     "read_regional_report": "Leia a análise de conclusões e recomendações regionais",
     "download_report": "Baixar relatório em formato PDF"
+  },
+  "methodology_form": {
+    "data_button_label": "Obtenha os dados na **Source Cooperative**",
+    "code_button_label": "Obtenha o código no **GitHub**",
+    "title_data": "Acessar os dados",
+    "title_code": "Acessar o código",
+    "intro": "Conte-nos um pouco sobre você antes de continuar. Isso nos ajuda a entender quem usa o Amazon Mining Watch e a melhorá-lo.",
+    "required_note": "Campos obrigatórios",
+    "name": "Nome",
+    "name_placeholder": "Seu nome completo",
+    "email": "E-mail",
+    "email_placeholder": "voce@exemplo.org",
+    "organization": "Organização",
+    "organization_placeholder": "Sua organização, ou \"Independente\"",
+    "organization_type": "Tipo de organização",
+    "organization_type_placeholder": "Selecione",
+    "organization_types": {
+      "research_academia": "Pesquisa / academia",
+      "ngo_civil_society": "ONG / sociedade civil",
+      "government_public_sector": "Governo / setor público",
+      "journalism_media": "Jornalismo / mídia",
+      "private_sector": "Setor privado",
+      "indigenous_community_organization": "Organização indígena ou comunitária",
+      "student": "Estudante",
+      "other": "Outro"
+    },
+    "country": "País",
+    "country_placeholder": "Selecione",
+    "intended_use": "Como você pretende usá-lo?",
+    "intended_use_placeholder": "ex.: pesquisa sobre mineração em áreas protegidas",
+    "contact_consent": "Vocês podem me enviar e-mails sobre atualizações dos dados",
+    "privacy_note": "Usamos essas informações apenas para entender quem usa o Amazon Mining Watch e, se você concordar, para enviar atualizações.",
+    "privacy_link": "Leia nossa política de privacidade",
+    "optional": "opcional",
+    "submit": "Continuar",
+    "cancel": "Cancelar",
+    "success_title": "Obrigado!",
+    "success_text": "Seu navegador bloqueou a nova aba. Use o link abaixo para continuar.",
+    "continue_data": "Ir para os dados",
+    "continue_code": "Ir para o código",
+    "errors": {
+      "required": "Este campo é obrigatório",
+      "too_long": "O texto é longo demais",
+      "invalid_email": "Digite um e-mail válido",
+      "invalid_option": "Selecione uma das opções",
+      "invalid_value": "Este valor não é válido",
+      "rate_limited": "Muitas tentativas. Tente novamente em alguns minutos.",
+      "generic": "Algo deu errado e não conseguimos salvar suas informações. Tente novamente."
+    }
   }
 }

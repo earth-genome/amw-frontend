@@ -1,0 +1,15 @@
+.privacy-policy ul {
+  padding-left: 28px;
+}
+.privacy-policy li {
+  font-family: var(--body-text-font);
+  font-size: 19px;
+  line-height: 1.6;
+  margin-bottom: 12px;
+  padding-left: 4px;
+}
+@media (max-width: 600px) {
+  .privacy-policy ul {
+    padding-left: 20px;
+  }
+}

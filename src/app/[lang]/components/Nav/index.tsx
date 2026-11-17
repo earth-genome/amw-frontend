@@ -54,6 +54,7 @@ const Nav: React.FC<NavProps> = ({ children, dictionary }) => {
     },
     { href: `/${locale}/faq`, label: dictionary.menu.faq },
     { href: `/${locale}/contact`, label: dictionary.menu.contact },
+    { href: `/${locale}/privacy-policy`, label: dictionary.menu.privacy_policy },
   ];
 
   useEffect(() => {
