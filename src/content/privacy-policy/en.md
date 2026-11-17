@@ -2,7 +2,7 @@
 
 _Last updated: November 13, 2026_
 
-Amazon Mining Watch is run by [ORGANIZATION]. For anything related to your data, contact us at [CONTACT EMAIL].
+Amazon Mining Watch is run by Earth Genome. For anything related to your data, contact us at [info@earthgenome.org](mailto:info@earthgenome.org).
 
 ## What we collect
 
@@ -23,7 +23,7 @@ We keep form responses for as long as they are useful for these purposes, and no
 
 ## Your rights
 
-You can ask us to access, correct or delete your information, or withdraw your consent to receive emails, at any time by writing to [CONTACT EMAIL]. Depending on where you live, you may have additional rights under laws such as Brazil's LGPD or the EU's GDPR.
+You can ask us to access, correct or delete your information, or withdraw your consent to receive emails, at any time by writing to [info@earthgenome.org](mailto:info@earthgenome.org). Depending on where you live, you may have additional rights under laws such as Brazil's LGPD or the EU's GDPR.
 
 ## Changes
 

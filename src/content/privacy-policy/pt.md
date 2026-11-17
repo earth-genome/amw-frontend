@@ -2,7 +2,7 @@
 
 _Última atualização: 13 de novembro de 2026_
 
-O Amazon Mining Watch é operado por [ORGANIZATION]. Para qualquer assunto relacionado aos seus dados, escreva para [CONTACT EMAIL].
+O Amazon Mining Watch é operado por Earth Genome. Para qualquer assunto relacionado aos seus dados, escreva para [info@earthgenome.org](mailto:info@earthgenome.org).
 
 ## O que coletamos
 
@@ -23,7 +23,7 @@ Guardamos as respostas enquanto forem úteis para essas finalidades, e por no m�
 
 ## Seus direitos
 
-Você pode pedir para acessar, corrigir ou excluir suas informações, ou retirar seu consentimento para receber e-mails, a qualquer momento, escrevendo para [CONTACT EMAIL]. Dependendo de onde você mora, pode ter direitos adicionais sob leis como a LGPD do Brasil ou o GDPR da União Europeia.
+Você pode pedir para acessar, corrigir ou excluir suas informações, ou retirar seu consentimento para receber e-mails, a qualquer momento, escrevendo para [info@earthgenome.org](mailto:info@earthgenome.org). Dependendo de onde você mora, pode ter direitos adicionais sob leis como a LGPD do Brasil ou o GDPR da União Europeia.
 
 ## Alterações
 
