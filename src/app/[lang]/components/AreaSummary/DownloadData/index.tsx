@@ -2,15 +2,17 @@
 import React, { useContext, useState } from "react";
 import Link from "next/link";
 import { ConfigProvider, Dropdown, message } from "antd";
+import { ArrowDownOutlined, LoadingOutlined } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import style from "./style.module.css";
 import { Context } from "@/lib/Store";
 import { ROUTES } from "@/constants/routes";
 import { fetchAreaGeometry } from "@/utils/areaGeometry";
+import { fetchAreaMines } from "@/utils/areaMines";
 import {
   AreaDownloadData,
   buildAreaCSV,
-  buildAreaGeoJSON,
+  buildAreaMinesGeoJSON,
   downloadFile,
   getAreaDownloadFilename,
 } from "@/utils/areaDownload";
@@ -18,9 +20,6 @@ import {
 interface DownloadDataProps {
   data: AreaDownloadData;
 }
-
-const capitalize = (text: string | undefined) =>
-  text ? `${text.charAt(0).toUpperCase()}${text.slice(1)}` : "";
 
 type DownloadFormat = "geojson" | "csv";
 
@@ -36,16 +35,18 @@ const DownloadData = ({ data }: DownloadDataProps) => {
     const { areaType, areaData, dataSnapshot } = data;
     setIsLoadingGeoJSON(true);
     try {
-      // the geometry comes from the vector tiles, the data is already loaded
+      // the area and its mines come from the vector tiles. The area geometry is only
+      // used to find the mines that intersect it
       const geometry = await fetchAreaGeometry(
         areaType,
         dataSnapshot,
         areaData.id,
         areaData.bbox,
       );
+      const mines = await fetchAreaMines(geometry, areaData.bbox, dataSnapshot);
       downloadFile(
-        JSON.stringify(buildAreaGeoJSON(geometry, data)),
-        getAreaDownloadFilename(data, "geojson"),
+        JSON.stringify(buildAreaMinesGeoJSON(mines)),
+        getAreaDownloadFilename(data, "geojson", "mines"),
         "application/geo+json",
       );
     } catch (err) {
@@ -139,7 +140,7 @@ const DownloadData = ({ data }: DownloadDataProps) => {
       <Dropdown
         menu={{ items, onClick: handleClick }}
         trigger={["click"]}
-        placement="top"
+        placement="bottomRight"
         open={open}
         onOpenChange={setOpen}
         overlayClassName={style.menu}
@@ -149,17 +150,14 @@ const DownloadData = ({ data }: DownloadDataProps) => {
           className={style.button}
           aria-expanded={open}
           aria-haspopup="menu"
+          aria-label={dictionary?.map_ui?.download_data}
+          aria-busy={isLoadingGeoJSON}
+          title={dictionary?.map_ui?.download_data}
           disabled={isLoadingGeoJSON}
         >
-          {isLoadingGeoJSON ? (
-            // the geometry tiles are being fetched
-            `${capitalize(dictionary?.map_ui?.loading)}...`
-          ) : (
-            <>
-              {dictionary?.map_ui?.download_data}{" "}
-              <span className={style.arrow}>{open ? "▲" : "▼"}</span>
-            </>
-          )}
+          {/* a spinner while the geometry tiles are being fetched */}
+          {isLoadingGeoJSON ? <LoadingOutlined /> : <ArrowDownOutlined />}
+          {dictionary?.map_ui?.download_data_short}
         </button>
       </Dropdown>
     </ConfigProvider>

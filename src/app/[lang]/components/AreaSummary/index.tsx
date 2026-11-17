@@ -143,14 +143,27 @@ const AreaSummary: React.FC<AreaProps> = ({
         <div>
           {dictionary.map_ui.total_area_affected} {formatLayerYear(displayYear)}
         </div>
-        <div className={style.areaKm}>
-          {hasAffectedArea
-            ? `${formatAreaNumber(
-                displayAreaInUnits(affectedAreaHa, areaUnits),
-                lang,
-                AREA_SIGNIFICANT_DIGITS,
-              )} ${dictionary?.map_ui?.[`${areaUnits}Abbrev`] ?? ""}`
-            : dictionary.map_ui.no_mining}
+        <div className={style.areaKmRow}>
+          <div className={style.areaKm}>
+            {hasAffectedArea
+              ? `${formatAreaNumber(
+                  displayAreaInUnits(affectedAreaHa, areaUnits),
+                  lang,
+                  AREA_SIGNIFICANT_DIGITS,
+                )} ${dictionary?.map_ui?.[`${areaUnits}Abbrev`] ?? ""}`
+              : dictionary.map_ui.no_mining}
+          </div>
+          {showDownloadData && (
+            <DownloadData
+              data={{
+                areaData: selectedAreaData,
+                areaType: selectedAreaType,
+                timeseries: selectedAreaTimeseriesData,
+                dataSnapshot,
+                dictionary,
+              }}
+            />
+          )}
         </div>
       </div>
       {/* we don't show economic cost nor illegality if there are no mining impacts */}
@@ -174,21 +187,6 @@ const AreaSummary: React.FC<AreaProps> = ({
             displayYear={displayYear}
             hideBarsAfterActiveYear={isScrollytelling}
             isFloating={isScrollytelling}
-            // the footer below has the bottom radius
-            hasFooter={showDownloadData}
-          />
-        </div>
-      )}
-      {showDownloadData && (
-        <div className={style.areaFooter}>
-          <DownloadData
-            data={{
-              areaData: selectedAreaData,
-              areaType: selectedAreaType,
-              timeseries: selectedAreaTimeseriesData,
-              dataSnapshot,
-              dictionary,
-            }}
           />
         </div>
       )}

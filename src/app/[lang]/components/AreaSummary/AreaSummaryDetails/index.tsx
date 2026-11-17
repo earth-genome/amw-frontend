@@ -27,8 +27,6 @@ interface AreaSummaryDetailsProps {
   displayYear: number;
   hideBarsAfterActiveYear?: boolean;
   isFloating?: boolean;
-  // when there is a footer below, it has the bottom radius instead
-  hasFooter?: boolean;
 }
 
 const AreaSummaryDetails = ({
@@ -44,7 +42,6 @@ const AreaSummaryDetails = ({
   displayYear,
   hideBarsAfterActiveYear,
   isFloating,
-  hasFooter,
 }: AreaSummaryDetailsProps) => {
   const [state, dispatch] = useContext(Context)!;
 
@@ -94,7 +91,7 @@ const AreaSummaryDetails = ({
 
   return (
     <div
-      className={`${style.wrapper} ${hasFooter ? style.wrapperWithFooter : ""}`}
+      className={style.wrapper}
       style={
         isFloating
           ? {
