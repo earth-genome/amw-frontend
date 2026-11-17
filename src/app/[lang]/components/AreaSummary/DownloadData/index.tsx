@@ -13,6 +13,7 @@ import { fetchAreaMines } from "@/utils/areaMines";
 import {
   AreaDownloadData,
   buildAreaCSV,
+  buildAreaGeoJSON,
   buildAreaMinesGeoJSON,
   downloadFile,
   getAreaDownloadFilename,
@@ -22,46 +23,78 @@ interface DownloadDataProps {
   data: AreaDownloadData;
 }
 
-type DownloadFormat = "geojson" | "csv";
+type DownloadFormat = "mines" | "area" | "csv";
+// the GeoJSONs, built from the vector tiles
+type GeoJSONFormat = Exclude<DownloadFormat, "csv">;
 
-// dropdown to download the data of the selected area as GeoJSON or CSV
+// dropdown to download the data of the selected area: GeoJSONs of its mines and of its
+// boundary, and a CSV
 const DownloadData = ({ data }: DownloadDataProps) => {
   const { dictionary } = data;
   const [state] = useContext(Context)!;
   const { lang } = state;
   const [open, setOpen] = useState(false);
-  const [isLoadingGeoJSON, setIsLoadingGeoJSON] = useState(false);
-  // the mines of the whole Amazon  links to the methods page, with the full dataset
+  // the GeoJSON being built, if any
+  const [loadingFormat, setLoadingFormat] = useState<GeoJSONFormat>();
+  const isLoading = !!loadingFormat;
+  // the mines of the whole Amazon are too many to build in the browser, so its GeoJSON
+  // links to the methods page, with the full dataset, instead
+  // the methods page, with the full dataset
   const methodsUrl = `/${lang}/${ROUTES["data-code-and-methods"].url}`;
   const isEntireAmazon =
     data.areaType.key === "countries" &&
     data.areaData.id === ENTIRE_AMAZON_AREA_ID;
 
-  const downloadGeoJSON = async () => {
-    const { areaType, areaData, dataSnapshot } = data;
-    setIsLoadingGeoJSON(true);
+  // shows the spinner while a GeoJSON is built, and a message if it fails
+  const withLoading = async (
+    format: GeoJSONFormat,
+    buildAndDownload: () => Promise<void>,
+  ) => {
+    setLoadingFormat(format);
     try {
+      await buildAndDownload();
+    } catch (err) {
+      console.error(`Failed to download ${format} GeoJSON: `, err);
+      message.error(dictionary?.map_ui?.download_error);
+    } finally {
+      setLoadingFormat(undefined);
+    }
+  };
+
+  // the area geometry comes from the vector tiles
+  const fetchGeometry = () => {
+    const { areaType, areaData, dataSnapshot } = data;
+    return fetchAreaGeometry(
+      areaType,
+      dataSnapshot,
+      areaData.id,
+      areaData.bbox,
+    );
+  };
+
+  const downloadMinesGeoJSON = () =>
+    withLoading("mines", async () => {
+      const { areaData, dataSnapshot } = data;
       // the area and its mines come from the vector tiles. The area geometry is only
       // used to find the mines that intersect it
-      const geometry = await fetchAreaGeometry(
-        areaType,
-        dataSnapshot,
-        areaData.id,
-        areaData.bbox,
-      );
+      const geometry = await fetchGeometry();
       const mines = await fetchAreaMines(geometry, areaData.bbox, dataSnapshot);
       downloadFile(
         JSON.stringify(buildAreaMinesGeoJSON(mines)),
         getAreaDownloadFilename(data, "geojson", "mines"),
         "application/geo+json",
       );
-    } catch (err) {
-      console.error("Failed to download GeoJSON: ", err);
-      message.error(dictionary?.map_ui?.download_error);
-    } finally {
-      setIsLoadingGeoJSON(false);
-    }
-  };
+    });
+
+  const downloadAreaGeoJSON = () =>
+    withLoading("area", async () => {
+      const geometry = await fetchGeometry();
+      downloadFile(
+        JSON.stringify(buildAreaGeoJSON(geometry, data)),
+        getAreaDownloadFilename(data, "geojson", "area"),
+        "application/geo+json",
+      );
+    });
 
   const downloadCSV = () => {
     downloadFile(
@@ -94,33 +127,43 @@ const DownloadData = ({ data }: DownloadDataProps) => {
   const items: MenuProps["items"] = [
     isEntireAmazon
       ? {
-          key: "geojson",
+          key: "mines",
           label: (
             <Link href={methodsUrl} className={style.itemLink}>
               {renderItem(
+                dictionary?.map_ui?.download_mines_label,
                 "GeoJSON",
-                dictionary?.map_ui?.download_geojson_hint,
-                dictionary?.map_ui?.download_geojson_external_description,
+                dictionary?.map_ui?.download_mines_external_description,
                 true,
               )}
             </Link>
           ),
         }
       : {
-          key: "geojson",
-          disabled: isLoadingGeoJSON,
+          key: "mines",
+          disabled: isLoading,
           label: renderItem(
+            dictionary?.map_ui?.download_mines_label,
             "GeoJSON",
-            dictionary?.map_ui?.download_geojson_hint,
-            dictionary?.map_ui?.download_geojson_description,
+            dictionary?.map_ui?.download_mines_description,
           ),
         },
     { type: "divider" },
     {
+      key: "area",
+      disabled: isLoading,
+      label: renderItem(
+        dictionary?.map_ui?.download_area_label,
+        "GeoJSON",
+        dictionary?.map_ui?.download_area_description,
+      ),
+    },
+    { type: "divider" },
+    {
       key: "csv",
       label: renderItem(
+        dictionary?.map_ui?.download_csv_label,
         "CSV",
-        dictionary?.map_ui?.download_csv_hint,
         dictionary?.map_ui?.download_csv_description,
       ),
     },
@@ -141,9 +184,10 @@ const DownloadData = ({ data }: DownloadDataProps) => {
   const handleClick: MenuProps["onClick"] = ({ key }) => {
     setOpen(false);
     // the link of the entire Amazon opens by itself
-    if ((key as DownloadFormat) === "geojson" && !isEntireAmazon)
-      downloadGeoJSON();
-    else if ((key as DownloadFormat) === "csv") downloadCSV();
+    const format = key as DownloadFormat;
+    if (format === "mines" && !isEntireAmazon) downloadMinesGeoJSON();
+    else if (format === "area") downloadAreaGeoJSON();
+    else if (format === "csv") downloadCSV();
   };
 
   return (
@@ -174,12 +218,12 @@ const DownloadData = ({ data }: DownloadDataProps) => {
           aria-expanded={open}
           aria-haspopup="menu"
           aria-label={dictionary?.map_ui?.download_data}
-          aria-busy={isLoadingGeoJSON}
+          aria-busy={isLoading}
           title={dictionary?.map_ui?.download_data}
-          disabled={isLoadingGeoJSON}
+          disabled={isLoading}
         >
           {/* a spinner while the geometry tiles are being fetched */}
-          {isLoadingGeoJSON ? <LoadingOutlined /> : <ArrowDownOutlined />}
+          {isLoading ? <LoadingOutlined /> : <ArrowDownOutlined />}
           {dictionary?.map_ui?.download_data_short}
         </button>
       </Dropdown>

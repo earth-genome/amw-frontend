@@ -1,4 +1,9 @@
-import type { Feature, FeatureCollection, Polygon } from "geojson";
+import type {
+  Feature,
+  FeatureCollection,
+  MultiPolygon,
+  Polygon,
+} from "geojson";
 import { csvFormat } from "d3";
 import {
   AreaType,
@@ -12,8 +17,8 @@ import { getAreaTypeInfo } from "@/utils/areaSummary";
 import { formatLayerYear } from "@/utils/content";
 import { slugify } from "@/utils/slugify";
 
-// the files with the data of an area that can be downloaded from its summary: a GeoJSON
-// of its mines for GIS / mapping and a CSV for spreadsheets
+// the files with the data of an area that can be downloaded from its summary: GeoJSONs of
+// its mines and of its boundary for GIS / mapping, and a CSV for spreadsheets
 
 type Dictionary = { [key: string]: any };
 
@@ -25,6 +30,10 @@ export interface AreaDownloadData {
   dictionary: Dictionary;
 }
 
+// e.g. 2018 => "2018", 202501 => "2025_q1"
+const formatPeriodKey = (year: number) =>
+  formatLayerYear(year).toLowerCase().replace(" ", "_");
+
 // e.g. 1234.5678 => 1234.57
 const roundTo2Decimals = (value: number | null | undefined) =>
   value == null ? null : Math.round(value * 100) / 100;
@@ -35,7 +44,7 @@ const ILLEGALITY_PERIOD = Number(ILLEGALITY_DATA_UPDATED_AT);
 const sortTimeseries = (timeseries: AreasTimeseriesData | undefined) =>
   [...(timeseries ?? [])].sort((a, b) => a.admin_year - b.admin_year);
 
-// the area properties of the CSV
+// the area properties shared by the CSV and the area GeoJSON
 const getAreaProperties = ({
   areaData,
   areaType,
@@ -73,6 +82,39 @@ export const buildAreaMinesGeoJSON = (
   type: "FeatureCollection",
   features: mines,
 });
+
+// the boundary of the area, with its mined area until each period and its illegality
+export const buildAreaGeoJSON = (
+  geometry: Polygon | MultiPolygon,
+  data: AreaDownloadData,
+): FeatureCollection<Polygon | MultiPolygon> => {
+  const { areaData, timeseries } = data;
+  const sortedTimeseries = sortTimeseries(timeseries);
+
+  // flat properties, so they can be read by GIS tools
+  const minedAreaProperties: Record<string, number | null> = {};
+  sortedTimeseries.forEach((d) => {
+    minedAreaProperties[`mined_ha_${formatPeriodKey(d.admin_year)}`] =
+      roundTo2Decimals(d.intersected_area_ha_cumulative);
+  });
+
+  return {
+    type: "FeatureCollection",
+    features: [
+      {
+        type: "Feature",
+        geometry,
+        properties: {
+          ...getAreaProperties(data),
+          // cumulative, until each period
+          ...minedAreaProperties,
+          ...getIllegalityProperties(areaData),
+          data_snapshot: data.dataSnapshot,
+        },
+      },
+    ],
+  };
+};
 
 export const buildAreaCSV = (data: AreaDownloadData) => {
   const { areaData, timeseries } = data;
