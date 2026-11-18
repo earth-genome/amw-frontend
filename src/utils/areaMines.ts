@@ -23,7 +23,7 @@ import {
   Tile,
   tileHasFeatures,
 } from "@/utils/areaGeometry";
-import { formatLayerYear } from "@/utils/content";
+import { formatLayerYear, formatYearAsRasterData } from "@/utils/content";
 
 // the mines that intersect an area, rebuilt from the mining vector tiles (the same source
 // as the mines layer of the map).
@@ -53,7 +53,7 @@ const INSIDE_TOLERANCE = 1e-9;
 const OUTSIDE_TOLERANCE = 1e-12;
 
 export interface MineProperties {
-  // year or quarter of the detection, e.g. 201900 or 202601
+  // year or quarter of the detection, as in the source raster data, e.g. 2019 or 20261
   onset_period_number: number;
   // e.g. "2019" or "2026 Q1"
   onset_period_name: string;
@@ -395,7 +395,7 @@ export const fetchAreaMines = async (
           precision: COORDINATES_PRECISION,
         }),
         properties: {
-          onset_period_number: mine.properties.year,
+          onset_period_number: formatYearAsRasterData(mine.properties.year),
           onset_period_name: formatLayerYear(mine.properties.year),
         },
       }))

@@ -127,3 +127,15 @@ export const formatLayerYear = (year: number): string => {
 
   return `${yearStr} Q${quarter}`;
 };
+
+export const formatYearAsRasterData = (year: number): number => {
+  // formats year codes as in the source raster data: YYYY00 → YYYY, YYYY01-04 → YYYY1-YYYY4
+  const yearNumber = Math.floor(year / 100);
+  const quarter = year % 100;
+
+  if (quarter === 0) {
+    return yearNumber;
+  }
+
+  return yearNumber * 10 + quarter;
+};
