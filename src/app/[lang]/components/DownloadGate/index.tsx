@@ -5,6 +5,7 @@ import React, {
   useCallback,
   useContext,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import {
@@ -36,8 +37,16 @@ import "./style.css";
 
 type FormDictionary = (typeof en)["methodology_form"];
 
+// In-memory fallback, shared by every DownloadGateProvider on the page: when
+// localStorage is unavailable (private mode, blocked site data, some in-app
+// browsers), the form would otherwise be shown, and submitted, again on the
+// next download. Lasts until the page is reloaded
+let submittedInMemory = false;
+
 // localStorage may be unavailable (private mode), then the form is shown again
+// after a reload
 const hasSubmitted = (): boolean => {
+  if (submittedInMemory) return true;
   try {
     return window.localStorage.getItem(SUBMITTED_STORAGE_KEY) !== null;
   } catch (_e) {
@@ -46,6 +55,7 @@ const hasSubmitted = (): boolean => {
 };
 
 const markSubmitted = () => {
+  submittedInMemory = true;
   try {
     window.localStorage.setItem(
       SUBMITTED_STORAGE_KEY,
@@ -119,6 +129,10 @@ export const DownloadGateProvider = ({
   const [form] = Form.useForm<FormValues>();
   const [pending, setPending] = useState<PendingRequest | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  // Synchronous guard against double submits: `submitting` only disables the
+  // form after a re-render, so a fast double click or Enter + click can call
+  // handleFinish twice before that and create two entries in Strapi
+  const submittingRef = useRef(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   // Set when access is granted but the browser blocked the new tab
   const [blocked, setBlocked] = useState(false);
@@ -187,7 +201,8 @@ export const DownloadGateProvider = ({
   });
 
   const handleFinish = async (values: FormValues) => {
-    if (!pending) return;
+    if (!pending || submittingRef.current) return;
+    submittingRef.current = true;
     setSubmitting(true);
     setSubmitError(null);
 
@@ -260,6 +275,7 @@ export const DownloadGateProvider = ({
     } catch (_e) {
       setSubmitError(dictionary.errors.generic);
     } finally {
+      submittingRef.current = false;
       setSubmitting(false);
     }
   };
