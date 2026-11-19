@@ -109,6 +109,14 @@
   color: var(--green-light);
 }
 
+/* date of the image, next to the label of the side */
+.date {
+  margin: 0 8px;
+  font-weight: 400;
+  letter-spacing: 1px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
 .frame {
   position: relative;
   flex: 1;
