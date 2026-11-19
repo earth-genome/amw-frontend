@@ -177,6 +177,9 @@ export interface BeforeAfter {
   id: number;
   // link of the Planet story, e.g. "https://www.planet.com/stories/brazil_er-guariba_1-w0aPSeCvR"
   embedUrl: string;
+  // dates of the before and after images, "YYYY-MM-DD"
+  beforeDate?: string | null;
+  afterDate?: string | null;
 }
 
 interface Area {

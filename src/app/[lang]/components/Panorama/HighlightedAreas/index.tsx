@@ -131,6 +131,7 @@ const HighlightedAreas = ({
                     dictionary={dictionary}
                     beforeAndAfter={area.beforeAndAfter}
                     title={area.title}
+                    lang={lang}
                   />
                 </div>
               </article>

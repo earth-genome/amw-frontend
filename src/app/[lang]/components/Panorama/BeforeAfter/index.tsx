@@ -12,8 +12,22 @@ interface BeforeAfterProps {
   beforeAndAfter: BeforeAfterData | null | undefined;
   // name of the area, the title of the modal window
   title: string;
+  lang: string;
   className?: string;
 }
+
+// formats a date of the CMS, "YYYY-MM-DD", in the date format of the locale. The date is
+// read and formatted in UTC so it isn't shifted to the day before in timezones behind UTC
+const formatDate = (date: string | null | undefined, lang: string) => {
+  if (!date) return null;
+  const parsed = new Date(`${date.slice(0, 10)}T00:00:00Z`);
+  if (Number.isNaN(parsed.getTime())) return null;
+  try {
+    return parsed.toLocaleDateString(lang, { timeZone: "UTC" });
+  } catch {
+    return parsed.toLocaleDateString(undefined, { timeZone: "UTC" });
+  }
+};
 
 // button that opens the Planet before/after imagery slider of an area in a modal window.
 // The CMS has the link of the Planet story, and the iframe shows its compare page. The
@@ -22,6 +36,7 @@ const BeforeAfter = ({
   dictionary,
   beforeAndAfter,
   title,
+  lang,
   className,
 }: BeforeAfterProps) => {
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -47,6 +62,8 @@ const BeforeAfter = ({
   const compareUrl = getPlanetCompareUrl(sourceUrl);
   if (!beforeAndAfter || !sourceUrl || !compareUrl) return null;
   const panorama = dictionary?.panorama;
+  const beforeDate = formatDate(beforeAndAfter.beforeDate, lang);
+  const afterDate = formatDate(beforeAndAfter.afterDate, lang);
 
   const open = () => {
     setIsLoaded(false);
@@ -100,8 +117,28 @@ const BeforeAfter = ({
               {/* the sides of the slider, the before image on the left and the after one
                   on the right */}
               <div className={style.sides}>
-                <span>{panorama?.before}</span>
-                <span>{panorama?.after}</span>
+                <span>
+                  {panorama?.before}
+                  {beforeDate && (
+                    <time
+                      className={style.date}
+                      dateTime={beforeAndAfter.beforeDate ?? undefined}
+                    >
+                      {beforeDate}
+                    </time>
+                  )}
+                </span>
+                <span>
+                  {afterDate && (
+                    <time
+                      className={style.date}
+                      dateTime={beforeAndAfter.afterDate ?? undefined}
+                    >
+                      {afterDate}
+                    </time>
+                  )}
+                  {panorama?.after}
+                </span>
               </div>
               <div className={style.frame}>
                 {!isLoaded && (
